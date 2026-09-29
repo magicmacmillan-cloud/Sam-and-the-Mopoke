@@ -1,0 +1,37 @@
+DoomEdNums
+{
+  15001 = DemonStaff
+  15002 = ForbiddenAmulet
+  15003 = ZombieFireVirus
+  15004 = CursedDoll
+  15005 = BloodOfTimShakomontus
+  15006 = MagicStatueOfFeeb
+  15007 = SqueezeBabyOfDacron
+  15008 = ScooterWeapon
+  15009 = GauntletOfStones
+  15010 = MopokeFeatherWand
+  15011 = PossessedSausage
+  15012 = JarOfDadToenails
+  15013 = UnholyJandal
+  15101 = SamRunner
+  15102 = TheMopoke
+  15200 = SamCharge
+}
+
+gameinfo
+{
+  title = "Sam and the Mopoke"
+  PlayerClasses = "SamDad"
+}
+
+defaultmap
+{
+  nojump = 0
+  nocrouch = 0
+}
+
+map MAP01 "WEAPON TEST"
+{
+  levelnum = 1
+  next = "EndGameC"
+}
