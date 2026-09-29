@@ -4,42 +4,49 @@ class SamRunner : Actor
   {
     Radius 14;
     Height 54;
+    Speed 13;
     +NOBLOCKMAP;
-    +NOINTERACTION;
+    +FRIENDLY;
   }
   States
   {
-  Spawn: SAMR ABCDEFGH 3; Loop;
+  Spawn: SAMR ABCDEFGH 2 A_Wander; Loop;
+  See: SAMR ABCDEFGH 2 A_Wander; Loop;
   }
 }
 
-class TheMopoke : Demon
+class TheMopoke : Actor
 {
   Default
   {
-    Health 350;
+    Health 520;
     Radius 25;
-    Height 60;
-    Speed 11;
-    PainChance 80;
+    Height 80;
+    Speed 15;
+    Monster;
+    +FLOORCLIP;
   }
   States
   {
   Spawn: MPKE A 8 A_Look; Loop;
-  See: MPKE ABCDEFGH 4 A_Chase; Loop;
+  See: MPKE ABCDEFGH 3 A_Chase; Loop;
   Melee:
     MPKE E 5 A_FaceTarget;
-    MPKE F 5 A_CustomMeleeAttack(18);
+    MPKE F 5 A_CustomMeleeAttack(20);
     Goto See;
   Pain:
-    MPKE G 4;
-    MPKE H 4 A_Pain;
+    MPKE G 4 A_Pain;
     Goto See;
   Death:
     MPKE H 6;
     MPKE G 6 A_Scream;
     MPKE F 6 A_NoBlocking;
-    MPKE E -1;
+    MPKE E 20 A_MopokeDie;
     Stop;
+  }
+  action void A_MopokeDie()
+  {
+    A_Log("The Mopoke folds into the dark. The way forward opens.");
+    Level.ExitLevel(0, false);
   }
 }
