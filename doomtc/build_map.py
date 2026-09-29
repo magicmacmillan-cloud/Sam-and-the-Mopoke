@@ -2,57 +2,118 @@ from pathlib import Path
 import struct
 
 ROOT=Path(__file__).resolve().parent
-OUT=ROOT/"sam-test-map.wad"
+OUT=ROOT/"sam-and-the-mopoke-map.wad"
 
 def lump(name,data=b""):
     return name.encode("ascii")[:8].ljust(8,b"\0"),data
-
 def tex8(s):
     return s.encode("ascii")[:8].ljust(8,b"\0")
 
-# Simple rectangular Doom-format weapon/sprite test arena.
-verts=[(-1024,-768),(1024,-768),(1024,768),(-1024,768)]
-sidedefs=[]
-linedefs=[]
-for i in range(4):
-    sidedefs.append((0,0,tex8("-"),tex8("-"),tex8("STARTAN3"),0))
-    linedefs.append((i,(i+1)%4,1,0,0,i,0xFFFF))
+# Continuous Doom-format route:
+# House -> playground -> forest -> cemetery -> tomb -> station -> mall -> library.
+outline=[
+ (-512,-384),(-192,-384),(-192,-320),(128,-320),(128,-384),(448,-384),(448,-256),(704,-256),(704,-448),(1024,-448),(1024,-320),(1344,-320),
+ (1344,-576),(1664,-576),(1664,-736),(2080,-736),(2080,-576),(2432,-576),
+ (2432,-832),(2784,-832),(2784,-640),(3136,-640),(3136,-896),(3520,-896),
+ (3520,-704),(3904,-704),(3904,-512),(4256,-512),(4256,-768),(4544,-768),
+ (4544,-576),(5056,-576),(5056,-704),(5504,-704),(5504,-896),(5952,-896),
+ (5952,-768),(6464,-768),(6464,-960),(7008,-960),(7008,-768),(7488,-768),
+ (7488,-1024),(8320,-1024),(8320,1024),(7488,1024),(7488,768),(7008,768),(7008,960),(6464,960),(6464,768),(5952,768),
+ (5952,896),(5504,896),(5504,704),(5056,704),(5056,576),(4544,576),(4544,768),(4256,768),(4256,512),(3904,512),(3904,704),(3520,704),
+ (3520,896),(3136,896),(3136,640),(2784,640),(2784,832),(2432,832),(2432,576),(2080,576),(2080,736),(1664,736),(1664,576),(1344,576),
+ (1344,320),(1024,320),(1024,448),(704,448),(704,256),(448,256),(448,384),(128,384),(128,320),(-192,320),(-192,384),(-512,384)
+]
+verts=list(outline); linedefs=[]; sidedefs=[]
+sectors=[(0,192,tex8("MOPFLR"),tex8("MOPCEI"),176,0,0)]
+def zone_tex(x):
+    if x<1344:return "HOUSE"
+    if x<2432:return "PLAYGRND"
+    if x<3520:return "FOREST"
+    if x<4256:return "GRAVE"
+    if x<4544:return "TOMB"
+    if x<5952:return "STATION"
+    if x<7488:return "MALL"
+    return "LIBRARY"
+for i,(x,y) in enumerate(verts):
+    nx,ny=verts[(i+1)%len(verts)]
+    side=len(sidedefs);sidedefs.append((0,0,tex8("-"),tex8("-"),tex8(zone_tex((x+nx)//2)),0))
+    linedefs.append((i,(i+1)%len(verts),1,0,0,side,0xFFFF))
+def wall(x1,y1,x2,y2,tex):
+    a=len(verts);verts.extend([(x1,y1),(x2,y2)])
+    s=len(sidedefs);sidedefs.append((0,0,tex8("-"),tex8("-"),tex8(tex),0))
+    linedefs.append((a,a+1,1,0,0,s,0xFFFF))
 
-# floor, ceiling, floor flat, ceiling flat, light, special, tag
-sectors=[(0,192,tex8("FLOOR0_1"),tex8("CEIL1_1"),192,0,0)]
+# House: bedrooms/hall, timber kitchen, pink bathroom, side porch, carport/backyard/shed.
+for w in [
+ (-120,-300,-120,-70),(160,70,160,300),(420,-300,420,-70),(680,70,680,240),(940,-300,940,-70),
+ (250,-300,250,-120),(520,120,520,300),(800,-260,980,-260),(1040,80,1250,80),
+ (1120,-220,1280,-220),(1180,140,1180,300)
+]: wall(*w,"HOUSE")
+wall(300,-80,420,-80,"KITCHEN"); wall(540,-60,680,-60,"PINKBATH"); wall(1080,250,1280,250,"CORRUG")
 
-# player, 13 weapons, ammo, Sam, Mopoke.
+# Playground.
+for w in [(1500,-350,1500,-80),(1780,100,1960,100),(2140,-350,2280,-350),(1880,-480,2040,-480)]:wall(*w,"PLAYGRND")
+# Forest forks/returns.
+for w in [(2520,-520,2700,-300),(2860,260,3040,500),(3180,-520,3380,-300),(3300,220,3460,420),(2600,40,2820,40),(3000,-120,3220,-120)]:wall(*w,"FOREST")
+# Cemetery / crypt lanes.
+for w in [(3600,-430,3820,-430),(3600,-120,3760,-120),(3860,140,4100,140),(3980,420,4180,420),(3660,300,3820,300),(4040,-300,4180,-300)]:wall(*w,"GRAVE")
+# Tomb.
+for w in [(4300,-430,4460,-430),(4300,-80,4420,-80),(4380,240,4520,240)]:wall(*w,"TOMB")
+# Station.
+for w in [(4620,-300,5000,-300),(5120,260,5480,260),(5580,-360,5840,-360),(5700,100,5920,100),(4760,80,4980,80),(5300,-120,5480,-120),(5660,360,5860,360)]:wall(*w,"STATION")
+# Mall.
+for w in [(6060,-480,6420,-480),(6200,120,6460,120),(6540,-560,6540,-180),(6700,260,7080,260),(7160,-420,7400,-420),(6120,360,6380,360),(6640,-300,6880,-300),(7040,500,7300,500)]:wall(*w,"MALL")
+# Library.
+for w in [(7600,-760,7600,-180),(7800,120,7800,760),(8000,-760,8000,-120),(8200,160,8200,760),(7700,-40,7900,-40),(8060,40,8260,40),(7520,-500,7720,-500),(7840,420,8040,420),(8120,-420,8280,-420)]:wall(*w,"LIBRARY")
+
+# Physical choke gaps for the three finger gates.
+for w in [(3400,-896,3400,-40),(3400,40,3400,896)]:wall(*w,"FOREST")
+for w in [(4480,-768,4480,-40),(4480,40,4480,768)]:wall(*w,"TOMB")
+for w in [(7350,-768,7350,-40),(7350,40,7350,768)]:wall(*w,"LIBRARY")
+
+# DoomEdNum things.
 things=[
-    (0,0,0,1,7),
-    (-800,-500,0,15001,7),(-550,-500,0,15002,7),(-300,-500,0,15003,7),
-    (-50,-500,0,15004,7),(200,-500,0,15005,7),(450,-500,0,15006,7),
-    (700,-500,0,15007,7),
-    (-800,500,180,15008,7),(-550,500,180,15009,7),(-300,500,180,15010,7),
-    (-50,500,180,15011,7),(200,500,180,15012,7),(450,500,180,15013,7),
-    (700,500,180,15200,7),
-    (-700,0,0,15101,7),
-    (700,0,180,15102,7)
+ (-320,0,0,1,7),
+ # opening clues / Sam pursuit
+ (620,0,0,15103,7),(850,80,0,15101,7),(1100,-80,0,15104,7),(1420,120,0,15105,7),
+ (1580,-120,0,15106,7),(1750,220,0,15301,7),
+ # forest enemies/clues/loot + goat finger before gate
+ (1900,-180,0,15401,7),(2200,220,0,15401,7),(2380,120,0,15107,7),(2480,-180,0,15402,7),
+ (2750,-180,0,15401,7),(2920,120,0,15108,7),(3050,180,0,15302,7),(3050,-300,0,15501,7),(3400,0,0,15601,7),
+ # cemetery and tomb
+ (3480,-180,0,15301,7),(3650,0,0,15402,7),(3720,120,0,15301,7),(3740,-220,0,15502,7),
+ (4050,160,0,15109,7),(4100,200,0,15401,7),(4230,-180,0,15402,7),(4360,180,0,15401,7),(4480,0,0,15602,7),
+ # station, Crow finger before service gate
+ (4550,0,0,15110,7),(4680,180,0,15402,7),(4780,-180,0,15301,7),(4980,-280,0,15401,7),
+ (5100,240,0,15402,7),(5220,-220,0,15401,7),(5250,180,0,15111,7),(5360,250,0,15402,7),
+ (5480,-240,0,15401,7),(5600,220,0,15402,7),(5750,-180,0,15301,7),(5750,300,0,15503,7),
+ # mall + Possum finger before archive gate
+ (6100,-180,0,15109,7),(6250,200,0,15301,7),(6300,-40,0,15102,7),(6350,-220,0,15401,7),
+ (6550,220,0,15402,7),(6750,-220,0,15401,7),(6900,220,0,15401,7),(7150,300,0,15503,7),(7350,0,0,15603,7),
+ # weapon discoveries distributed along route
+ (2050,0,0,15001,7),(3180,-350,0,15002,7),(3900,-250,0,15003,7),(4700,-120,0,15004,7),
+ (5200,0,0,15005,7),(5800,0,0,15006,7),(6200,-300,0,15007,7),(6450,300,0,15008,7),
+ (6700,420,0,15009,7),(6900,0,0,15010,7),(7150,300,0,15011,7),(7700,300,0,15012,7),(8000,300,0,15013,7),
+ # recovery/secret caches
+ (2700,620,0,15301,7),(3300,-700,0,15301,7),(3800,560,0,15301,7),(4900,470,0,15301,7),
+ (5650,-650,0,15301,7),(6400,650,0,15301,7),(7900,-760,0,15301,7),
+ # finale Mopoke
+ (8180,0,180,15102,7)
 ]
 
-lumps=[
-    lump("SAMMPK",b"Sam and the Mopoke Doom II mod"),
-    lump("MAP01"),
-    lump("THINGS",b"".join(struct.pack("<hhhhh",*t) for t in things)),
-    lump("LINEDEFS",b"".join(struct.pack("<HHHHHHH",*x) for x in linedefs)),
-    lump("SIDEDEFS",b"".join(struct.pack("<hh8s8s8sH",*x) for x in sidedefs)),
-    lump("VERTEXES",b"".join(struct.pack("<hh",*x) for x in verts)),
-    lump("SEGS"),lump("SSECTORS"),lump("NODES"),
-    lump("SECTORS",b"".join(struct.pack("<hh8s8shhh",*x) for x in sectors)),
-    lump("REJECT"),lump("BLOCKMAP")
-]
-
-data=bytearray(b"PWAD"+struct.pack("<II",len(lumps),0))
-entries=[]
-for name,body in lumps:
-    pos=len(data); data+=body; entries.append((pos,len(body),name))
+L=[lump("SAMMPK",b"Sam and the Mopoke standalone Doom II game"),lump("MAP01"),
+   lump("THINGS",b"".join(struct.pack("<hhhhh",*x) for x in things)),
+   lump("LINEDEFS",b"".join(struct.pack("<HHHHHHH",*x) for x in linedefs)),
+   lump("SIDEDEFS",b"".join(struct.pack("<hh8s8s8sH",*x) for x in sidedefs)),
+   lump("VERTEXES",b"".join(struct.pack("<hh",*x) for x in verts)),
+   lump("SEGS"),lump("SSECTORS"),lump("NODES"),
+   lump("SECTORS",b"".join(struct.pack("<hh8s8shhh",*x) for x in sectors)),
+   lump("REJECT"),lump("BLOCKMAP")]
+data=bytearray(b"PWAD"+struct.pack("<II",len(L),0));entries=[]
+for name,body in L:
+    pos=len(data);data+=body;entries.append((pos,len(body),name))
 dirpos=len(data)
-for pos,size,name in entries:
-    data+=struct.pack("<II8s",pos,size,name)
+for pos,size,name in entries:data+=struct.pack("<II8s",pos,size,name)
 data[8:12]=struct.pack("<I",dirpos)
 OUT.write_bytes(data)
 print(OUT)
