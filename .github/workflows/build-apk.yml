@@ -1,4 +1,4 @@
-name: Build Sam and the Mopoke Doom II APK
+name: Build Sam and the Mopoke IWAD APK
 
 on:
   workflow_dispatch:
@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'doomtc/**'
+      - 'README.md'
       - '.github/workflows/build-apk.yml'
 
 permissions:
@@ -19,62 +20,10 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out Sam and the Mopoke
+        uses: actions/checkout@v4
         with:
           path: game
-
-      - name: Generate and package Doom II mod
-        run: |
-          set -euo pipefail
-          python3 game/doomtc/generate_assets.py
-          python3 game/doomtc/build_map.py
-          python3 game/doomtc/pack_tc.py
-
-      - name: Validate clean Doom-format content
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import struct, zipfile
-
-          root=Path("game/doomtc")
-          wad=root/"sam-and-the-mopoke-map.wad"
-          pk3=root/"build/sam-and-the-mopoke.pk3"
-
-          b=wad.read_bytes()
-          assert b[:4] == b"PWAD"
-          count,diroff=struct.unpack_from("<II",b,4)
-          names=[]
-          for i in range(count):
-              pos,size,name=struct.unpack_from("<II8s",b,diroff+i*16)
-              assert pos+size <= len(b)
-              names.append(name.rstrip(b"\0").decode("ascii"))
-          for required in ("SAMMPK","MAP01","THINGS","LINEDEFS","SIDEDEFS","VERTEXES","SECTORS"):
-              assert required in names, required
-
-          with zipfile.ZipFile(pk3) as z:
-              files=set(z.namelist())
-              for required in (
-                  "MAPINFO","LANGUAGE","MENUDEF","SBARINFO","SNDINFO","zscript.txt",
-                  "zscript/player.zs","zscript/weapons.zs","zscript/actors.zs",
-                  "zscript/keys.zs","zscript/clues.zs","zscript/world.zs","zscript/story.zs",
-                  "sprites/ZHNDA0.png","sprites/WSTAA0.png","sprites/WGAUA0.png",
-                  "sprites/SAMRA0.png","sprites/MPKEA0.png","sprites/ZDADA0.png",
-                  "sprites/GTFGA0.png","sprites/CRFGA0.png","sprites/PSFGA0.png",
-                  "textures/HOUSE.png","textures/FOREST.png","textures/LIBRARY.png",
-                  "graphics/DADST00.png","graphics/STBAR.png"
-              ):
-                  assert required in files, required
-              weapons=z.read("zscript/weapons.zs").decode("utf-8")
-              for name in (
-                  "ZombieHands","DemonStaff","ForbiddenAmulet","ZombieFireVirus","CursedDoll",
-                  "BloodOfTimShakomontus","MagicStatueOfFeeb","SqueezeBabyOfDacron",
-                  "ScooterWeapon","GauntletOfStones","MopokeFeatherWand",
-                  "PossessedSausage","JarOfDadToenails","UnholyJandal"
-              ):
-                  assert f"class {name}" in weapons, name
-              assert not any("Mopoke2D/" in x for x in files)
-          print("Doom-format mod validation passed")
-          PY
 
       - name: Check out Android Doom source port
         uses: actions/checkout@v4
@@ -82,6 +31,61 @@ jobs:
           repository: manuelsiuro/GZDoom-Android-2026
           ref: master
           path: engine
+
+      - name: Generate Sam and the Mopoke game data
+        run: |
+          set -euo pipefail
+          test -s engine/doom/src/main/assets/freedoom2.wad
+          python3 game/doomtc/generate_assets.py
+          python3 game/doomtc/build_map.py
+          python3 game/doomtc/build_iwad.py engine/doom/src/main/assets/freedoom2.wad
+
+      - name: Validate standalone IWAD
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, struct
+
+          wad=Path("game/doomtc/build/sam-and-the-mopoke.wad")
+          b=wad.read_bytes()
+          assert b[:4] == b"IWAD", b[:4]
+          count,diroff=struct.unpack_from("<II",b,4)
+          assert diroff + count*16 <= len(b)
+          names=[]
+          data={}
+          for i in range(count):
+              pos,size,raw=struct.unpack_from("<II8s",b,diroff+i*16)
+              assert pos+size <= len(b)
+              name=raw.rstrip(b"\0").decode("ascii")
+              names.append(name)
+              data.setdefault(name,[]).append(b[pos:pos+size])
+
+          required={
+              "SAMMPK","SAMLIC","IWADINFO","ZSCRIPT","MAPINFO","LANGUAGE","MENUDEF",
+              "SBARINFO","SNDINFO","MAP01","THINGS","LINEDEFS","SIDEDEFS","VERTEXES",
+              "SECTORS","S_START","S_END","F_START","F_END","TX_START","TX_END",
+              "SAMMUS","ZHNDA0","WSTAA0","WGAUA0","SAMRA0","MPKEA0","ZDADA0",
+              "GTFGA0","CRFGA0","PSFGA0","HOUSE","FOREST","GRAVE","TOMB",
+              "STATION","MALL","LIBRARY"
+          }
+          missing=sorted(required-set(names))
+          assert not missing, missing
+          maps=[n for n in names if re.fullmatch(r"MAP\d\d",n)]
+          assert maps == ["MAP01"], maps
+
+          zscript=data["ZSCRIPT"][-1].decode("utf-8")
+          for cls in (
+              "ZombieHands","DemonStaff","ForbiddenAmulet","ZombieFireVirus","CursedDoll",
+              "BloodOfTimShakomontus","MagicStatueOfFeeb","SqueezeBabyOfDacron",
+              "ScooterWeapon","GauntletOfStones","MopokeFeatherWand","PossessedSausage",
+              "JarOfDadToenails","UnholyJandal","GoatFinger","CrowFinger","PossumFinger",
+              "GoatFingerGate","CrowFingerGate","PossumFingerGate","SamRunner",
+              "MopokeShambler","UndeadGoat","TheMopoke","SamStoryHandler"
+          ):
+              assert f"class {cls}" in zscript, cls
+
+          print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps")
+          PY
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -91,22 +95,25 @@ jobs:
 
       - name: Install Android SDK 36
         run: |
+          set -euo pipefail
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n1)"
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
 
-      - name: Install Sam and the Mopoke Doom assets
+      - name: Install only the Sam and the Mopoke IWAD
         run: |
           set -euo pipefail
-          mkdir -p engine/doom/src/main/assets
-          cp game/doomtc/build/sam-and-the-mopoke.pk3 engine/doom/src/main/assets/
-          cp game/doomtc/sam-and-the-mopoke-map.wad engine/doom/src/main/assets/
-          test -s engine/doom/src/main/assets/freedoom2.wad
-          rm -f engine/doom/src/main/assets/freedoom1.wad engine/doom/src/main/assets/freedoom-manual.pdf
+          ASSETS=engine/doom/src/main/assets
+          mkdir -p "$ASSETS"
+          cp game/doomtc/build/sam-and-the-mopoke.wad "$ASSETS/"
+          rm -f "$ASSETS/freedoom1.wad" "$ASSETS/freedoom2.wad" "$ASSETS/freedoom-manual.pdf"
+          rm -f "$ASSETS/sam-and-the-mopoke.pk3" "$ASSETS/sam-and-the-mopoke-map.wad"
+          test -s "$ASSETS/sam-and-the-mopoke.wad"
 
-      - name: Brand launcher and boot the Doom II mod directly
+      - name: Brand launcher and boot the IWAD directly
         working-directory: engine
         run: |
+          set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
 
@@ -125,10 +132,9 @@ jobs:
           p.write_text(s)
 
           p=Path("doom/src/main/java/com/msa/freedoom/Utils.kt")
-          s=p.read_text().replace(
-              'copyAsset(responsibleActivity, "freedoom1.wad", fullBaseDir)', ''
-          )
-          p.write_text(s)
+          lines=p.read_text().splitlines()
+          lines=[line for line in lines if 'copyAsset' not in line or ('freedoom1.wad' not in line and 'freedoom2.wad' not in line)]
+          p.write_text("\n".join(lines)+"\n")
           PY
 
           cat > doom/src/main/java/com/msa/freedoom/EntryActivity.kt <<'KOT'
@@ -159,9 +165,7 @@ jobs:
                       val base = AppSettings.getQuakeFullDir()
                       withContext(Dispatchers.IO) {
                           AppSettings.createDirectories(application)
-                          Utils.copyAsset(this@EntryActivity, "sam-and-the-mopoke.pk3", base)
-                          Utils.copyAsset(this@EntryActivity, "sam-and-the-mopoke-map.wad", base)
-                          Utils.copyAsset(this@EntryActivity, "freedoom2.wad", base)
+                          Utils.copyAsset(this@EntryActivity, "sam-and-the-mopoke.wad", base)
                           Utils.copyAsset(this@EntryActivity, "uzdoom.pk3", "$base/res")
                           Utils.copyAsset(this@EntryActivity, "uzdoom_game_support.pk3", "$base/res")
                           Utils.copyAsset(this@EntryActivity, "game_widescreen_gfx.pk3", base)
@@ -176,7 +180,7 @@ jobs:
                           putExtra("res_div", AppSettings.getIntOption(this@EntryActivity, "gzdoom_res_div", 1))
                           putExtra("game_path", base)
                           putExtra("game", "com.samandthemopoke.game")
-                          putExtra("args", "-iwad freedoom2.wad -file sam-and-the-mopoke-map.wad sam-and-the-mopoke.pk3 +map MAP01")
+                          putExtra("args", "-iwad sam-and-the-mopoke.wad +map MAP01")
                       })
                       finish()
                   }
@@ -193,20 +197,31 @@ jobs:
           chmod +x gradlew
           ./gradlew :doom:assembleDebug --stacktrace
 
-      - name: Verify APK contains free Doom II base and Sam mod
+      - name: Verify APK ships one standalone game IWAD
         run: |
           set -euo pipefail
           APK="$(find engine/doom/build/outputs/apk -type f -name '*debug*.apk' | head -n1)"
           test -n "$APK"
-          unzip -l "$APK" > /tmp/apk-list.txt
-          grep -q 'assets/freedoom2.wad' /tmp/apk-list.txt
-          grep -q 'assets/sam-and-the-mopoke-map.wad' /tmp/apk-list.txt
-          grep -q 'assets/sam-and-the-mopoke.pk3' /tmp/apk-list.txt
-          cp "$APK" Sam-and-the-Mopoke-Doom2-debug.apk
+          python3 - "$APK" <<'PY'
+          import sys, zipfile
+          apk=sys.argv[1]
+          with zipfile.ZipFile(apk) as z:
+              names=set(z.namelist())
+              target="assets/sam-and-the-mopoke.wad"
+              assert target in names
+              assert "assets/freedoom2.wad" not in names
+              assert "assets/sam-and-the-mopoke.pk3" not in names
+              assert "assets/sam-and-the-mopoke-map.wad" not in names
+              with z.open(target) as f:
+                  assert f.read(4) == b"IWAD"
+          print("APK contains the standalone Sam and the Mopoke IWAD and no external game-data mod stack")
+          PY
+          cp "$APK" Sam-and-the-Mopoke-IWAD-debug.apk
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Sam and the Mopoke APK
+        uses: actions/upload-artifact@v4
         with:
-          name: Sam-and-the-Mopoke-Doom2-APK
-          path: Sam-and-the-Mopoke-Doom2-debug.apk
+          name: Sam-and-the-Mopoke-IWAD-APK
+          path: Sam-and-the-Mopoke-IWAD-debug.apk
           if-no-files-found: error
           retention-days: 3
