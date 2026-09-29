@@ -24,7 +24,6 @@ DoomEdNums
   15108 = SamMessage
   15109 = LincolnMessage
   15110 = FalseMessage
-  15111 = SamRunner
 
   15301 = SearchableCache
   15302 = DyingSurvivor
@@ -61,6 +60,6 @@ map MAP01 "THE MAN WHO REMEMBERED"
 {
   levelnum = 1
   next = "EndGameC"
-  music = "music/sam-mopoke.mid"
+  music = "SAMMUS"
   sky1 = "MOPSKY"
 }
