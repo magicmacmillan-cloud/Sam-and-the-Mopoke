@@ -32,3 +32,13 @@ GitHub Actions validates that the shipped game file has an `IWAD` header and rej
 MAP01 now uses separate material sectors for house, playground, forest, cemetery, tomb, station, mall and library rather than one shared floor/ceiling. Outdoor zones use the night sky; indoor zones have distinct roof/ceiling materials and heights. Location-specific wall textures include baked trim, grime, cracks or signage motifs.
 
 Enemy variety now includes shamblers, undead goats, rot possums, cursed crows, ranged station husks, mall brutes and library shades before the final Mopoke. Cursed weapons keep distinct silhouettes and now have weapon-specific firing/impact sound cues.
+
+
+## Definitive Sam sprite set
+
+The uploaded Sam reference sheet is the source of truth for Sam. The IWAD build installs a 44-frame set covering look-back, scared, hurt, exhausted, crouch/hide, walk, run, turn, and fall/get-up states, replacing the earlier procedural Sam runner art.
+
+
+## Music system
+
+The supplied soundtrack is stored under anonymous internal names MUSIC01–MUSIC10. MUSIC01 is the title/menu cue. MAP01 changes cues by authored location using a one-second fade-out, switch at silence, and one-second fade-in. MUSIC09 is reserved for the final approach/fight and MUSIC10 for the ending.
