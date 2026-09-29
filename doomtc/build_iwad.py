@@ -1,9 +1,9 @@
 from pathlib import Path
-import re, struct, sys
+import re, struct, sys, zipfile
 
 ROOT = Path(__file__).resolve().parent
 MAP_WAD = ROOT / "sam-and-the-mopoke-map.wad"
-OUT = ROOT / "build" / "sam-and-the-mopoke.wad"
+OUT = ROOT / "build" / "sam-and-the-mopoke.wad"\nMUSIC_NAMES = [f"MUSIC{i:02d}" for i in range(1, 11)]
 
 if len(sys.argv) != 2:
     raise SystemExit("usage: build_iwad.py /path/to/freedoom2.wad")
@@ -192,9 +192,23 @@ for filename, lumpname in SOUND_LUMPS.items():
         raise ValueError(f"missing generated sound: {filename}")
     lumps.append((lumpname, p.read_bytes()))
 
+bundle = ROOT/"music"/"music_bundle.zip"
+if not bundle.is_file():
+    raise ValueError("missing numeric MIDI bundle")
+with zipfile.ZipFile(bundle, "r") as z:
+    members = set(z.namelist())
+    for music_name in MUSIC_NAMES:
+        member = f"{music_name}.mid"
+        if member not in members:
+            raise ValueError(f"music bundle missing {member}")
+        body = z.read(member)
+        if not body.startswith(b"MThd"):
+            raise ValueError(f"{member} is not a MIDI file")
+        lumps.append((music_name, body))
+
 music = ROOT/"music"/"sam-mopoke.mid"
 if not music.is_file():
-    raise ValueError("missing generated music")
+    raise ValueError("missing generated fallback music")
 lumps.append(("SAMMUS", music.read_bytes()))
 
 # The custom MAP01 is the only playable map shipped in the standalone IWAD.
@@ -214,7 +228,7 @@ required = {
     "HCEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","GTGTA0","CRGTA0","PSGTA0",
     "POSSA0","CROWA0","HUSKA0","BRUTA0","SHADA0"
 }
-missing = sorted(required - set(names))
+required.update(MUSIC_NAMES)\nmissing = sorted(required - set(names))
 if ident != b"IWAD" or missing:
     raise ValueError(f"IWAD validation failed: header={ident!r} missing={missing}")
 maps = [n for n in names if re.fullmatch(r"MAP\d\d", n)]
