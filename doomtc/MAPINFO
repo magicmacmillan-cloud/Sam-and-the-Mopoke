@@ -13,15 +13,42 @@ DoomEdNums
   15011 = PossessedSausage
   15012 = JarOfDadToenails
   15013 = UnholyJandal
-  15101 = SamRunner
+
+  15101 = SamMudPrint
   15102 = TheMopoke
+  15103 = SamColaClue
+  15104 = SamWallNote
+  15105 = SamRunner
+  15106 = FalseSamTrail
+  15107 = SamBackpackClue
+  15108 = SamMessage
+  15109 = LincolnMessage
+  15110 = FalseMessage
+  15111 = SamRunner
+
+  15301 = SearchableCache
+  15302 = DyingSurvivor
+
+  15401 = MopokeShambler
+  15402 = UndeadGoat
+
+  15501 = GoatFinger
+  15502 = CrowFinger
+  15503 = PossumFinger
+
+  15601 = GoatFingerGate
+  15602 = CrowFingerGate
+  15603 = PossumFingerGate
+
   15200 = SamCharge
 }
 
 gameinfo
 {
   title = "Sam and the Mopoke"
+  borderflat = "MOPFLR"
   PlayerClasses = "SamDad"
+  AddEventHandlers = "SamStoryHandler"
 }
 
 defaultmap
@@ -30,8 +57,10 @@ defaultmap
   nocrouch = 0
 }
 
-map MAP01 "WEAPON TEST"
+map MAP01 "THE MAN WHO REMEMBERED"
 {
   levelnum = 1
   next = "EndGameC"
+  music = "music/sam-mopoke.mid"
+  sky1 = "MOPSKY"
 }
