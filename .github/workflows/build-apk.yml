@@ -7,6 +7,7 @@ on:
     paths:
       - 'doomtc/**'
       - 'README.md'
+      - 'DESIGN_SPEC.md'
       - '.github/workflows/build-apk.yml'
 
 permissions:
@@ -40,7 +41,7 @@ jobs:
           python3 game/doomtc/build_map.py
           python3 game/doomtc/build_iwad.py engine/doom/src/main/assets/freedoom2.wad
 
-      - name: Validate standalone IWAD
+      - name: Validate standalone IWAD and authored environment
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -51,27 +52,62 @@ jobs:
           assert b[:4] == b"IWAD", b[:4]
           count,diroff=struct.unpack_from("<II",b,4)
           assert diroff + count*16 <= len(b)
+
           names=[]
+          entries=[]
           data={}
           for i in range(count):
               pos,size,raw=struct.unpack_from("<II8s",b,diroff+i*16)
               assert pos+size <= len(b)
               name=raw.rstrip(b"\0").decode("ascii")
+              body=b[pos:pos+size]
               names.append(name)
-              data.setdefault(name,[]).append(b[pos:pos+size])
+              entries.append((name,body))
+              data.setdefault(name,[]).append(body)
 
           required={
               "SAMMPK","SAMLIC","IWADINFO","ZSCRIPT","MAPINFO","LANGUAGE","MENUDEF",
               "SBARINFO","SNDINFO","MAP01","THINGS","LINEDEFS","SIDEDEFS","VERTEXES",
               "SECTORS","S_START","S_END","F_START","F_END","TX_START","TX_END",
               "SAMMUS","ZHNDA0","WSTAA0","WGAUA0","SAMRA0","MPKEA0","ZDADA0",
-              "GTFGA0","CRFGA0","PSFGA0","HOUSE","FOREST","GRAVE","TOMB",
-              "STATION","MALL","LIBRARY"
+              "GTFGA0","CRFGA0","PSFGA0","GTGTA0","CRGTA0","PSGTA0",
+              "POSSA0","CROWA0","HUSKA0","BRUTA0","SHADA0",
+              "HOUSE","KITCHEN","PINKBATH","CORRUG","PLAYGRND","FOREST","GRAVE",
+              "TOMB","STATION","MALL","LIBRARY",
+              "HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL",
+              "STNFLR","MALLFLR","LIBFLR","HCEIL","TOMBCE","STNCEIL",
+              "MALLCEIL","LIBCEIL"
           }
           missing=sorted(required-set(names))
           assert not missing, missing
+
           maps=[n for n in names if re.fullmatch(r"MAP\d\d",n)]
           assert maps == ["MAP01"], maps
+
+          # Check the custom MAP01 sector table, not an unrelated base IWAD lump.
+          map_i=next(i for i,(n,_) in enumerate(entries) if n=="MAP01")
+          sec_blob=None
+          for n,body in entries[map_i+1:map_i+24]:
+              if n=="SECTORS":
+                  sec_blob=body
+                  break
+          assert sec_blob is not None
+          assert len(sec_blob)%26==0
+          sector_count=len(sec_blob)//26
+          assert sector_count>=10, sector_count
+
+          floors=set()
+          ceilings=set()
+          lights=set()
+          for off in range(0,len(sec_blob),26):
+              floor,ceil,ff,cf,light,special,tag=struct.unpack_from("<hh8s8shhh",sec_blob,off)
+              floors.add(ff.rstrip(b"\0").decode("ascii"))
+              ceilings.add(cf.rstrip(b"\0").decode("ascii"))
+              lights.add(light)
+
+          assert {"HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
+          assert {"HCEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
+          assert len(lights) >= 6, lights
 
           zscript=data["ZSCRIPT"][-1].decode("utf-8")
           for cls in (
@@ -80,11 +116,12 @@ jobs:
               "ScooterWeapon","GauntletOfStones","MopokeFeatherWand","PossessedSausage",
               "JarOfDadToenails","UnholyJandal","GoatFinger","CrowFinger","PossumFinger",
               "GoatFingerGate","CrowFingerGate","PossumFingerGate","SamRunner",
-              "MopokeShambler","UndeadGoat","RotPossum","CursedCrow","StationHusk",\n              "MallBrute","LibraryShade","TheMopoke","SamStoryHandler"
+              "MopokeShambler","UndeadGoat","RotPossum","CursedCrow","StationHusk",
+              "MallBrute","LibraryShade","TheMopoke","SamStoryHandler"
           ):
               assert f"class {cls}" in zscript, cls
 
-          print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps")
+          print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, {sector_count} authored sectors")
           PY
 
       - name: Set up Java 17
