@@ -1,0 +1,9 @@
+ListMenu "MainMenu"
+{
+  Position 64, 72
+  StaticTextCentered 160, 48, "SAM AND THE MOPOKE"
+  TextItem "NEW GAME", "n", "PlayerclassMenu"
+  TextItem "LOAD GAME", "l", "LoadGameMenu"
+  TextItem "OPTIONS", "o", "OptionsMenu"
+  TextItem "QUIT", "q", "QuitMenu"
+}
