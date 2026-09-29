@@ -12,7 +12,7 @@ with zipfile.ZipFile(OUT,"w",zipfile.ZIP_DEFLATED) as z:
         rel=p.relative_to(ROOT)
         if any(part in exclude for part in rel.parts):
             continue
-        if p.name in {"build_map.py","generate_assets.py","pack_tc.py","sam_weapon_assets.py","README.md"}:
+        if p.name in {"build_map.py","generate_assets.py","pack_tc.py","sam_weapon_assets.py","world_assets.py","README.md"}:
             continue
         if p.suffix in {".pyc"}:
             continue
