@@ -3,7 +3,8 @@ import re, struct, sys, zipfile
 
 ROOT = Path(__file__).resolve().parent
 MAP_WAD = ROOT / "sam-and-the-mopoke-map.wad"
-OUT = ROOT / "build" / "sam-and-the-mopoke.wad"\nMUSIC_NAMES = [f"MUSIC{i:02d}" for i in range(1, 11)]
+OUT = ROOT / "build" / "sam-and-the-mopoke.wad"
+MUSIC_NAMES = [f"MUSIC{i:02d}" for i in range(1, 11)]
 
 if len(sys.argv) != 2:
     raise SystemExit("usage: build_iwad.py /path/to/freedoom2.wad")
@@ -20,6 +21,7 @@ OVERRIDES = {
     "IWADINFO","ZSCRIPT","MAPINFO","LANGUAGE","MENUDEF","SBARINFO","SNDINFO",
     "TITLEPIC","INTERPIC","STBAR","SAMMPK","SAMLIC","SAMMUS"
 }
+OVERRIDES.update(MUSIC_NAMES)
 
 SOUND_LUMPS = {
     "punch.wav":"SSPUNCH",
@@ -228,7 +230,8 @@ required = {
     "HCEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","GTGTA0","CRGTA0","PSGTA0",
     "POSSA0","CROWA0","HUSKA0","BRUTA0","SHADA0"
 }
-required.update(MUSIC_NAMES)\nmissing = sorted(required - set(names))
+required.update(MUSIC_NAMES)
+missing = sorted(required - set(names))
 if ident != b"IWAD" or missing:
     raise ValueError(f"IWAD validation failed: header={ident!r} missing={missing}")
 maps = [n for n in names if re.fullmatch(r"MAP\d\d", n)]
