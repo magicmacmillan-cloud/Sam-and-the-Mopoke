@@ -37,7 +37,7 @@ jobs:
           import struct, zipfile
 
           root=Path("game/doomtc")
-          wad=root/"sam-test-map.wad"
+          wad=root/"sam-and-the-mopoke-map.wad"
           pk3=root/"build/sam-and-the-mopoke.pk3"
 
           b=wad.read_bytes()
@@ -56,8 +56,11 @@ jobs:
               for required in (
                   "MAPINFO","LANGUAGE","MENUDEF","SBARINFO","SNDINFO","zscript.txt",
                   "zscript/player.zs","zscript/weapons.zs","zscript/actors.zs",
+                  "zscript/keys.zs","zscript/clues.zs","zscript/world.zs","zscript/story.zs",
                   "sprites/ZHNDA0.png","sprites/WSTAA0.png","sprites/WGAUA0.png",
                   "sprites/SAMRA0.png","sprites/MPKEA0.png","sprites/ZDADA0.png",
+                  "sprites/GTFGA0.png","sprites/CRFGA0.png","sprites/PSFGA0.png",
+                  "textures/HOUSE.png","textures/FOREST.png","textures/LIBRARY.png",
                   "graphics/DADST00.png","graphics/STBAR.png"
               ):
                   assert required in files, required
@@ -97,7 +100,7 @@ jobs:
           set -euo pipefail
           mkdir -p engine/doom/src/main/assets
           cp game/doomtc/build/sam-and-the-mopoke.pk3 engine/doom/src/main/assets/
-          cp game/doomtc/sam-test-map.wad engine/doom/src/main/assets/
+          cp game/doomtc/sam-and-the-mopoke-map.wad engine/doom/src/main/assets/
           test -s engine/doom/src/main/assets/freedoom2.wad
           rm -f engine/doom/src/main/assets/freedoom1.wad engine/doom/src/main/assets/freedoom-manual.pdf
 
@@ -157,7 +160,7 @@ jobs:
                       withContext(Dispatchers.IO) {
                           AppSettings.createDirectories(application)
                           Utils.copyAsset(this@EntryActivity, "sam-and-the-mopoke.pk3", base)
-                          Utils.copyAsset(this@EntryActivity, "sam-test-map.wad", base)
+                          Utils.copyAsset(this@EntryActivity, "sam-and-the-mopoke-map.wad", base)
                           Utils.copyAsset(this@EntryActivity, "freedoom2.wad", base)
                           Utils.copyAsset(this@EntryActivity, "uzdoom.pk3", "$base/res")
                           Utils.copyAsset(this@EntryActivity, "uzdoom_game_support.pk3", "$base/res")
@@ -173,7 +176,7 @@ jobs:
                           putExtra("res_div", AppSettings.getIntOption(this@EntryActivity, "gzdoom_res_div", 1))
                           putExtra("game_path", base)
                           putExtra("game", "com.samandthemopoke.game")
-                          putExtra("args", "-iwad freedoom2.wad -file sam-test-map.wad sam-and-the-mopoke.pk3 +map MAP01")
+                          putExtra("args", "-iwad freedoom2.wad -file sam-and-the-mopoke-map.wad sam-and-the-mopoke.pk3 +map MAP01")
                       })
                       finish()
                   }
@@ -197,7 +200,7 @@ jobs:
           test -n "$APK"
           unzip -l "$APK" > /tmp/apk-list.txt
           grep -q 'assets/freedoom2.wad' /tmp/apk-list.txt
-          grep -q 'assets/sam-test-map.wad' /tmp/apk-list.txt
+          grep -q 'assets/sam-and-the-mopoke-map.wad' /tmp/apk-list.txt
           grep -q 'assets/sam-and-the-mopoke.pk3' /tmp/apk-list.txt
           cp "$APK" Sam-and-the-Mopoke-Doom2-debug.apk
 
