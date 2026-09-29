@@ -1,0 +1,10 @@
+base Doom;
+
+height 32;
+statusbar normal
+{
+  drawimage "STBAR", 0, 168;
+  drawnumber 3, HUDFONT_DOOM, untranslated, health, 42, 190;
+  drawnumber 3, HUDFONT_DOOM, untranslated, ammo1, 124, 190;
+  drawmugshot "DAD", 5, 148, 168;
+}
