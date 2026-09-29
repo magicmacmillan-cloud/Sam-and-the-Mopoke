@@ -1,17 +1,108 @@
 class MopokeShambler : Actor {
- Default { Health 45; Speed 8; Radius 20; Height 56; Monster; +FLOORCLIP; PainChance 150; }
- States { Spawn: MZOM A 10 A_Look; Loop; See: MZOM ABCDEFGH 4 A_Chase; Loop; Melee: MZOM E 3 A_FaceTarget; MZOM FG 3 A_CustomMeleeAttack(7); Goto See; Pain: MZOM A 4 A_Pain; Goto See; Death: MZOM H 6 A_NoBlocking; Stop; }
+ Default { Health 45; Speed 8; Radius 20; Height 56; Monster; +FLOORCLIP; PainChance 150; SeeSound "sam/zombie"; }
+ States {
+  Spawn: MZOM A 10 A_Look; Loop;
+  See: MZOM ABCDEFGH 4 A_Chase; Loop;
+  Melee: MZOM E 3 A_FaceTarget; MZOM FG 3 A_CustomMeleeAttack(7,"sam/scratch"); Goto See;
+  Pain: MZOM A 4 A_Pain; Goto See;
+  Death: MZOM G 5 A_Scream; MZOM H 6 A_NoBlocking; Stop;
+ }
 }
+
 class UndeadGoat : Actor {
- Default { Health 90; Speed 13; Radius 24; Height 48; Monster; +FLOORCLIP; }
- States { Spawn: GOAT A 10 A_Look; Loop; See: GOAT ABCDEFGH 3 A_Chase; Loop; Melee: GOAT DE 2 A_FaceTarget; GOAT FG 2 A_CustomMeleeAttack(12); Goto See; Pain: GOAT A 3 A_Pain; Goto See; Death: GOAT H 6 A_NoBlocking; Stop; }
+ Default { Health 90; Speed 13; Radius 24; Height 48; Monster; +FLOORCLIP; SeeSound "sam/goat"; ActiveSound "sam/goat"; }
+ States {
+  Spawn: GOAT A 10 A_Look; Loop;
+  See: GOAT ABCDEFGH 3 A_Chase; Loop;
+  Melee: GOAT DE 2 A_FaceTarget; GOAT FG 2 A_CustomMeleeAttack(12,"sam/goat"); Goto See;
+  Pain: GOAT A 3 A_Pain; Goto See;
+  Death: GOAT G 5 A_Scream; GOAT H 6 A_NoBlocking; Stop;
+ }
 }
+
+class RotPossum : Actor {
+ Default { Health 38; Speed 16; Radius 18; Height 24; Monster; +FLOORCLIP; PainChance 180; }
+ States {
+  Spawn: POSS A 8 A_Look; Loop;
+  See: POSS ABCDEFGH 2 A_Chase; Loop;
+  Melee: POSS E 2 A_FaceTarget; POSS FG 2 A_CustomMeleeAttack(8,"sam/scratch"); Goto See;
+  Pain: POSS B 3 A_Pain; Goto See;
+  Death: POSS G 4 A_Scream; POSS H 6 A_NoBlocking; Stop;
+ }
+}
+
+class CursedCrow : Actor {
+ Default { Health 26; Speed 18; Radius 14; Height 22; Monster; +NOGRAVITY +FLOAT; PainChance 200; }
+ States {
+  Spawn: CROW A 8 A_Look; Loop;
+  See: CROW ABCDEFGH 2 A_Chase; Loop;
+  Melee: CROW E 2 A_FaceTarget; CROW FG 2 A_CustomMeleeAttack(6,"sam/scratch"); Goto See;
+  Pain: CROW B 2 A_Pain; Goto See;
+  Death: CROW G 3 A_Scream; CROW H 5 A_NoBlocking; Stop;
+ }
+}
+
+class HuskBolt : FastProjectile {
+ Default { Radius 4; Height 4; Speed 22; Damage 7; Projectile; +RANDOMIZE; }
+ States { Spawn: MORB AB 2 Bright; Loop; Death: MORB CDE 2 Bright; Stop; }
+}
+
+class StationHusk : Actor {
+ Default { Health 115; Speed 9; Radius 20; Height 58; Monster; PainChance 100; SeeSound "sam/zombie"; }
+ States {
+  Spawn: HUSK A 10 A_Look; Loop;
+  See: HUSK ABCD 4 A_Chase; Loop;
+  Missile:
+   HUSK E 4 A_FaceTarget;
+   HUSK F 3 A_CustomMissile("HuskBolt",32,0,0);
+   HUSK G 4;
+   Goto See;
+  Melee: HUSK E 3 A_FaceTarget; HUSK F 3 A_CustomMeleeAttack(10,"sam/scratch"); Goto See;
+  Pain: HUSK B 3 A_Pain; Goto See;
+  Death: HUSK G 5 A_Scream; HUSK H 7 A_NoBlocking; Stop;
+ }
+}
+
+class MallBrute : Actor {
+ Default { Health 190; Speed 7; Radius 30; Height 64; Monster; Mass 300; PainChance 55; }
+ States {
+  Spawn: BRUT A 10 A_Look; Loop;
+  See: BRUT ABCDEFGH 4 A_Chase; Loop;
+  Melee: BRUT E 4 A_FaceTarget; BRUT FG 4 A_CustomMeleeAttack(22,"sam/hitflesh"); Goto See;
+  Pain: BRUT B 3 A_Pain; Goto See;
+  Death: BRUT G 6 A_Scream; BRUT H 8 A_NoBlocking; Stop;
+ }
+}
+
+class LibraryShade : Actor {
+ Default { Health 78; Speed 17; Radius 18; Height 62; Monster; +SHADOW; PainChance 145; }
+ States {
+  Spawn: SHAD A 7 A_Look; Loop;
+  See: SHAD ABCDEFGH 2 A_Chase; Loop;
+  Melee: SHAD E 2 A_FaceTarget; SHAD FG 2 A_CustomMeleeAttack(14,"sam/whisper"); Goto See;
+  Pain: SHAD B 2 A_Pain; Goto See;
+  Death: SHAD G 4 A_Scream; SHAD H 6 A_NoBlocking; Stop;
+ }
+}
+
 class DyingSurvivor : Actor {
  Default { Radius 16; Height 32; +USESPECIAL; }
  States { Spawn: SURV A -1; Stop; }
- override bool Used(Actor u){ if(u&&u.player){A_Log("Kid with a backpack? Cemetery. Don't follow the crying.");return true;} return false; }
+ override bool Used(Actor u){
+  if(u&&u.player){
+   A_Log("Kid with a backpack? Cemetery. Don't follow the crying.");
+   A_PlaySound("sam/survivor",CHAN_VOICE);
+   return true;
+  }
+  return false;
+ }
 }
-class SamHealth : Health { Default { Inventory.Amount 10; Inventory.PickupMessage "Something still sealed. Good enough."; } States { Spawn: LOOT A -1; Stop; } }
+
+class SamHealth : Health {
+ Default { Inventory.Amount 10; Inventory.PickupMessage "Something still sealed. Good enough."; }
+ States { Spawn: LOOT A -1; Stop; }
+}
+
 class SearchableCache : Actor {
  Default { Radius 18; Height 28; +USESPECIAL; Tag "Search"; }
  States { Spawn: LOOT A -1; Stop; }
@@ -22,22 +113,37 @@ class SearchableCache : Actor {
   else if(r<=4){u.GiveInventory("SamCharge",4);A_Log("Found cursed charges.");}
   else if(r<=6){u.GiveInventory("SamHealth",1);A_Log("Found something useful.");}
   else {u.GiveInventory("SamCharge",10);A_Log("Rare cache. Something inside is humming.");}
-  Destroy(); return true;
+  A_PlaySound("sam/loot",CHAN_ITEM);
+  Destroy();
+  return true;
  }
 }
+
 class CupboardCache : SearchableCache { Default { Tag "Cupboard"; } }
 class LockerCache : SearchableCache { Default { Tag "Locker"; } }
 class BinCache : SearchableCache { Default { Tag "Bin"; } }
 class GraveCache : SearchableCache { Default { Tag "Disturbed Grave"; } }
 class AbandonedCarCache : SearchableCache { Default { Tag "Abandoned Car"; } }
 class VendingCache : SearchableCache { Default { Tag "Vending Machine"; } }
-class SamMessage : Actor { Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; } States { Spawn: SMSG A -1; Stop; } override bool Used(Actor u){A_Log("SAM: DAD? DON'T COME THIS WAY.");return true;} }
-class FalseMessage : Actor { Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; } States { Spawn: FMSG A -1; Stop; } override bool Used(Actor u){A_Log("IT KNOWS YOU ARE FOLLOWING.");return true;} }
+
+class SamMessage : Actor {
+ Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; }
+ States { Spawn: SMSG A -1; Stop; }
+ override bool Used(Actor u){A_Log("SAM: DAD? DON'T COME THIS WAY.");return true;}
+}
+
+class FalseMessage : Actor {
+ Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; }
+ States { Spawn: FMSG A -1; Stop; }
+ override bool Used(Actor u){A_Log("IT KNOWS YOU ARE FOLLOWING.");return true;}
+}
+
 class LincolnMessage : Actor {
  Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; }
  States { Spawn: LNTE A -1; Stop; }
  override bool Used(Actor u){
-  if(!u||!u.player)return false; int r=Random[lincolnnote](0,4);
+  if(!u||!u.player)return false;
+  int r=Random[lincolnnote](0,4);
   if(r==0) A_Log("LINCOLN: Dad, if you find this, Sam went ahead.");
   else if(r==1) A_Log("LINCOLN: Sam said not to follow the crying.");
   else if(r==2) A_Log("LINCOLN: Dad? We were here. I don't know where this place goes.");

@@ -144,3 +144,146 @@ def generate_world_assets(root: Path):
     ]: _wav(root,n,f,d,no)
     _midi(root)
     print("Generated Sam and the Mopoke world textures, keys, clues, monsters, ambience and music")
+
+
+# --- Full environment + monster-art polish pass ---
+def _flat_material(root,name,base,kind):
+    w=h=64;p=[]
+    for y in range(h):
+        for x in range(w):
+            n=((x*13+y*17)%13)-6
+            c=[max(0,min(255,v+n)) for v in base]
+            if kind=="carpet" and ((x+y)%9==0): c=[max(0,v-10) for v in c]
+            elif kind=="tile" and (x%16<1 or y%16<1): c=[max(0,v-30) for v in c]
+            elif kind=="wood" and (x%16<2): c=[max(0,v-24) for v in c]
+            elif kind=="dirt" and ((x*7+y*11)%29<3): c=[max(0,v-18) for v in c]
+            elif kind=="stone" and (x%32<2 or y%24<2): c=[max(0,v-22) for v in c]
+            elif kind=="concrete" and ((x*5+y*3)%37==0): c=[max(0,v-20) for v in c]
+            p += [*c,255]
+    _png(root/"flats"/f"{name}.png",w,h,p)
+
+def _wall_polish(root,name,base,style):
+    w=h=128;p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            n=((x*19+y*23)%17)-8
+            c=[max(0,min(255,v+n)) for v in base]
+            # Material grammar.
+            if style=="plaster":
+                if y in (94,95): c=[max(0,v-35) for v in c]
+                if x%64==0: c=[max(0,v-8) for v in c]
+            elif style=="panel":
+                if x%24<2: c=[max(0,v-28) for v in c]
+                if y in (96,97): c=[min(255,v+18) for v in c]
+            elif style=="tile":
+                if x%24<2 or y%24<2: c=[max(0,v-32) for v in c]
+            elif style=="corrug":
+                if x%12<3: c=[min(255,v+14) for v in c]
+                elif x%12>9: c=[max(0,v-18) for v in c]
+            elif style=="fence":
+                if x%32<4 or y in (28,29,92,93): c=[max(0,v-38) for v in c]
+            elif style=="bark":
+                if x%21<4: c=[max(0,v-24) for v in c]
+                if (x*3+y*5)%79<2: c=[max(0,v-30) for v in c]
+            elif style=="masonry":
+                if y%24<2 or ((x+(16 if (y//24)%2 else 0))%48)<2: c=[max(0,v-34) for v in c]
+            elif style=="concrete":
+                if y in (31,63,95): c=[max(0,v-15) for v in c]
+            elif style=="shop":
+                if y in (18,19,92,93): c=[min(255,v+18) for v in c]
+                if x%64<3: c=[max(0,v-26) for v in c]
+            elif style=="shelves":
+                if y%28<4 or x%40<3: c=[max(0,v-34) for v in c]
+            i=(y*w+x)*4;p[i:i+4]=[*c,255]
+    # Baked grime/cracks/trims so walls do not read as flat colour swaps.
+    grime=(42,38,35)
+    for k in range(8):
+        x=9+k*17; y=18+(k*29)%90
+        _line(p,w,h,x,y,x+8,y+10,1,grime)
+        if k%2==0:_line(p,w,h,x+8,y+10,x+4,y+19,1,grime)
+    if name in ("STATION","MALL","LIBRARY"):
+        _rect(p,w,h,8,8,58,20,(45,43,42))
+        _rect(p,w,h,12,11,54,17,(156,145,118))
+    _png(root/"textures"/f"{name}.png",w,h,p)
+
+def _gate_sprite(root,name,metal):
+    w=h=96;p=_canvas(w,h)
+    stone=(87,82,74); dark=(39,37,35)
+    _rect(p,w,h,8,5,88,94,stone)
+    _rect(p,w,h,16,13,80,94,dark)
+    for x in range(20,80,12): _rect(p,w,h,x,15,x+5,92,metal)
+    _disc(p,w,h,48,48,10,15,(116,83,59))
+    _disc(p,w,h,48,48,5,10,(28,23,20))
+    _png(root/"sprites"/f"{name}A0.png",w,h,p,48,92)
+
+def _extra_creature(root,prefix,kind):
+    w=h=96
+    for i,fr in enumerate("ABCDEFGH"):
+        p=_canvas(w,h); bob=(0,-2,0,2,1,-1,0,1)[i]; step=(-7,-3,2,8,6,2,-4,-8)[i]
+        if kind=="possum":
+            fur=(101,94,89); pale=(178,153,145); tail=(154,119,113)
+            _disc(p,w,h,45,55+bob,23,12,fur);_disc(p,w,h,65,47+bob,9,8,pale)
+            _line(p,w,h,24,58+bob,8,47+bob+step//2,4,tail)
+            _line(p,w,h,38,64+bob,36+step,87,3,fur);_line(p,w,h,55,64+bob,57-step,87,3,fur)
+            _disc(p,w,h,69,45+bob,2,2,(219,156,61))
+        elif kind=="crow":
+            feather=(25,27,31); eye=(221,151,54); spread=(2,6,11,16,12,8,4,1)[i]
+            _disc(p,w,h,48,45+bob,13,20,feather);_disc(p,w,h,48,25+bob,9,9,feather)
+            _line(p,w,h,40,42+bob,20-spread,60+bob,5,feather);_line(p,w,h,56,42+bob,76+spread,60+bob,5,feather)
+            _line(p,w,h,48,30+bob,61,33+bob,3,(90,74,52));_disc(p,w,h,44,23+bob,2,2,eye)
+        elif kind=="husk":
+            skin=(95,105,93); coat=(62,67,71); glow=(206,132,65)
+            _disc(p,w,h,48,20+bob,11,12,skin);_rect(p,w,h,34,33+bob,62,67+bob,coat)
+            _line(p,w,h,39,64+bob,37+step,92,5,coat);_line(p,w,h,57,64+bob,59-step,92,5,coat)
+            _disc(p,w,h,43,18+bob,2,2,glow);_disc(p,w,h,53,18+bob,2,2,glow)
+            _disc(p,w,h,66,48+bob,5,5,glow)
+        elif kind=="brute":
+            skin=(91,101,78); cloth=(67,52,49); wound=(105,29,27)
+            _disc(p,w,h,48,19+bob,13,13,skin);_disc(p,w,h,48,53+bob,24,27,cloth)
+            _line(p,w,h,32,46+bob,17+step//2,76,7,skin);_line(p,w,h,64,46+bob,79-step//2,76,7,skin)
+            _line(p,w,h,40,72+bob,37+step,94,7,cloth);_line(p,w,h,57,72+bob,60-step,94,7,cloth)
+            _disc(p,w,h,62,42+bob,5,5,wound)
+        else:
+            body=(34,35,42); edge=(96,94,111); eye=(200,190,165)
+            _disc(p,w,h,48,25+bob,10,11,edge,175);_disc(p,w,h,48,54+bob,16,29,body,185)
+            _line(p,w,h,36,48+bob,24-step//2,79,5,body);_line(p,w,h,60,48+bob,72+step//2,79,5,body)
+            _disc(p,w,h,43,23+bob,2,2,eye,220);_disc(p,w,h,53,23+bob,2,2,eye,220)
+        _png(root/"sprites"/f"{prefix}{fr}0.png",w,h,p,48,92)
+
+_base_world_assets = generate_world_assets
+def generate_world_assets(root: Path):
+    root=Path(root)
+    _base_world_assets(root)
+
+    # Wall identities, with baked trim/grime/signage details.
+    for spec in [
+      ("HOUSE",(129,105,92),"plaster"),("KITCHEN",(132,88,55),"panel"),
+      ("PINKBATH",(155,111,119),"tile"),("CORRUG",(88,92,96),"corrug"),
+      ("PLAYGRND",(91,81,67),"fence"),("FOREST",(57,74,55),"bark"),
+      ("GRAVE",(91,93,88),"masonry"),("TOMB",(103,91,76),"masonry"),
+      ("STATION",(83,87,91),"concrete"),("MALL",(108,98,92),"shop"),
+      ("LIBRARY",(78,59,47),"shelves")
+    ]:_wall_polish(root,*spec)
+
+    # Separate floor and roof/ceiling materials.
+    for spec in [
+      ("HCARPET",(82,70,62),"carpet"),("KTILE",(124,111,91),"tile"),
+      ("PBATH",(156,126,130),"tile"),("GRASS",(56,75,50),"dirt"),
+      ("DIRT",(73,61,48),"dirt"),("GRAVEFL",(76,72,65),"stone"),
+      ("TOMBFL",(85,74,61),"stone"),("STNFLR",(78,81,84),"concrete"),
+      ("MALLFLR",(113,105,99),"tile"),("LIBFLR",(65,52,44),"wood"),
+      ("HCEIL",(111,106,98),"concrete"),("TOMBCE",(70,62,54),"stone"),
+      ("STNCEIL",(63,67,71),"concrete"),("MALLCEIL",(93,89,84),"tile"),
+      ("LIBCEIL",(58,48,42),"wood")
+    ]:_flat_material(root,*spec)
+
+    _gate_sprite(root,"GTGT",(104,93,73))
+    _gate_sprite(root,"CRGT",(62,64,68))
+    _gate_sprite(root,"PSGT",(112,79,62))
+
+    for prefix,kind in [
+      ("POSS","possum"),("CROW","crow"),("HUSK","husk"),
+      ("BRUT","brute"),("SHAD","shade")
+    ]:_extra_creature(root,prefix,kind)
+
+    print("Generated distinct walls, floors, ceilings, gates and expanded monster sprites")

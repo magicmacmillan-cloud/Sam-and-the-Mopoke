@@ -80,7 +80,7 @@ jobs:
               "ScooterWeapon","GauntletOfStones","MopokeFeatherWand","PossessedSausage",
               "JarOfDadToenails","UnholyJandal","GoatFinger","CrowFinger","PossumFinger",
               "GoatFingerGate","CrowFingerGate","PossumFingerGate","SamRunner",
-              "MopokeShambler","UndeadGoat","TheMopoke","SamStoryHandler"
+              "MopokeShambler","UndeadGoat","RotPossum","CursedCrow","StationHusk",\n              "MallBrute","LibraryShade","TheMopoke","SamStoryHandler"
           ):
               assert f"class {cls}" in zscript, cls
 

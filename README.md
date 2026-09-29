@@ -25,3 +25,10 @@ The current design preserves the established horror/action pacing, Sam pursuit, 
 ## Build
 
 GitHub Actions validates that the shipped game file has an `IWAD` header and rejects builds that still include `freedoom2.wad`, a separate Sam PK3, or a separate Sam PWAD.
+
+
+## Environment/combat pass
+
+MAP01 now uses separate material sectors for house, playground, forest, cemetery, tomb, station, mall and library rather than one shared floor/ceiling. Outdoor zones use the night sky; indoor zones have distinct roof/ceiling materials and heights. Location-specific wall textures include baked trim, grime, cracks or signage motifs.
+
+Enemy variety now includes shamblers, undead goats, rot possums, cursed crows, ranged station husks, mall brutes and library shades before the final Mopoke. Cursed weapons keep distinct silhouettes and now have weapon-specific firing/impact sound cues.
