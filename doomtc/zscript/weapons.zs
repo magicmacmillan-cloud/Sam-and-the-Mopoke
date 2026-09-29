@@ -25,7 +25,10 @@ class SamCursedBolt : FastProjectile
   States
   {
   Spawn: MORB AB 2 Bright; Loop;
-  Death:\n    MORB C 0 Bright A_PlaySound("sam/cursefire",CHAN_BODY);\n    MORB CDE 3 Bright;\n    Stop;
+  Death:
+    MORB C 0 Bright A_PlaySound("sam/cursefire",CHAN_BODY);
+    MORB CDE 3 Bright;
+    Stop;
   }
 }
 
@@ -45,7 +48,8 @@ class SamHeavyBolt : FastProjectile
   Spawn: MORB AB 2 Bright; Loop;
   Death:
     MORB C 2 Bright;
-    MORB D 0 Bright A_PlaySound("sam/gauntlet",CHAN_BODY);\n    MORB D 0 Bright A_Explode(110, 120, XF_HURTSOURCE, false, 120);
+    MORB D 0 Bright A_PlaySound("sam/gauntlet",CHAN_BODY);
+    MORB D 0 Bright A_Explode(110, 120, XF_HURTSOURCE, false, 120);
     MORB E 4 Bright;
     Stop;
   }
