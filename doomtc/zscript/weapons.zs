@@ -133,6 +133,7 @@ class ZombieFireVirus : Weapon
   Deselect: VIRS A 1 A_Lower; Loop;
   Select: VIRS A 1 A_Raise; Loop;
   Fire:
+    VIRS A 0 A_PlaySound("sam/cursefire",CHAN_WEAPON);
     VIRS B 1;
     VIRS C 1 Bright A_FireBullets(2,2,1,7,"BulletPuff");
     VIRS D 2;
@@ -188,6 +189,7 @@ class MagicStatueOfFeeb : Weapon
   Deselect: FEEB A 1 A_Lower; Loop;
   Select: FEEB A 1 A_Raise; Loop;
   Fire:
+    FEEB A 0 A_PlaySound("sam/whisper",CHAN_WEAPON);
     FEEB B 2;
     FEEB C 2 Bright A_FireBullets(1,1,1,18,"BulletPuff");
     FEEB D 4;
@@ -224,6 +226,7 @@ class ScooterWeapon : Weapon
   Deselect: SCOT A 1 A_Lower; Loop;
   Select: SCOT A 1 A_Raise; Loop;
   Fire:
+    SCOT A 0 A_PlaySound("sam/hitflesh",CHAN_WEAPON);
     SCOT B 2;
     SCOT C 2 A_CustomPunch(28,false,0,"BulletPuff",96);
     SCOT D 3;
@@ -264,6 +267,7 @@ class MopokeFeatherWand : Weapon
   Deselect: FEAT A 1 A_Lower; Loop;
   Select: FEAT A 1 A_Raise; Loop;
   Fire:
+    FEAT A 0 A_PlaySound("sam/mopokecry",CHAN_WEAPON);
     FEAT B 1;
     FEAT C 1 Bright A_FireCustomMissile("SamCursedBolt");
     FEAT D 2;
@@ -281,6 +285,7 @@ class PossessedSausage : Weapon
   Deselect: SAUS A 1 A_Lower; Loop;
   Select: SAUS A 1 A_Raise; Loop;
   Fire:
+    SAUS A 0 A_PlaySound("sam/hitflesh",CHAN_WEAPON);
     SAUS B 2;
     SAUS C 2 A_CustomPunch(20,false,0,"BulletPuff",88);
     SAUS D 4;
@@ -298,6 +303,7 @@ class JarOfDadToenails : Weapon
   Deselect: TOES A 1 A_Lower; Loop;
   Select: TOES A 1 A_Raise; Loop;
   Fire:
+    TOES A 0 A_PlaySound("sam/cursefire",CHAN_WEAPON);
     TOES B 2;
     TOES C 2 Bright A_FireBullets(12,9,11,4,"BulletPuff");
     TOES D 5;
