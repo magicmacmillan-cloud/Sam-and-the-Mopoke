@@ -10,8 +10,54 @@ class SamRunner : Actor
   }
   States
   {
-  Spawn: SAMR ABCDEFGH 2 A_Wander; Loop;
-  See: SAMR ABCDEFGH 2 A_Wander; Loop;
+  Spawn:
+    SAMS A 8 A_Wander;
+    SAMW ABCDEF 3 A_Wander;
+    Loop;
+
+  See:
+    SAMR ABCDEF 2 A_Wander;
+    SAML ABC 2 A_Wander;
+    SAMR ABCDEF 2 A_Wander;
+    SAML DEF 2 A_Wander;
+    Loop;
+
+  LookBack:
+    SAML ABCDEF 3 A_Wander;
+    Goto See;
+
+  Scared:
+    SAMS ABCD 4;
+    Goto See;
+
+  Hurt:
+  Pain:
+    SAMH ABCD 3;
+    Goto See;
+
+  Exhausted:
+    SAME ABCD 5;
+    Goto See;
+
+  Crouch:
+    SAMC ABCD 5;
+    Goto See;
+
+  Walk:
+    SAMW ABCDEF 3 A_Wander;
+    Goto See;
+
+  Turn:
+    SAMT ABCD 4;
+    Goto See;
+
+  Fall:
+    SAMF ABCDEF 5;
+    Goto See;
+
+  Death:
+    SAMF ABCDEF 5;
+    Stop;
   }
 }
 
