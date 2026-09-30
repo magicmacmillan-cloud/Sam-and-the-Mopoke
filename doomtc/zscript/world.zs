@@ -1,44 +1,44 @@
 class MopokeShambler : Actor {
  Default { Health 45; Speed 8; Radius 20; Height 56; Monster; +FLOORCLIP; PainChance 150; SeeSound "sam/zombie"; }
  States {
-  Spawn: MZOM A 10 A_Look; Loop;
-  See: MZOM ABCDEFGH 4 A_Chase; Loop;
-  Melee: MZOM E 3 A_FaceTarget; MZOM FG 3 A_CustomMeleeAttack(7,"sam/scratch"); Goto See;
-  Pain: MZOM A 4 A_Pain; Goto See;
-  Death: MZOM G 5 A_Scream; MZOM H 6 A_NoBlocking; Stop;
+  Spawn: SHAM AB 8 A_Look; Loop;
+  See: SHAM CDEF 5 A_Chase; Loop;
+  Melee: SHAM G 4 A_FaceTarget; SHAM HI 4 A_CustomMeleeAttack(7,"sam/scratch"); Goto See;
+  Pain: SHAM JK 3 A_Pain; Goto See;
+  Death: SHAM L 5 A_Scream; SHAM M 5; SHAM N 5 A_NoBlocking; SHAM O -1; Stop;
  }
 }
 
 class UndeadGoat : Actor {
  Default { Health 90; Speed 13; Radius 24; Height 48; Monster; +FLOORCLIP; SeeSound "sam/goat"; ActiveSound "sam/goat"; }
  States {
-  Spawn: GOAT A 10 A_Look; Loop;
-  See: GOAT ABCDEFGH 3 A_Chase; Loop;
-  Melee: GOAT DE 2 A_FaceTarget; GOAT FG 2 A_CustomMeleeAttack(12,"sam/goat"); Goto See;
-  Pain: GOAT A 3 A_Pain; Goto See;
-  Death: GOAT G 5 A_Scream; GOAT H 6 A_NoBlocking; Stop;
+  Spawn: GOAT AB 8 A_Look; Loop;
+  See: GOAT CDEF 4 A_Chase; Loop;
+  Melee: GOAT G 3 A_FaceTarget; GOAT HI 3 A_CustomMeleeAttack(12,"sam/goat"); Goto See;
+  Pain: GOAT JK 3 A_Pain; Goto See;
+  Death: GOAT L 4 A_Scream; GOAT M 5; GOAT N 5 A_NoBlocking; GOAT O -1; Stop;
  }
 }
 
 class RotPossum : Actor {
  Default { Health 38; Speed 16; Radius 18; Height 24; Monster; +FLOORCLIP; PainChance 180; }
  States {
-  Spawn: POSS A 8 A_Look; Loop;
-  See: POSS ABCDEFGH 2 A_Chase; Loop;
-  Melee: POSS E 2 A_FaceTarget; POSS FG 2 A_CustomMeleeAttack(8,"sam/scratch"); Goto See;
-  Pain: POSS B 3 A_Pain; Goto See;
-  Death: POSS G 4 A_Scream; POSS H 6 A_NoBlocking; Stop;
+  Spawn: POSS AB 7 A_Look; Loop;
+  See: POSS CDEF 3 A_Chase; Loop;
+  Melee: POSS G 2 A_FaceTarget; POSS HI 3 A_CustomMeleeAttack(8,"sam/scratch"); Goto See;
+  Pain: POSS JK 2 A_Pain; Goto See;
+  Death: POSS L 3 A_Scream; POSS M 4; POSS N 4 A_NoBlocking; POSS O -1; Stop;
  }
 }
 
 class CursedCrow : Actor {
  Default { Health 26; Speed 18; Radius 14; Height 22; Monster; +NOGRAVITY +FLOAT; PainChance 200; }
  States {
-  Spawn: CROW A 8 A_Look; Loop;
-  See: CROW ABCDEFGH 2 A_Chase; Loop;
-  Melee: CROW E 2 A_FaceTarget; CROW FG 2 A_CustomMeleeAttack(6,"sam/scratch"); Goto See;
-  Pain: CROW B 2 A_Pain; Goto See;
-  Death: CROW G 3 A_Scream; CROW H 5 A_NoBlocking; Stop;
+  Spawn: CROW AB 7 A_Look; Loop;
+  See: CROW CDEF 3 A_Chase; Loop;
+  Melee: CROW G 2 A_FaceTarget; CROW HI 2 A_CustomMeleeAttack(6,"sam/scratch"); Goto See;
+  Pain: CROW JK 2 A_Pain; Goto See;
+  Death: CROW L 3 A_Scream; CROW M 4; CROW N 4 A_NoBlocking; CROW O -1; Stop;
  }
 }
 
@@ -50,38 +50,66 @@ class HuskBolt : FastProjectile {
 class StationHusk : Actor {
  Default { Health 115; Speed 9; Radius 20; Height 58; Monster; PainChance 100; SeeSound "sam/zombie"; }
  States {
-  Spawn: HUSK A 10 A_Look; Loop;
-  See: HUSK ABCD 4 A_Chase; Loop;
+  Spawn: HUSK AB 8 A_Look; Loop;
+  See: HUSK CDEF 5 A_Chase; Loop;
   Missile:
-   HUSK E 4 A_FaceTarget;
-   HUSK F 3 A_CustomMissile("HuskBolt",32,0,0);
-   HUSK G 4;
+   HUSK G 4 A_FaceTarget;
+   HUSK H 3 A_CustomMissile("HuskBolt",32,0,0);
+   HUSK I 4;
    Goto See;
-  Melee: HUSK E 3 A_FaceTarget; HUSK F 3 A_CustomMeleeAttack(10,"sam/scratch"); Goto See;
-  Pain: HUSK B 3 A_Pain; Goto See;
-  Death: HUSK G 5 A_Scream; HUSK H 7 A_NoBlocking; Stop;
+  Melee: HUSK G 3 A_FaceTarget; HUSK HI 3 A_CustomMeleeAttack(10,"sam/scratch"); Goto See;
+  Pain: HUSK JK 3 A_Pain; Goto See;
+  Death: HUSK L 5 A_Scream; HUSK M 5; HUSK N 5 A_NoBlocking; HUSK O -1; Stop;
  }
 }
 
 class MallBrute : Actor {
  Default { Health 190; Speed 7; Radius 30; Height 64; Monster; Mass 300; PainChance 55; }
  States {
-  Spawn: BRUT A 10 A_Look; Loop;
-  See: BRUT ABCDEFGH 4 A_Chase; Loop;
-  Melee: BRUT E 4 A_FaceTarget; BRUT FG 4 A_CustomMeleeAttack(22,"sam/hitflesh"); Goto See;
-  Pain: BRUT B 3 A_Pain; Goto See;
-  Death: BRUT G 6 A_Scream; BRUT H 8 A_NoBlocking; Stop;
+  Spawn: BRUT AB 9 A_Look; Loop;
+  See: BRUT CDEF 5 A_Chase; Loop;
+  Melee: BRUT G 4 A_FaceTarget; BRUT HI 4 A_CustomMeleeAttack(22,"sam/hitflesh"); Goto See;
+  Pain: BRUT JK 3 A_Pain; Goto See;
+  Death: BRUT L 6 A_Scream; BRUT M 6; BRUT N 6 A_NoBlocking; BRUT O -1; Stop;
  }
 }
 
 class LibraryShade : Actor {
  Default { Health 78; Speed 17; Radius 18; Height 62; Monster; +SHADOW; PainChance 145; }
  States {
-  Spawn: SHAD A 7 A_Look; Loop;
-  See: SHAD ABCDEFGH 2 A_Chase; Loop;
-  Melee: SHAD E 2 A_FaceTarget; SHAD FG 2 A_CustomMeleeAttack(14,"sam/whisper"); Goto See;
-  Pain: SHAD B 2 A_Pain; Goto See;
-  Death: SHAD G 4 A_Scream; SHAD H 6 A_NoBlocking; Stop;
+  Spawn: SHAD AB 7 A_Look; Loop;
+  See: SHAD CDEF 3 A_Chase; Loop;
+  Melee: SHAD G 2 A_FaceTarget; SHAD HI 3 A_CustomMeleeAttack(14,"sam/whisper"); Goto See;
+  Pain: SHAD JK 2 A_Pain; Goto See;
+  Death: SHAD L 4 A_Scream; SHAD M 4; SHAD N 5 A_NoBlocking; SHAD O -1; Stop;
+ }
+}
+
+class CemeteryGhoul : Actor {
+ Default { Health 82; Speed 10; Radius 20; Height 56; Monster; +FLOORCLIP; PainChance 135; SeeSound "sam/zombie"; }
+ States {
+  Spawn: CGHL AB 8 A_Look; Loop;
+  See: CGHL CDEF 5 A_Chase; Loop;
+  Melee: CGHL G 4 A_FaceTarget; CGHL HI 4 A_CustomMeleeAttack(11,"sam/scratch"); Goto See;
+  Pain: CGHL JK 3 A_Pain; Goto See;
+  Death: CGHL L 5 A_Scream; CGHL M 5; CGHL N 5 A_NoBlocking; CGHL O -1; Stop;
+ }
+}
+
+class TombWisp : Actor {
+ Default {
+  Health 46; Speed 15; Radius 14; Height 36; Monster;
+  +NOGRAVITY +FLOAT +SHADOW;
+  PainChance 190;
+  RenderStyle "Translucent";
+  Alpha 0.72;
+ }
+ States {
+  Spawn: SHAD AB 7 A_Look; Loop;
+  See: SHAD CDEF 3 A_Chase; Loop;
+  Melee: SHAD G 2 A_FaceTarget; SHAD HI 2 Bright A_CustomMeleeAttack(9,"sam/whisper"); Goto See;
+  Pain: SHAD JK 2 Bright A_Pain; Goto See;
+  Death: SHAD L 3 Bright A_Scream; SHAD M 4 Bright; SHAD N 4 Bright A_NoBlocking; SHAD O -1 Bright; Stop;
  }
 }
 
@@ -154,30 +182,3 @@ class LincolnMessage : Actor {
 }
 
 
-class CemeteryGhoul : Actor {
- Default { Health 82; Speed 10; Radius 20; Height 56; Monster; +FLOORCLIP; PainChance 135; SeeSound "sam/zombie"; }
- States {
-  Spawn: MZOM A 10 A_Look; Loop;
-  See: MZOM ABCDEFGH 4 A_Chase; Loop;
-  Melee: MZOM E 4 A_FaceTarget; MZOM FG 4 A_CustomMeleeAttack(11,"sam/scratch"); Goto See;
-  Pain: MZOM B 4 A_Pain; Goto See;
-  Death: MZOM G 5 A_Scream; MZOM H 7 A_NoBlocking; Stop;
- }
-}
-
-class TombWisp : Actor {
- Default {
-  Health 46; Speed 15; Radius 14; Height 36; Monster;
-  +NOGRAVITY +FLOAT +SHADOW;
-  PainChance 190;
-  RenderStyle "Translucent";
-  Alpha 0.72;
- }
- States {
-  Spawn: SHAD A 8 A_Look; Loop;
-  See: SHAD ABCDEFGH 3 A_Chase; Loop;
-  Melee: SHAD E 2 A_FaceTarget; SHAD FG 2 Bright A_CustomMeleeAttack(9,"sam/whisper"); Goto See;
-  Pain: SHAD B 2 Bright A_Pain; Goto See;
-  Death: SHAD G 4 Bright A_Scream; SHAD H 6 Bright A_NoBlocking; Stop;
- }
-}
