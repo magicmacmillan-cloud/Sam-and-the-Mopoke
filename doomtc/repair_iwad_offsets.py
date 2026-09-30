@@ -53,9 +53,14 @@ def repair(path):
             destination, category = (0, 0), "faces"
         elif (name[:4] in WEAPONS and len(name) == 6
               and name[4] in "ABCDEFGH" and name[5] == "0"
-              and struct.unpack_from(">II", data, 16) == (320, 200)):
+              and struct.unpack_from(">II", data, 16) in ((128, 128), (320, 200))):
+            # GZDoom view-weapon overlays require the horizontal canvas
+            # midpoint as their origin. The former zero offset anchored the
+            # left edge and pushed both hands off centre. Retain the approved
+            # vertical anchor for the polished 128x128 artwork.
+            width, height = struct.unpack_from(">II", data, 16)
             anchor, old = origin(data)
-            destination, category = (0, old[1]), "firstperson"
+            destination, category = (width // 2, 112 if height == 128 else old[1]), "firstperson"
         else:
             continue
         anchor, old = origin(data)
