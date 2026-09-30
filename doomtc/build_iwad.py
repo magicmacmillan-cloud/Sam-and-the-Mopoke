@@ -213,7 +213,7 @@ if not music.is_file():
     raise ValueError("missing generated fallback music")
 lumps.append(("SAMMUS", music.read_bytes()))
 
-# The custom MAP01 is the only playable map shipped in the standalone IWAD.
+# Append the complete eight-map custom campaign.
 lumps.extend(map_lumps)
 
 write_wad(OUT, lumps, ident=b"IWAD")
@@ -235,6 +235,7 @@ missing = sorted(required - set(names))
 if ident != b"IWAD" or missing:
     raise ValueError(f"IWAD validation failed: header={ident!r} missing={missing}")
 maps = [n for n in names if re.fullmatch(r"MAP\d\d", n)]
-if maps != ["MAP01"]:
-    raise ValueError(f"standalone IWAD should ship only custom MAP01, got {maps}")
+expected_maps=[f"MAP{i:02d}" for i in range(1,9)]
+if maps != expected_maps:
+    raise ValueError(f"standalone IWAD should ship the eight-map campaign, got {maps}")
 print(f"Built standalone IWAD: {OUT} ({OUT.stat().st_size} bytes, {len(verify)} lumps)")
