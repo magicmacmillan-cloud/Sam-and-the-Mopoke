@@ -23,11 +23,11 @@ class UndeadGoat : Actor {
 class RotPossum : Actor {
  Default { Health 38; Speed 16; Radius 18; Height 24; Monster; +FLOORCLIP; PainChance 180; }
  States {
-  Spawn: POSS AB 7 A_Look; Loop;
-  See: POSS CDEF 3 A_Chase; Loop;
-  Melee: POSS G 2 A_FaceTarget; POSS HI 3 A_CustomMeleeAttack(8,"sam/scratch"); Goto See;
-  Pain: POSS JK 2 A_Pain; Goto See;
-  Death: POSS L 3 A_Scream; POSS M 4; POSS N 4 A_NoBlocking; POSS O -1; Stop;
+  Spawn: ROTP AB 7 A_Look; Loop;
+  See: ROTP CDEF 3 A_Chase; Loop;
+  Melee: ROTP G 2 A_FaceTarget; ROTP HI 3 A_CustomMeleeAttack(8,"sam/scratch"); Goto See;
+  Pain: ROTP JK 2 A_Pain; Goto See;
+  Death: ROTP L 3 A_Scream; ROTP M 4; ROTP N 4 A_NoBlocking; ROTP O -1; Stop;
  }
 }
 
