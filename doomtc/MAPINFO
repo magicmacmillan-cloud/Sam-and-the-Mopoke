@@ -1,53 +1,53 @@
 DoomEdNums
 {
-  15001 = DemonStaff
-  15002 = ForbiddenAmulet
-  15003 = ZombieFireVirus
-  15004 = CursedDoll
-  15005 = BloodOfTimShakomontus
-  15006 = MagicStatueOfFeeb
-  15007 = SqueezeBabyOfDacron
-  15008 = ScooterWeapon
-  15009 = GauntletOfStones
-  15010 = MopokeFeatherWand
-  15011 = PossessedSausage
-  15012 = JarOfDadToenails
-  15013 = UnholyJandal
+  15001 = "DemonStaff"
+  15002 = "ForbiddenAmulet"
+  15003 = "ZombieFireVirus"
+  15004 = "CursedDoll"
+  15005 = "BloodOfTimShakomontus"
+  15006 = "MagicStatueOfFeeb"
+  15007 = "SqueezeBabyOfDacron"
+  15008 = "ScooterWeapon"
+  15009 = "GauntletOfStones"
+  15010 = "MopokeFeatherWand"
+  15011 = "PossessedSausage"
+  15012 = "JarOfDadToenails"
+  15013 = "UnholyJandal"
 
-  15101 = SamMudPrint
-  15102 = TheMopoke
-  15103 = SamColaClue
-  15104 = SamWallNote
-  15105 = SamRunner
-  15106 = FalseSamTrail
-  15107 = SamBackpackClue
-  15108 = SamMessage
-  15109 = LincolnMessage
-  15110 = FalseMessage
-  15111 = SamHiding
-  15112 = SamCompanion
+  15101 = "SamMudPrint"
+  15102 = "TheMopoke"
+  15103 = "SamColaClue"
+  15104 = "SamWallNote"
+  15105 = "SamRunner"
+  15106 = "FalseSamTrail"
+  15107 = "SamBackpackClue"
+  15108 = "SamMessage"
+  15109 = "LincolnMessage"
+  15110 = "FalseMessage"
+  15111 = "SamHiding"
+  15112 = "SamCompanion"
 
-  15301 = SearchableCache
-  15302 = DyingSurvivor
+  15301 = "SearchableCache"
+  15302 = "DyingSurvivor"
 
-  15401 = MopokeShambler
-  15402 = UndeadGoat
-  15403 = RotPossum
-  15404 = CursedCrow
-  15405 = StationHusk
-  15406 = MallBrute
-  15407 = LibraryShade
-  15408 = CemeteryGhoul
-  15409 = TombWisp
-  15410 = MopokeGlimpse
+  15401 = "MopokeShambler"
+  15402 = "UndeadGoat"
+  15403 = "RotPossum"
+  15404 = "CursedCrow"
+  15405 = "StationHusk"
+  15406 = "MallBrute"
+  15407 = "LibraryShade"
+  15408 = "CemeteryGhoul"
+  15409 = "TombWisp"
+  15410 = "MopokeGlimpse"
 
-  15501 = GoatFinger
-  15502 = CrowFinger
-  15503 = PossumFinger
-  15601 = GoatFingerGate
-  15602 = CrowFingerGate
-  15603 = PossumFingerGate
-  15200 = SamCharge
+  15501 = "GoatFinger"
+  15502 = "CrowFinger"
+  15503 = "PossumFinger"
+  15601 = "GoatFingerGate"
+  15602 = "CrowFingerGate"
+  15603 = "PossumFingerGate"
+  15200 = "SamCharge"
 }
 
 gameinfo
