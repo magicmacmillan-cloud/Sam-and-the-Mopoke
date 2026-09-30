@@ -130,7 +130,7 @@ MAPS=[
    A(2048,96,2496,448,"STATION"),
    A(2432,-160,2816,160,"STATION"),
  ], exit=((2816,-160),(2816,160)), things=[
-   (96,0,0,1,7),(470,0,0,15112,7),
+   (96,0,0,1,7),(1860,0,0,15112,7),
    (720,-380,0,15405,7),(760,380,0,15405,7),
    (1080,-500,0,15405,7),(1120,500,0,15405,7),
    (1480,-350,0,15301,7),(1520,350,0,15109,7),
@@ -150,6 +150,13 @@ MAPS=[
    A(2496,-224,3008,224,"MALL"),
    A(2944,-480,3392,480,"MALL"),
    A(3328,-160,3712,160,"MALL"),
+   # Real connecting galleries: no isolated shopping-centre wings.
+   A(1512,-96,1872,96,"MALL"),
+   A(2320,-112,2544,112,"MALL"),
+   A(2192,-376,2288,-192,"MALL"),
+   A(2192,192,2288,376,"MALL"),
+   A(1776,-352,1888,-192,"MALL"),
+   A(1776,192,1888,352,"MALL"),
  ], exit=((3712,-160),(3712,160)), things=[
    (96,0,0,1,7),(300,100,0,15112,7),(560,-520,0,15406,7),(600,520,0,15406,7),
    (1040,-500,0,15301,7),(1120,500,0,15108,7),(1360,0,0,15406,7),
@@ -170,6 +177,13 @@ MAPS=[
    A(2880,-640,3264,-192,"LIB"), A(2880,192,3264,640,"LIB"),
    A(3136,-160,3584,160,"LIB"),
    A(3520,-480,3968,480,"LIB"),
+   # Physical loop connectors; impossible architecture, but no unreachable islands.
+   A(704,-112,960,112,"LIB"),
+   A(1304,-112,1584,112,"LIB"),
+   A(2256,-112,2568,112,"LIB"),
+   A(2872,-112,3200,112,"LIB"),
+   A(2944,-256,3056,-80,"LIB"),
+   A(2944,80,3056,256,"LIB"),
  ], exit=None, things=[
    (96,0,0,1,7),(250,80,0,15112,7),
    (560,-420,0,15407,7),(600,420,0,15407,7),(960,0,0,15109,7),
@@ -231,7 +245,14 @@ def build_map(md):
         key=norm_edge(p1,p2)
         if sec1 is None:
             wall=STYLE[st0][5]
-            special=11 if exit_norm==key else 0
+            # Some room joins split the exit wall into shorter grid segments.
+            # Match its central segment too, so MAP04/06/07 cannot soft-lock.
+            is_exit = exit_norm == key
+            if not is_exit and md.get("exit") and p1[0] == p2[0] == md["exit"][0][0]:
+                lo,hi=sorted((p1[1],p2[1]))
+                exitlo,exithi=sorted((md["exit"][0][1],md["exit"][1][1]))
+                is_exit = exitlo<=lo<=0<=hi<=exithi
+            special=11 if is_exit else 0
             linedefs.append((vid(*p1),vid(*p2),1,special,0,side(sec0,middle=wall),0xFFFF))
         else:
             w0=STYLE[st0][5]
