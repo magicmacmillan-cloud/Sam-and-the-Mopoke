@@ -3,6 +3,7 @@ class SamDad : DoomPlayer
   Default
   {
     Player.DisplayName "Dad";
+    Player.Face "DAD";
     Player.StartItem "ZombieHands";
     Player.StartItem "SamCharge", 12;
     Player.WeaponSlot 1, "ZombieHands", "PossessedSausage", "UnholyJandal";
