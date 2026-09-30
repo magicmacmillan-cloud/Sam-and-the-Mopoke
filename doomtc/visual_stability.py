@@ -48,10 +48,14 @@ def apply_visual_stability(root: Path):
 
     # The world actors use full 8-direction sprite sets. Never leave a rotation-0
     # fallback beside them or GZDoom can select visually incompatible frames.
-    for prefix in ("MPKE","GOAT","POSS","CROW","SHAM","CGHL","HUSK","BRUT","SHAD"):
+    for prefix in ("MPKE","GOAT","ROTP","CROW","SHAM","CGHL","HUSK","BRUT","SHAD"):
         for fr in "ABCDEFGHIJKLMNOP":
             p=sprites/f"{prefix}{fr}0.png"
             if p.exists():
                 p.unlink()
 
-    print("Visual stability pass applied: fixed HUD weapon anchors and removed mixed monster rotations")
+        # Remove old custom POSS files completely; POSS is a stock Doom/Freedoom
+    # sprite namespace and caused custom possum frames to collide with the base IWAD.
+    for p in sprites.glob("POSS*.png"):
+        p.unlink()
+    print("Visual stability pass applied: fixed HUD weapon anchors, unique possum namespace and stable monster rotations")
