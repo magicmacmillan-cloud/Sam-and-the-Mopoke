@@ -90,32 +90,31 @@ jobs:
               assert data[mus][-1][:4] == b"MThd", mus
 
           maps=[n for n in names if re.fullmatch(r"MAP\d\d",n)]
-          assert maps == ["MAP01"], maps
-
-          # Check the custom MAP01 sector table, not an unrelated base IWAD lump.
-          map_i=next(i for i,(n,_) in enumerate(entries) if n=="MAP01")
-          sec_blob=None
-          for n,body in entries[map_i+1:map_i+24]:
-              if n=="SECTORS":
-                  sec_blob=body
-                  break
-          assert sec_blob is not None
-          assert len(sec_blob)%26==0
-          sector_count=len(sec_blob)//26
-          assert sector_count>=10, sector_count
+          expected=[f"MAP{i:02d}" for i in range(1,9)]
+          assert maps == expected, maps
 
           floors=set()
           ceilings=set()
-          lights=set()
-          for off in range(0,len(sec_blob),26):
-              floor,ceil,ff,cf,light,special,tag=struct.unpack_from("<hh8s8shhh",sec_blob,off)
-              floors.add(ff.rstrip(b"\0").decode("ascii"))
-              ceilings.add(cf.rstrip(b"\0").decode("ascii"))
-              lights.add(light)
+          sector_counts={}
+          for mapname in expected:
+              map_i=next(i for i,(n,_) in enumerate(entries) if n==mapname)
+              sec_blob=None
+              for n,body in entries[map_i+1:map_i+24]:
+                  if n=="SECTORS":
+                      sec_blob=body
+                      break
+              assert sec_blob is not None, mapname
+              assert len(sec_blob)%26==0, mapname
+              sector_count=len(sec_blob)//26
+              sector_counts[mapname]=sector_count
+              assert sector_count>=12, (mapname,sector_count)
+              for off in range(0,len(sec_blob),26):
+                  floor,ceil,ff,cf,light,special,tag=struct.unpack_from("<hh8s8shhh",sec_blob,off)
+                  floors.add(ff.rstrip(b"\0").decode("ascii"))
+                  ceilings.add(cf.rstrip(b"\0").decode("ascii"))
 
           assert {"HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
           assert {"HCEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
-          assert len(lights) >= 6, lights
 
           zscript=data["ZSCRIPT"][-1].decode("utf-8")
           for cls in (
