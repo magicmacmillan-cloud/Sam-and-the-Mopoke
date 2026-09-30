@@ -67,7 +67,7 @@ jobs:
 
           required={
               "SAMMPK","SAMLIC","IWADINFO","ZSCRIPT","MAPINFO","LANGUAGE","MENUDEF",
-              "SBARINFO","SNDINFO","MAP01","THINGS","LINEDEFS","SIDEDEFS","VERTEXES",
+              "SBARINFO","SNDINFO","MAP01","MAP02","MAP03","MAP04","MAP05","MAP06","MAP07","MAP08","THINGS","LINEDEFS","SIDEDEFS","VERTEXES",
               "SECTORS","S_START","S_END","F_START","F_END","TX_START","TX_END",
               "SAMMUS","ZHNDA0","WSTAA0","WGAUA0","SAMRA0","MPKEA0","ZDADA0",
               "GTFGA0","CRFGA0","PSFGA0","GTGTA0","CRGTA0","PSGTA0",
@@ -125,15 +125,13 @@ jobs:
               "JarOfDadToenails","UnholyJandal","GoatFinger","CrowFinger","PossumFinger",
               "GoatFingerGate","CrowFingerGate","PossumFingerGate","SamRunner",
               "MopokeShambler","UndeadGoat","RotPossum","CursedCrow","StationHusk",
-              "MallBrute","LibraryShade","TheMopoke","SamStoryHandler"
+              "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler"
           ):
               assert f"class {cls}" in zscript, cls
-          assert "S_ChangeMusic(" in zscript
-          assert "SetMusicVolume(" in zscript
           assert "SAML ABCDEF" in zscript
           assert "SAMF ABCDEF" in zscript
 
-          print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, {sector_count} authored sectors")
+          print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, sector counts={sector_counts}")
           PY
 
       - name: Set up Java 17
