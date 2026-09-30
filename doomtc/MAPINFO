@@ -13,6 +13,7 @@ DoomEdNums
   15011 = PossessedSausage
   15012 = JarOfDadToenails
   15013 = UnholyJandal
+
   15101 = SamMudPrint
   15102 = TheMopoke
   15103 = SamColaClue
@@ -23,8 +24,12 @@ DoomEdNums
   15108 = SamMessage
   15109 = LincolnMessage
   15110 = FalseMessage
+  15111 = SamHiding
+  15112 = SamCompanion
+
   15301 = SearchableCache
   15302 = DyingSurvivor
+
   15401 = MopokeShambler
   15402 = UndeadGoat
   15403 = RotPossum
@@ -32,6 +37,10 @@ DoomEdNums
   15405 = StationHusk
   15406 = MallBrute
   15407 = LibraryShade
+  15408 = CemeteryGhoul
+  15409 = TombWisp
+  15410 = MopokeGlimpse
+
   15501 = GoatFinger
   15502 = CrowFinger
   15503 = PossumFinger
@@ -58,10 +67,59 @@ defaultmap
   nocrouch = 0
 }
 
-map MAP01 "THE MAN WHO REMEMBERED"
+map MAP01 "ARNOLD STREET"
 {
   levelnum = 1
-  next = "EndGameC"
+  next = "MAP02"
   music = "MUSIC02"
+  sky1 = "MOPSKY"
+}
+map MAP02 "THE PLAYGROUND"
+{
+  levelnum = 2
+  next = "MAP03"
+  music = "MUSIC03"
+  sky1 = "MOPSKY"
+}
+map MAP03 "BLACK-GUM WOODS"
+{
+  levelnum = 3
+  next = "MAP04"
+  music = "MUSIC04"
+  sky1 = "MOPSKY"
+}
+map MAP04 "CEMETERY"
+{
+  levelnum = 4
+  next = "MAP05"
+  music = "MUSIC05"
+  sky1 = "MOPSKY"
+}
+map MAP05 "THE TOMB"
+{
+  levelnum = 5
+  next = "MAP06"
+  music = "MUSIC05"
+  sky1 = "MOPSKY"
+}
+map MAP06 "UNDERGROUND STATION"
+{
+  levelnum = 6
+  next = "MAP07"
+  music = "MUSIC06"
+  sky1 = "MOPSKY"
+}
+map MAP07 "DIDDY MART"
+{
+  levelnum = 7
+  next = "MAP08"
+  music = "MUSIC07"
+  sky1 = "MOPSKY"
+}
+map MAP08 "THE IMPOSSIBLE LIBRARY"
+{
+  levelnum = 8
+  next = "EndGameC"
+  music = "MUSIC09"
   sky1 = "MOPSKY"
 }
