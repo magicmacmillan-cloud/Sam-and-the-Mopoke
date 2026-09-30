@@ -42,3 +42,8 @@ The uploaded Sam reference sheet is the source of truth for Sam. The IWAD build 
 ## Music system
 
 The supplied soundtrack is stored under anonymous internal names MUSIC01–MUSIC10. MUSIC01 is the title/menu cue. MAP01 changes cues by authored location using a one-second fade-out, switch at silence, and one-second fade-in. MUSIC09 is reserved for the final approach/fight and MUSIC10 for the ending.
+
+
+## Unknown actor regression check
+
+This branch validates the known-working v6 cursed weapon actors and explicit DoomEdNum mappings against the restored visual campaign build.
