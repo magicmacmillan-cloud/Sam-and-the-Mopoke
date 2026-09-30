@@ -334,6 +334,7 @@ def generate_polish_assets(root: Path):
         for rot in range(1,9):
             _mopoke_frame(root,fr,rot)
             _goat(root,fr,rot); _possum(root,fr,rot); _crow(root,fr,rot)
+            _humanoid(root,"SHAM",fr,rot,(54,65,57),(99,116,82))
             _humanoid(root,"CGHL",fr,rot,(84,63,45),(126,117,94))
             _humanoid(root,"HUSK",fr,rot,(195,92,31),(81,100,81))
             _humanoid(root,"BRUT",fr,rot,(125,36,33),(104,101,83),brute=True)
@@ -387,11 +388,12 @@ def generate_polish_assets(root: Path):
     ]
     for spec in specs:_texture(root,*spec)
 
-    # The original first-pass generator created rotation-0 Mopoke frames. The polished
-    # boss uses real 8-direction sprites, so remove those legacy lumps to avoid a mixed
-    # rotation set being selected by GZDoom.
-    for fr in "ABCDEFGH":
-        old=root/"sprites"/f"MPKE{fr}0.png"
-        if old.exists(): old.unlink()
+    # Remove all legacy rotation-0 frames for actors that now have proper 8-direction
+    # sets. Mixing A0 with A1..A8 is what caused the old monster animation flicker.
+    for prefix in ("MPKE","GOAT","POSS","CROW","SHAM","CGHL","HUSK","BRUT","SHAD"):
+        for fr in "ABCDEFGHIJKLMNOP":
+            old=root/"sprites"/f"{prefix}{fr}0.png"
+            if old.exists():
+                old.unlink()
 
     print("Generated final-look weapon, enemy, HUD, key, prop and environment pass")
