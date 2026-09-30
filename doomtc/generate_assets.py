@@ -3,12 +3,17 @@ import zipfile
 
 from sam_weapon_assets import generate_sam_assets
 from world_assets import generate_world_assets
+from polish_assets import generate_polish_assets
+from visual_stability import apply_visual_stability
 
 ROOT = Path(__file__).resolve().parent
 
+# Base generators provide the complete weapon/pickup/world resource inventory.
 generate_sam_assets(ROOT)
 generate_world_assets(ROOT)
 
+# Sam's uploaded 44-frame sheet is the source of truth for Sam. Reinstall it after
+# the base generators so no procedural fallback frame can overwrite his identity.
 sam_zip = ROOT / "sam_frames.zip"
 if not sam_zip.is_file():
     raise RuntimeError("missing sam_frames.zip")
@@ -30,15 +35,24 @@ expected = {
     *(f"SAMF{c}0.png" for c in "ABCDEF"),
 }
 with zipfile.ZipFile(sam_zip, "r") as z:
-    names = set(z.namelist())
-    missing = sorted(expected - names)
+    names=set(z.namelist())
+    missing=sorted(expected-names)
     if missing:
         raise RuntimeError(f"Sam frame archive missing: {missing}")
     for name in sorted(expected):
-        body = z.read(name)
+        body=z.read(name)
         if not body.startswith(b"\x89PNG\r\n\x1a\n"):
             raise RuntimeError(f"{name} is not PNG")
-        (ROOT / "sprites" / name).write_bytes(body)
+        (ROOT/"sprites"/name).write_bytes(body)
+
+# Restore the detailed visual pass we had already developed: proper undead Dad hands,
+# held cursed weapons, standalone pickups, Zombie Dad HUD faces, 8-direction monsters,
+# canonical Mopoke, location props and richer textures.
+generate_polish_assets(ROOT)
+
+# Final cleanup prevents the two bugs seen in the older APKs: first-person sprites
+# hovering in the top-left and mixed A0/A1..A8 monster frames flickering between art sets.
+apply_visual_stability(ROOT)
 
 print(f"Installed {len(expected)} definitive Sam sprite frames from uploaded sheet")
-print("Sam and the Mopoke Doom II assets generated")
+print("Sam and the Mopoke polished Doom II assets generated")
