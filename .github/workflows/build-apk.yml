@@ -180,8 +180,15 @@ jobs:
           p=Path("doom/build.gradle.kts")
           s=p.read_text().replace(
               'applicationId = "com.msa.freedoom"',
-              'applicationId = "com.samandthemopoke.game"'
+              'applicationId = "com.samandthemopoke.installtest"'
           )
+          # Installer-safe native libraries: extract on device instead of mmap.
+          # The Samsung Z Flip 6 is arm64; do not bundle unneeded 32-bit/x86 ELF.
+          assert 'useLegacyPackaging = false' in s
+          s=s.replace('useLegacyPackaging = false','useLegacyPackaging = true')
+          assert 'versionName = "0.50.0"' in s
+          s=s.replace('versionName = "0.50.0"',
+                      'versionName = "0.50.1-install-test"\\n        ndk { abiFilters += setOf("arm64-v8a") }')
           p.write_text(s)
 
           p=Path("doom/src/main/java/com/msa/freedoom/Utils.kt")
@@ -232,7 +239,7 @@ jobs:
                           action = Intent.ACTION_MAIN
                           putExtra("res_div", AppSettings.getIntOption(this@EntryActivity, "gzdoom_res_div", 1))
                           putExtra("game_path", base)
-                          putExtra("game", "com.samandthemopoke.game")
+                          putExtra("game", "com.samandthemopoke.installtest")
                           putExtra("args", "-iwad sam-and-the-mopoke.wad +map MAP01")
                       })
                       finish()
@@ -271,10 +278,27 @@ jobs:
           PY
           cp "$APK" Sam-and-the-Mopoke-IWAD-debug.apk
 
+      - name: Verify Gradle-signed native installer variant
+        run: |
+          set -euo pipefail
+          APK="$(find engine/doom/build/outputs/apk -type f -name '*debug*.apk' | head -n1)"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "$APK"
+          python3 - "$APK" <<'PY'
+          import sys,zipfile
+          with zipfile.ZipFile(sys.argv[1]) as z:
+              assert z.testzip() is None
+              libs=[i for i in z.infolist() if i.filename.startswith("lib/") and i.filename.endswith(".so")]
+              assert len(libs)>=8, len(libs)
+              assert {i.filename.split("/")[1] for i in libs} == {"arm64-v8a"}
+              assert all(i.compress_type == zipfile.ZIP_DEFLATED for i in libs)
+              assert z.read("assets/sam-and-the-mopoke.wad")[:4] == b"IWAD"
+              print(f"Gradle installer validation passed: {len(libs)} compressed arm64 native libraries")
+          PY
+
       - name: Upload Sam and the Mopoke APK
         uses: actions/upload-artifact@v4
         with:
-          name: Sam-and-the-Mopoke-IWAD-APK
+          name: Sam-and-the-Mopoke-NATIVE-GRADLE-INSTALL-TEST
           path: Sam-and-the-Mopoke-IWAD-debug.apk
           if-no-files-found: error
           retention-days: 3
