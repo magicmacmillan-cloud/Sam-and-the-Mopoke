@@ -12,7 +12,7 @@ class PossumFinger : Key {
 }
 
 class GoatFingerGate : Actor {
- Default { Radius 30; Height 64; +SOLID +USESPECIAL; Tag "Carved goat-finger door"; }
+ Default { Radius 110; Height 96; +SOLID +USESPECIAL; Tag "Carved goat-finger door"; }
  States { Spawn: GTGT A -1; Stop; }
  override bool Used(Actor u) {
   if(!u||!u.player)return false;
@@ -27,7 +27,7 @@ class GoatFingerGate : Actor {
  }
 }
 class CrowFingerGate : Actor {
- Default { Radius 30; Height 64; +SOLID +USESPECIAL; Tag "Crow-finger service gate"; }
+ Default { Radius 110; Height 96; +SOLID +USESPECIAL; Tag "Crow-finger service gate"; }
  States { Spawn: CRGT A -1; Stop; }
  override bool Used(Actor u) {
   if(!u||!u.player)return false;
@@ -42,7 +42,7 @@ class CrowFingerGate : Actor {
  }
 }
 class PossumFingerGate : Actor {
- Default { Radius 30; Height 64; +SOLID +USESPECIAL; Tag "Possum-finger archive gate"; }
+ Default { Radius 110; Height 96; +SOLID +USESPECIAL; Tag "Possum-finger archive gate"; }
  States { Spawn: PSGT A -1; Stop; }
  override bool Used(Actor u) {
   if(!u||!u.player)return false;
