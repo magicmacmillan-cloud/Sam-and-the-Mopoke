@@ -187,7 +187,7 @@ def _possum(root,frame,rot):
         oline(p,w,h,22,64+bob,6,70+bob,2,(147,111,108))
         if frame in "GHI": oline(p,w,h,75,60+bob,86,55+bob,2,BONE)
         fleck(p,w,h,45,63+bob,BLOOD,6,idx*19+rot)
-    _png(root/"sprites"/f"POSS{frame}{rot}.png",w,h,p,44,84)
+    _png(root/"sprites"/f"ROTP{frame}{rot}.png",w,h,p,44,84)
 
 def _crow(root,frame,rot):
     w=h=96;p=_canvas(w,h); idx=ord(frame)-65; wing=10+abs((idx%4)-2)*7
