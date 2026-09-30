@@ -25,10 +25,7 @@ class SamCursedBolt : FastProjectile
   States
   {
   Spawn: MORB AB 2 Bright; Loop;
-  Death:
-    MORB C 0 Bright A_PlaySound("sam/cursefire",CHAN_BODY);
-    MORB CDE 3 Bright;
-    Stop;
+  Death: MORB CDE 3 Bright; Stop;
   }
 }
 
@@ -48,7 +45,6 @@ class SamHeavyBolt : FastProjectile
   Spawn: MORB AB 2 Bright; Loop;
   Death:
     MORB C 2 Bright;
-    MORB D 0 Bright A_PlaySound("sam/gauntlet",CHAN_BODY);
     MORB D 0 Bright A_Explode(110, 120, XF_HURTSOURCE, false, 120);
     MORB E 4 Bright;
     Stop;
@@ -74,7 +70,6 @@ class ZombieHands : Weapon
   Deselect: ZHND A 1 A_Lower; Loop;
   Select: ZHND A 1 A_Raise; Loop;
   Fire:
-    ZHND A 0 A_PlaySound("sam/zombiehand",CHAN_WEAPON);
     ZHND B 2;
     ZHND C 2 A_CustomPunch(14, false, 0, "BulletPuff", 82);
     ZHND D 3;
@@ -100,7 +95,6 @@ class DemonStaff : Weapon
   Deselect: DMST A 1 A_Lower; Loop;
   Select: DMST A 1 A_Raise; Loop;
   Fire:
-    DMST A 0 A_PlaySound("sam/stafffire",CHAN_WEAPON);
     DMST B 2;
     DMST C 2 Bright A_FireCustomMissile("SamCursedBolt");
     DMST D 3 Bright;
@@ -119,7 +113,6 @@ class ForbiddenAmulet : Weapon
   Deselect: AMUL A 1 A_Lower; Loop;
   Select: AMUL A 1 A_Raise; Loop;
   Fire:
-    AMUL A 0 A_PlaySound("sam/cursefire",CHAN_WEAPON);
     AMUL B 2;
     AMUL C 2 Bright A_FireBullets(7,5,7,5,"BulletPuff");
     AMUL D 4;
@@ -137,7 +130,6 @@ class ZombieFireVirus : Weapon
   Deselect: VIRS A 1 A_Lower; Loop;
   Select: VIRS A 1 A_Raise; Loop;
   Fire:
-    VIRS A 0 A_PlaySound("sam/cursefire",CHAN_WEAPON);
     VIRS B 1;
     VIRS C 1 Bright A_FireBullets(2,2,1,7,"BulletPuff");
     VIRS D 2;
@@ -157,7 +149,6 @@ class CursedDoll : Weapon
   Deselect: DOLL A 1 A_Lower; Loop;
   Select: DOLL A 1 A_Raise; Loop;
   Fire:
-    DOLL A 0 A_PlaySound("sam/whisper",CHAN_WEAPON);
     DOLL B 3;
     DOLL C 2 Bright A_FireCustomMissile("SamCursedBolt",0,true,0,0);
     DOLL D 5;
@@ -175,7 +166,6 @@ class BloodOfTimShakomontus : Weapon
   Deselect: BLOD A 1 A_Lower; Loop;
   Select: BLOD A 1 A_Raise; Loop;
   Fire:
-    BLOD A 0 A_PlaySound("sam/hitflesh",CHAN_WEAPON);
     BLOD B 2;
     BLOD C 2 Bright A_FireBullets(9,7,9,6,"BulletPuff");
     BLOD D 5;
@@ -193,7 +183,6 @@ class MagicStatueOfFeeb : Weapon
   Deselect: FEEB A 1 A_Lower; Loop;
   Select: FEEB A 1 A_Raise; Loop;
   Fire:
-    FEEB A 0 A_PlaySound("sam/whisper",CHAN_WEAPON);
     FEEB B 2;
     FEEB C 2 Bright A_FireBullets(1,1,1,18,"BulletPuff");
     FEEB D 4;
@@ -211,7 +200,6 @@ class SqueezeBabyOfDacron : Weapon
   Deselect: DACR A 1 A_Lower; Loop;
   Select: DACR A 1 A_Raise; Loop;
   Fire:
-    DACR A 0 A_PlaySound("sam/mopokecry",CHAN_WEAPON);
     DACR B 2;
     DACR C 1 Bright A_FireBullets(4,4,3,5,"BulletPuff");
     DACR D 1 Bright A_FireBullets(4,4,3,5,"BulletPuff");
@@ -230,7 +218,6 @@ class ScooterWeapon : Weapon
   Deselect: SCOT A 1 A_Lower; Loop;
   Select: SCOT A 1 A_Raise; Loop;
   Fire:
-    SCOT A 0 A_PlaySound("sam/hitflesh",CHAN_WEAPON);
     SCOT B 2;
     SCOT C 2 A_CustomPunch(28,false,0,"BulletPuff",96);
     SCOT D 3;
@@ -249,7 +236,6 @@ class GauntletOfStones : Weapon
   Deselect: GAUN A 1 A_Lower; Loop;
   Select: GAUN A 1 A_Raise; Loop;
   Fire:
-    GAUN A 0 A_PlaySound("sam/gauntlet",CHAN_WEAPON);
     GAUN B 3;
     GAUN C 2 Bright;
     GAUN D 0 A_FireCustomMissile("SamHeavyBolt");
@@ -271,7 +257,6 @@ class MopokeFeatherWand : Weapon
   Deselect: FEAT A 1 A_Lower; Loop;
   Select: FEAT A 1 A_Raise; Loop;
   Fire:
-    FEAT A 0 A_PlaySound("sam/mopokecry",CHAN_WEAPON);
     FEAT B 1;
     FEAT C 1 Bright A_FireCustomMissile("SamCursedBolt");
     FEAT D 2;
@@ -289,7 +274,6 @@ class PossessedSausage : Weapon
   Deselect: SAUS A 1 A_Lower; Loop;
   Select: SAUS A 1 A_Raise; Loop;
   Fire:
-    SAUS A 0 A_PlaySound("sam/hitflesh",CHAN_WEAPON);
     SAUS B 2;
     SAUS C 2 A_CustomPunch(20,false,0,"BulletPuff",88);
     SAUS D 4;
@@ -307,7 +291,6 @@ class JarOfDadToenails : Weapon
   Deselect: TOES A 1 A_Lower; Loop;
   Select: TOES A 1 A_Raise; Loop;
   Fire:
-    TOES A 0 A_PlaySound("sam/cursefire",CHAN_WEAPON);
     TOES B 2;
     TOES C 2 Bright A_FireBullets(12,9,11,4,"BulletPuff");
     TOES D 5;
@@ -325,7 +308,6 @@ class UnholyJandal : Weapon
   Deselect: JAND A 1 A_Lower; Loop;
   Select: JAND A 1 A_Raise; Loop;
   Fire:
-    JAND A 0 A_PlaySound("sam/jandal",CHAN_WEAPON);
     JAND B 2;
     JAND C 2 A_CustomPunch(24,false,0,"BulletPuff",100);
     JAND D 4;
