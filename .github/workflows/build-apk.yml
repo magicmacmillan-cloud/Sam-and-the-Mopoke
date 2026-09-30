@@ -231,25 +231,25 @@ jobs:
           marker="void TouchInterfaceBase::hideControls(void)"
           assert src.count(marker)==1
           src=src.replace(marker,'''void TouchInterfaceBase::setTouchOverlayVisible(bool visible)
-{
-    controllerHidesTouch = !visible;
-    if(currentScreenMode == TS_GAME && tcGameMain)
-        tcGameMain->setEnabled(visible);
-    if(!visible && tcCustomButtons)
-        tcCustomButtons->setEnabled(false);
-}
+          {
+          controllerHidesTouch = !visible;
+          if(currentScreenMode == TS_GAME && tcGameMain)
+          tcGameMain->setEnabled(visible);
+          if(!visible && tcCustomButtons)
+          tcCustomButtons->setEnabled(false);
+          }
 
-'''+marker)
+          '''+marker)
           marker="void TouchInterfaceBase::frameControls(bool REND_FRAMEBUFFER, bool REND_TOUCH)\n{"
           assert src.count(marker)==1
           src=src.replace(marker,marker+'''
-    // Screen-mode changes can re-enable the game HUD. Respect physical pads.
-    if(controllerHidesTouch)
-    {
-        if(tcGameMain && tcGameMain->isEnabled()) tcGameMain->setEnabled(false);
-        if(tcCustomButtons && tcCustomButtons->isEnabled()) tcCustomButtons->setEnabled(false);
-    }
-''')
+          // Screen-mode changes can re-enable the game HUD. Respect physical pads.
+          if(controllerHidesTouch)
+          {
+          if(tcGameMain && tcGameMain->isEnabled()) tcGameMain->setEnabled(false);
+          if(tcCustomButtons && tcCustomButtons->isEnabled()) tcCustomButtons->setEnabled(false);
+          }
+          ''')
           p.write_text(src)
 
           p=Path("doom/src/main/jni/Clibs_OpenTouch/android_jni_inc.cpp")
@@ -259,24 +259,24 @@ jobs:
           marker="static TouchInterface touchInterface;"
           assert src.count(marker)==1
           src=src.replace(marker,marker+'''
-static std::atomic<int> requestedTouchOverlay(-1);
-''')
+          static std::atomic<int> requestedTouchOverlay(-1);
+          ''')
           marker="int EXPORT_ME\nJAVA_FUNC(renderControls)(JNIEnv *env, jobject obj)"
           assert src.count(marker)==1
           src=src.replace(marker,'''void EXPORT_ME
-JAVA_FUNC(setTouchOverlayEnabled)(JNIEnv *env, jclass klass, jboolean enabled)
-{
-    requestedTouchOverlay.store(enabled ? 1 : 0);
-}
+          JAVA_FUNC(setTouchOverlayEnabled)(JNIEnv *env, jclass klass, jboolean enabled)
+          {
+          requestedTouchOverlay.store(enabled ? 1 : 0);
+          }
 
-'''+marker)
+          '''+marker)
           marker="void frameControlsSDLCallback(void)\n{\n    touchInterface.newGameFrame();"
           assert src.count(marker)==1
           src=src.replace(marker,'''void frameControlsSDLCallback(void)
-{
-    int overlay=requestedTouchOverlay.exchange(-1);
-    if(overlay>=0) touchInterface.setTouchOverlayVisible(overlay!=0);
-    touchInterface.newGameFrame();''')
+          {
+          int overlay=requestedTouchOverlay.exchange(-1);
+          if(overlay>=0) touchInterface.setTouchOverlayVisible(overlay!=0);
+          touchInterface.newGameFrame();''')
           p.write_text(src)
 
           p=Path("doom/src/main/java/org/libsdl/app/NativeLib.java")
@@ -293,46 +293,46 @@ JAVA_FUNC(setTouchOverlayEnabled)(JNIEnv *env, jclass klass, jboolean enabled)
           marker="import android.os.Bundle"
           assert src.count(marker)==1
           src=src.replace(marker,marker+'''
-import android.hardware.input.InputManager
-import android.view.InputDevice
-import org.libsdl.app.NativeLib
-''')
+          import android.hardware.input.InputManager
+          import android.view.InputDevice
+          import org.libsdl.app.NativeLib
+          ''')
           src=src.replace('class Game : SDLActivity() {', '''class Game : SDLActivity() {
-    private val inputChangeListener = object : InputManager.InputDeviceListener {
-        override fun onInputDeviceAdded(deviceId: Int) = updateGamepadPresence()
-        override fun onInputDeviceRemoved(deviceId: Int) = updateGamepadPresence()
-        override fun onInputDeviceChanged(deviceId: Int) = updateGamepadPresence()
-    }
-    private fun updateGamepadPresence() {
-        val hasPad=InputDevice.getDeviceIds().any { id ->
+          private val inputChangeListener = object : InputManager.InputDeviceListener {
+          override fun onInputDeviceAdded(deviceId: Int) = updateGamepadPresence()
+          override fun onInputDeviceRemoved(deviceId: Int) = updateGamepadPresence()
+          override fun onInputDeviceChanged(deviceId: Int) = updateGamepadPresence()
+          }
+          private fun updateGamepadPresence() {
+          val hasPad=InputDevice.getDeviceIds().any { id ->
             val d=InputDevice.getDevice(id)
             d != null && !d.isVirtual &&
               ((d.sources and InputDevice.SOURCE_GAMEPAD)==InputDevice.SOURCE_GAMEPAD ||
                (d.sources and InputDevice.SOURCE_JOYSTICK)==InputDevice.SOURCE_JOYSTICK)
-        }
-        // JNI is loaded by SDLActivity; on the first start it may still be
-        // loading, so retry once from onWindowFocusChanged/onResume.
-        try { NativeLib.setTouchOverlayEnabled(!hasPad) }
-        catch (_: UnsatisfiedLinkError) {}
-    }
-''')
+          }
+          // JNI is loaded by SDLActivity; on the first start it may still be
+          // loading, so retry once from onWindowFocusChanged/onResume.
+          try { NativeLib.setTouchOverlayEnabled(!hasPad) }
+          catch (_: UnsatisfiedLinkError) {}
+          }
+          ''')
           src=src.replace('''        super.onCreate(savedInstanceState)
-    }''','''        super.onCreate(savedInstanceState)
-        getSystemService(InputManager::class.java)
+          }''','''        super.onCreate(savedInstanceState)
+          getSystemService(InputManager::class.java)
             ?.registerInputDeviceListener(inputChangeListener, null)
-        updateGamepadPresence()
-    }
-    override fun onResume() {
-        super.onResume()
-        updateGamepadPresence()
-    }''')
+          updateGamepadPresence()
+          }
+          override fun onResume() {
+          super.onResume()
+          updateGamepadPresence()
+          }''')
           src=src.replace('''        Utils.onWindowFocusChanged(this, hasFocus)''','''        Utils.onWindowFocusChanged(this, hasFocus)
-        if(hasFocus) updateGamepadPresence()''')
+          if(hasFocus) updateGamepadPresence()''')
           src=src.replace('''        super.onDestroy()
-        // The engine''','''        getSystemService(InputManager::class.java)
+          // The engine''','''        getSystemService(InputManager::class.java)
             ?.unregisterInputDeviceListener(inputChangeListener)
-        super.onDestroy()
-        // The engine''')
+          super.onDestroy()
+          // The engine''')
           assert 'NativeLib.setTouchOverlayEnabled(!hasPad)' in src
           p.write_text(src)
           PY
