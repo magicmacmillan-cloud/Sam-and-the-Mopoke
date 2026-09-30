@@ -47,6 +47,9 @@ jobs:
           python3 game/doomtc/generate_assets.py
           python3 game/doomtc/build_map.py
           python3 game/doomtc/build_iwad.py engine/doom/src/main/assets/freedoom2.wad
+          # Repair placement in the exact WAD that will be installed. This avoids
+          # double-offset first-person canvases and upward-shifted HUD art.
+          python3 game/doomtc/repair_iwad_offsets.py game/doomtc/build/sam-and-the-mopoke.wad
 
       - name: Validate standalone IWAD and authored environment
         run: |
