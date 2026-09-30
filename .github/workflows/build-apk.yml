@@ -188,7 +188,7 @@ jobs:
           s=s.replace('useLegacyPackaging = false','useLegacyPackaging = true')
           assert 'versionName = "0.50.0"' in s
           s=s.replace('versionName = "0.50.0"',
-                      'versionName = "0.50.1-install-test"\\n        ndk { abiFilters += setOf("arm64-v8a") }')
+                      'versionName = "0.50.1-install-test"\n        ndk { abiFilters += setOf("arm64-v8a") }')
           p.write_text(s)
 
           p=Path("doom/src/main/java/com/msa/freedoom/Utils.kt")
