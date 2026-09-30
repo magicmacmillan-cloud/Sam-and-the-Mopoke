@@ -42,6 +42,8 @@ def _set_grab(path, offx=0, offy=32):
 
 def apply_visual_stability(root: Path):
     sprites=Path(root)/"sprites"
+
+    # Keep every first-person frame on the same Doom HUD origin.
     for prefix in WEAPON_PREFIXES:
         for fr in "ABCDEFGH":
             _set_grab(sprites/f"{prefix}{fr}0.png",0,32)
@@ -54,8 +56,9 @@ def apply_visual_stability(root: Path):
             if p.exists():
                 p.unlink()
 
-        # Remove old custom POSS files completely; POSS is a stock Doom/Freedoom
-    # sprite namespace and caused custom possum frames to collide with the base IWAD.
+    # POSS is a stock Doom/Freedoom sprite namespace. Remove any old generated
+    # custom POSS frames so the Rot Possum cannot collide with the base IWAD.
     for p in sprites.glob("POSS*.png"):
         p.unlink()
+
     print("Visual stability pass applied: fixed HUD weapon anchors, unique possum namespace and stable monster rotations")
