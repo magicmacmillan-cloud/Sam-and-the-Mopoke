@@ -282,7 +282,7 @@ def generate_world_assets(root: Path):
     _gate_sprite(root,"PSGT",(112,79,62))
 
     for prefix,kind in [
-      ("POSS","possum"),("CROW","crow"),("HUSK","husk"),
+      ("ROTP","possum"),("CROW","crow"),("HUSK","husk"),
       ("BRUT","brute"),("SHAD","shade")
     ]:_extra_creature(root,prefix,kind)
 
