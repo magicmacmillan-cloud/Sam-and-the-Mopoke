@@ -1,93 +1,167 @@
 class SamStoryHandler : EventHandler
 {
-  bool woke, sawSam, voiceTruth, forestWarn, lincolnTrace, impossible, mallPeak, finale;
-  int musicZone;
-  int targetMusicZone;
-  int fadeState;
-  int fadeTick;
+  int lastLevel;
+  bool beatA;
+  bool beatB;
+  bool beatC;
 
-  String MusicForZone(int z)
+  void StartMapBeat(int n)
   {
-    switch(z)
+    switch(n)
     {
-      case 0: return "MUSIC02";
-      case 1: return "MUSIC03";
-      case 2: return "MUSIC04";
-      case 3: return "MUSIC05";
-      case 4: return "MUSIC05";
-      case 5: return "MUSIC06";
-      case 6: return "MUSIC07";
-      case 7: return "MUSIC08";
-      case 8: return "MUSIC09";
-    }
-    return "MUSIC02";
-  }
-
-  int MusicZoneForX(double x)
-  {
-    if(x > 8050) return 8;
-    if(x >= 7488) return 7;
-    if(x >= 5952) return 6;
-    if(x >= 4544) return 5;
-    if(x >= 4256) return 4;
-    if(x >= 3520) return 3;
-    if(x >= 2432) return 2;
-    if(x >= 1344) return 1;
-    return 0;
-  }
-
-  void UpdateMusic(double x)
-  {
-    int z = MusicZoneForX(x);
-    if(z != targetMusicZone) targetMusicZone = z;
-
-    if(fadeState == 0 && targetMusicZone != musicZone)
-    {
-      fadeState = 1;
-      fadeTick = 0;
-    }
-
-    if(fadeState == 1)
-    {
-      fadeTick++;
-      double v = 1.0 - (double(fadeTick) / 35.0);
-      if(v <= 0.0 || fadeTick >= 35)
-      {
-        SetMusicVolume(0.0);
-        S_ChangeMusic(MusicForZone(targetMusicZone), 0, true, true);
-        musicZone = targetMusicZone;
-        fadeState = 2;
-        fadeTick = 0;
-      }
-      else SetMusicVolume(v);
-    }
-    else if(fadeState == 2)
-    {
-      fadeTick++;
-      double v = double(fadeTick) / 35.0;
-      if(v >= 1.0 || fadeTick >= 35)
-      {
-        SetMusicVolume(1.0);
-        fadeState = 0;
-        fadeTick = 0;
-      }
-      else SetMusicVolume(v);
+      case 1:
+        Console.Printf("Cold... No. I remember this house. I remember dying.");
+        break;
+      case 2:
+        Console.Printf("He's ahead. Don't scare him again. Just keep moving.");
+        break;
+      case 3:
+        Console.Printf("Black-gums. Every path looks like the last one. Watch the landmarks.");
+        break;
+      case 4:
+        Console.Printf("Graves, paths, locked stone. Sam has to be close.");
+        break;
+      case 5:
+        Console.Printf("Those carved sockets are deliberate. The fingers belong somewhere.");
+        break;
+      case 6:
+        Console.Printf("SAM: ...Dad?");
+        Console.Printf("ADAM: Yeah, mate. It's me. Lincoln -- is he with you?");
+        Console.Printf("SAM: I don't know. Just don't leave me.");
+        break;
+      case 7:
+        Console.Printf("He's staying with me now. Whatever happens, get Sam through.");
+        break;
+      case 8:
+        Console.Printf("The shelves are moving. Remember the routes. Keep Sam close.");
+        break;
     }
   }
 
   override void WorldTick()
   {
     if(players[0].mo == null) return;
-    double x = players[0].mo.Pos.X;
-    UpdateMusic(x);
 
-    if(!woke){woke=true;Console.Printf("Cold... No. I remember this. I died.");}
-    if(!sawSam&&x>900){sawSam=true;Console.Printf("Wait... is that... my son? Sam. My boy. Where's Lincoln?");}
-    if(!voiceTruth&&x>1250){voiceTruth=true;Console.Printf("Sam, it's me... Dad. Why is he running? ...He only hears that noise. That noise is me.");}
-    if(!forestWarn&&x>2400){forestWarn=true;Console.Printf("Those tracks... too neat. Something wants me to follow them.");}
-    if(!lincolnTrace&&x>3500){lincolnTrace=true;Console.Printf("Lincoln. You left this for me. Keep moving, mate.");}
-    if(!impossible&&x>4550){impossible=true;Console.Printf("This place shouldn't connect to here.");}
-    if(!mallPeak&&x>6000){mallPeak=true;Console.Printf("Sam! I saw you. I'm still coming.");}
-    if(!finale&&x>7480){finale=true;Console.Printf("Whatever brought me back is waiting ahead.");}
+    int n = level.levelnum;
+    double x = players[0].mo.Pos.X;
+
+    if(n != lastLevel)
+    {
+      lastLevel = n;
+      beatA = false;
+      beatB = false;
+      beatC = false;
+      StartMapBeat(n);
+    }
+
+    if(n == 1)
+    {
+      if(!beatA && x > 500)
+      {
+        beatA = true;
+        Console.Printf("Wait... Sam? Sam! It's Dad...");
+      }
+      if(!beatB && x > 1500)
+      {
+        beatB = true;
+        Console.Printf("Why is he running? ...He only hears that noise. That noise is me.");
+      }
+    }
+    else if(n == 2)
+    {
+      if(!beatA && x > 1000)
+      {
+        beatA = true;
+        Console.Printf("There -- behind the equipment. Sam!");
+      }
+    }
+    else if(n == 3)
+    {
+      if(!beatA && x > 900)
+      {
+        beatA = true;
+        Console.Printf("Those tracks are too neat. Something wants me to follow them.");
+      }
+      if(!beatB && x > 1650)
+      {
+        beatB = true;
+        Console.Printf("That shape between the trees... Mopoke.");
+      }
+      if(!beatC && x > 2050)
+      {
+        beatC = true;
+        Console.Printf("Sam's trail is real here. Fresh mud. Torn strap.");
+      }
+    }
+    else if(n == 4)
+    {
+      if(!beatA && x > 1450)
+      {
+        beatA = true;
+        Console.Printf("I can hear him breathing. Sam's hiding somewhere close.");
+      }
+      if(!beatB && x > 1950)
+      {
+        beatB = true;
+        Console.Printf("He ran again. Not because he hates me. Because he still sees a monster.");
+      }
+    }
+    else if(n == 5)
+    {
+      if(!beatA && x > 900)
+      {
+        beatA = true;
+        Console.Printf("Goat. Crow. Possum. The carvings match the fingers.");
+      }
+      if(!beatB && x > 1650)
+      {
+        beatB = true;
+        Console.Printf("Lincoln's marks again. He knew this route before I did.");
+      }
+    }
+    else if(n == 6)
+    {
+      if(!beatA && x > 700)
+      {
+        beatA = true;
+        Console.Printf("SAM: I can understand you now... sort of.");
+      }
+      if(!beatB && x > 1750)
+      {
+        beatB = true;
+        Console.Printf("ADAM: Stay behind me. If we get split up, keep moving to the lights.");
+      }
+    }
+    else if(n == 7)
+    {
+      if(!beatA && x > 1200)
+      {
+        beatA = true;
+        Console.Printf("SAM: Dad... something's following us through the shops.");
+      }
+      if(!beatB && x > 2600)
+      {
+        beatB = true;
+        Console.Printf("No more chasing clues. We are getting out together.");
+      }
+    }
+    else if(n == 8)
+    {
+      if(!beatA && x > 900)
+      {
+        beatA = true;
+        Console.Printf("Same shelves. Different way out. The library is folding back on itself.");
+      }
+      if(!beatB && x > 1750)
+      {
+        beatB = true;
+        Console.Printf("Mopoke is here. Don't stop.");
+      }
+      if(!beatC && x > 3150)
+      {
+        beatC = true;
+        Console.Printf("Use what we learned. Open the route, protect Sam, then move.");
+      }
+    }
   }
 }
