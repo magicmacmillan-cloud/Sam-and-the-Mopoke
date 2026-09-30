@@ -150,20 +150,25 @@ class TheMopoke : Actor
   }
   States
   {
-  Spawn: MPKE A 8 A_Look; Loop;
-  See: MPKE ABCDEFGH 3 A_Chase; Loop;
+  Spawn:
+    MPKE AB 8 A_Look;
+    Loop;
+  See:
+    MPKE CDEF 4 A_Chase;
+    Loop;
   Melee:
-    MPKE E 5 A_FaceTarget;
-    MPKE F 5 A_CustomMeleeAttack(20);
+    MPKE G 5 A_FaceTarget;
+    MPKE H 4 A_CustomMeleeAttack(20);
+    MPKE I 5;
     Goto See;
   Pain:
-    MPKE G 4 A_Pain;
+    MPKE JK 4 A_Pain;
     Goto See;
   Death:
-    MPKE H 6;
-    MPKE G 6 A_Scream;
-    MPKE F 6 A_NoBlocking;
-    MPKE E 20 A_MopokeDie;
+    MPKE L 6 A_Scream;
+    MPKE M 6;
+    MPKE N 6 A_NoBlocking;
+    MPKE O 20 A_MopokeDie;
     Stop;
   }
   action void A_MopokeDie()
