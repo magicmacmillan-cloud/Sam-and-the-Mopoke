@@ -152,3 +152,32 @@ class LincolnMessage : Actor {
   return true;
  }
 }
+
+
+class CemeteryGhoul : Actor {
+ Default { Health 82; Speed 10; Radius 20; Height 56; Monster; +FLOORCLIP; PainChance 135; SeeSound "sam/zombie"; }
+ States {
+  Spawn: MZOM A 10 A_Look; Loop;
+  See: MZOM ABCDEFGH 4 A_Chase; Loop;
+  Melee: MZOM E 4 A_FaceTarget; MZOM FG 4 A_CustomMeleeAttack(11,"sam/scratch"); Goto See;
+  Pain: MZOM B 4 A_Pain; Goto See;
+  Death: MZOM G 5 A_Scream; MZOM H 7 A_NoBlocking; Stop;
+ }
+}
+
+class TombWisp : Actor {
+ Default {
+  Health 46; Speed 15; Radius 14; Height 36; Monster;
+  +NOGRAVITY +FLOAT +SHADOW;
+  PainChance 190;
+  RenderStyle "Translucent";
+  Alpha 0.72;
+ }
+ States {
+  Spawn: SHAD A 8 A_Look; Loop;
+  See: SHAD ABCDEFGH 3 A_Chase; Loop;
+  Melee: SHAD E 2 A_FaceTarget; SHAD FG 2 Bright A_CustomMeleeAttack(9,"sam/whisper"); Goto See;
+  Pain: SHAD B 2 Bright A_Pain; Goto See;
+  Death: SHAD G 4 Bright A_Scream; SHAD H 6 Bright A_NoBlocking; Stop;
+ }
+}
