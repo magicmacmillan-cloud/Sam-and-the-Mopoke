@@ -47,6 +47,9 @@ jobs:
           python3 game/doomtc/generate_assets.py
           python3 game/doomtc/build_map.py
           python3 game/doomtc/build_iwad.py engine/doom/src/main/assets/freedoom2.wad
+          # Repair placement in the exact WAD that will be installed. This avoids
+          # double-offset first-person canvases and upward-shifted HUD art.
+          python3 game/doomtc/repair_iwad_offsets.py game/doomtc/build/sam-and-the-mopoke.wad
 
       - name: Validate standalone IWAD and authored environment
         run: |
@@ -180,14 +183,161 @@ jobs:
           p=Path("doom/build.gradle.kts")
           s=p.read_text().replace(
               'applicationId = "com.msa.freedoom"',
-              'applicationId = "com.samandthemopoke.game"'
+              'applicationId = "com.samandthemopoke.v6test"'
           )
+          # Installer-safe native libraries: extract on device instead of mmap.
+          # The Samsung Z Flip 6 is arm64; do not bundle unneeded 32-bit/x86 ELF.
+          assert 'useLegacyPackaging = false' in s
+          s=s.replace('useLegacyPackaging = false','useLegacyPackaging = true')
+          assert 'versionName = "0.50.0"' in s
+          s=s.replace('versionName = "0.50.0"',
+                      'versionName = "0.50.1-install-test"\n        ndk { abiFilters += setOf("arm64-v8a") }')
           p.write_text(s)
 
           p=Path("doom/src/main/java/com/msa/freedoom/Utils.kt")
           lines=p.read_text().splitlines()
           lines=[line for line in lines if 'copyAsset' not in line or ('freedoom1.wad' not in line and 'freedoom2.wad' not in line)]
           p.write_text("\n".join(lines)+"\n")
+
+          # Android-only input fix: no modifications to the Doom engine itself.
+          # Preserve default gamepad input while separating move/look/fire/use.
+          p=Path("doom/src/main/jni/Clibs_OpenTouch/idtech1/touch_interface.cpp")
+          src=p.read_text()
+          a=src.index("void TouchInterface::createControlsDoom(")
+          b=src.index("void TouchInterface::createControlsDoom3(",a)
+          controls=src[a:b]
+          replacements=[
+            ('"attack", touchcontrols::RectF(20, 7, 23, 10)', '"attack", touchcontrols::RectF(22.3, 9.1, 25.4, 12.1)'),
+            ('"use", touchcontrols::RectF(23, 6, 26, 9)', '"use", touchcontrols::RectF(22.3, 5.3, 25.4, 8.3)'),
+            ('"keyboard", touchcontrols::RectF(8, 0, 10, 2), "keyboard", KEY_SHOW_KBRD, false, false', '"keyboard", touchcontrols::RectF(8, 0, 10, 2), "keyboard", KEY_SHOW_KBRD, false, true'),
+            ('"show_weapons", touchcontrols::RectF(12, 14, 14, 16)', '"show_weapons", touchcontrols::RectF(11, 0, 14, 2)'),
+            ('"touch", touchcontrols::RectF(17, 4, 26, 16)', '"touch", touchcontrols::RectF(12.5, 4, 21.5, 12.7)'),
+            ('"stick", touchcontrols::RectF(0, 7, 8, 16)', '"stick", touchcontrols::RectF(0, 8, 8.5, 15.4)'),
+          ]
+          for old,new in replacements:
+              assert controls.count(old)==1,(old,controls.count(old))
+              controls=controls.replace(old,new)
+          src=src[:a]+controls+src[b:]
+          p.write_text(src)
+
+          # Explicit controller connection and disconnection events update the
+          # overlay on the SDL render thread, keeping gamepad input independent.
+          p=Path("doom/src/main/jni/Clibs_OpenTouch/touch_interface_base.h")
+          src=p.read_text()
+          marker="    void hideControls(void);"
+          assert src.count(marker)==1
+          src=src.replace(marker,"    bool controllerHidesTouch = false;\n    void setTouchOverlayVisible(bool visible);\n"+marker)
+          p.write_text(src)
+
+          p=Path("doom/src/main/jni/Clibs_OpenTouch/touch_interface_base.cpp")
+          src=p.read_text()
+          marker="void TouchInterfaceBase::hideControls(void)"
+          assert src.count(marker)==1
+          src=src.replace(marker,'''void TouchInterfaceBase::setTouchOverlayVisible(bool visible)
+          {
+          controllerHidesTouch = !visible;
+          if(currentScreenMode == TS_GAME && tcGameMain)
+          tcGameMain->setEnabled(visible);
+          if(!visible && tcCustomButtons)
+          tcCustomButtons->setEnabled(false);
+          }
+
+          '''+marker)
+          marker="void TouchInterfaceBase::frameControls(bool REND_FRAMEBUFFER, bool REND_TOUCH)\n{"
+          assert src.count(marker)==1
+          src=src.replace(marker,marker+'''
+          // Screen-mode changes can re-enable the game HUD. Respect physical pads.
+          if(controllerHidesTouch)
+          {
+          if(tcGameMain && tcGameMain->isEnabled()) tcGameMain->setEnabled(false);
+          if(tcCustomButtons && tcCustomButtons->isEnabled()) tcCustomButtons->setEnabled(false);
+          }
+          ''')
+          p.write_text(src)
+
+          p=Path("doom/src/main/jni/Clibs_OpenTouch/android_jni_inc.cpp")
+          src=p.read_text()
+          assert src.count('#include <time.h>')==1
+          src=src.replace('#include <time.h>','#include <time.h>\n#include <atomic>')
+          marker="static TouchInterface touchInterface;"
+          assert src.count(marker)==1
+          src=src.replace(marker,marker+'''
+          static std::atomic<int> requestedTouchOverlay(-1);
+          ''')
+          marker="int EXPORT_ME\nJAVA_FUNC(renderControls)(JNIEnv *env, jobject obj)"
+          assert src.count(marker)==1
+          src=src.replace(marker,'''void EXPORT_ME
+          JAVA_FUNC(setTouchOverlayEnabled)(JNIEnv *env, jclass klass, jboolean enabled)
+          {
+          requestedTouchOverlay.store(enabled ? 1 : 0);
+          }
+
+          '''+marker)
+          marker="void frameControlsSDLCallback(void)\n{\n    touchInterface.newGameFrame();"
+          assert src.count(marker)==1
+          src=src.replace(marker,'''void frameControlsSDLCallback(void)
+          {
+          int overlay=requestedTouchOverlay.exchange(-1);
+          if(overlay>=0) touchInterface.setTouchOverlayVisible(overlay!=0);
+          touchInterface.newGameFrame();''')
+          p.write_text(src)
+
+          p=Path("doom/src/main/java/org/libsdl/app/NativeLib.java")
+          src=p.read_text()
+          marker="    public static native int renderControls();"
+          assert src.count(marker)==1
+          src=src.replace(marker,marker+"\n    public static native void setTouchOverlayEnabled(boolean enabled);")
+          p.write_text(src)
+
+          # UI-thread input events request changes but only the native render
+          # thread touches C++ TouchControls objects, avoiding GL races.
+          p=Path("doom/src/main/java/com/msa/freedoom/Game.kt")
+          src=p.read_text()
+          marker="import android.os.Bundle"
+          assert src.count(marker)==1
+          src=src.replace(marker,marker+'''
+          import android.hardware.input.InputManager
+          import android.view.InputDevice
+          import org.libsdl.app.NativeLib
+          ''')
+          src=src.replace('class Game : SDLActivity() {', '''class Game : SDLActivity() {
+          private val inputChangeListener = object : InputManager.InputDeviceListener {
+          override fun onInputDeviceAdded(deviceId: Int) = updateGamepadPresence()
+          override fun onInputDeviceRemoved(deviceId: Int) = updateGamepadPresence()
+          override fun onInputDeviceChanged(deviceId: Int) = updateGamepadPresence()
+          }
+          private fun updateGamepadPresence() {
+          val hasPad=InputDevice.getDeviceIds().any { id ->
+            val d=InputDevice.getDevice(id)
+            d != null && !d.isVirtual &&
+              ((d.sources and InputDevice.SOURCE_GAMEPAD)==InputDevice.SOURCE_GAMEPAD ||
+               (d.sources and InputDevice.SOURCE_JOYSTICK)==InputDevice.SOURCE_JOYSTICK)
+          }
+          // JNI is loaded by SDLActivity; on the first start it may still be
+          // loading, so retry once from onWindowFocusChanged/onResume.
+          try { NativeLib.setTouchOverlayEnabled(!hasPad) }
+          catch (_: UnsatisfiedLinkError) {}
+          }
+          ''')
+          src=src.replace('''        super.onCreate(savedInstanceState)
+          }''','''        super.onCreate(savedInstanceState)
+          getSystemService(InputManager::class.java)
+            ?.registerInputDeviceListener(inputChangeListener, null)
+          updateGamepadPresence()
+          }
+          override fun onResume() {
+          super.onResume()
+          updateGamepadPresence()
+          }''')
+          src=src.replace('''        Utils.onWindowFocusChanged(this, hasFocus)''','''        Utils.onWindowFocusChanged(this, hasFocus)
+          if(hasFocus) updateGamepadPresence()''')
+          src=src.replace('''        super.onDestroy()
+          // The engine''','''        getSystemService(InputManager::class.java)
+            ?.unregisterInputDeviceListener(inputChangeListener)
+          super.onDestroy()
+          // The engine''')
+          assert 'NativeLib.setTouchOverlayEnabled(!hasPad)' in src
+          p.write_text(src)
           PY
 
           cat > doom/src/main/java/com/msa/freedoom/EntryActivity.kt <<'KOT'
@@ -232,7 +382,7 @@ jobs:
                           action = Intent.ACTION_MAIN
                           putExtra("res_div", AppSettings.getIntOption(this@EntryActivity, "gzdoom_res_div", 1))
                           putExtra("game_path", base)
-                          putExtra("game", "com.samandthemopoke.game")
+                          putExtra("game", "com.samandthemopoke.v6test")
                           putExtra("args", "-iwad sam-and-the-mopoke.wad +map MAP01")
                       })
                       finish()
@@ -271,10 +421,27 @@ jobs:
           PY
           cp "$APK" Sam-and-the-Mopoke-IWAD-debug.apk
 
+      - name: Verify Gradle-signed native installer variant
+        run: |
+          set -euo pipefail
+          APK="$(find engine/doom/build/outputs/apk -type f -name '*debug*.apk' | head -n1)"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "$APK"
+          python3 - "$APK" <<'PY'
+          import sys,zipfile
+          with zipfile.ZipFile(sys.argv[1]) as z:
+              assert z.testzip() is None
+              libs=[i for i in z.infolist() if i.filename.startswith("lib/") and i.filename.endswith(".so")]
+              assert len(libs)>=8, len(libs)
+              assert {i.filename.split("/")[1] for i in libs} == {"arm64-v8a"}
+              assert all(i.compress_type == zipfile.ZIP_DEFLATED for i in libs)
+              assert z.read("assets/sam-and-the-mopoke.wad")[:4] == b"IWAD"
+              print(f"Gradle installer validation passed: {len(libs)} compressed arm64 native libraries")
+          PY
+
       - name: Upload Sam and the Mopoke APK
         uses: actions/upload-artifact@v4
         with:
-          name: Sam-and-the-Mopoke-IWAD-APK
+          name: Sam-and-the-Mopoke-NATIVE-GRADLE-INSTALL-TEST
           path: Sam-and-the-Mopoke-IWAD-debug.apk
           if-no-files-found: error
           retention-days: 3
