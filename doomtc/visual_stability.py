@@ -46,7 +46,10 @@ def apply_visual_stability(root: Path):
     # Keep every first-person frame on the same Doom HUD origin.
     for prefix in WEAPON_PREFIXES:
         for fr in "ABCDEFGH":
-            _set_grab(sprites/f"{prefix}{fr}0.png",0,32)
+            # Polished weapon art is a centred 128x128 canvas, so the native
+            # anchor is its horizontal midpoint (64), not its left edge (0).
+            # The approved bottom-of-screen vertical anchor is 112.
+            _set_grab(sprites/f"{prefix}{fr}0.png",64,112)
 
     # The world actors use full 8-direction sprite sets. Never leave a rotation-0
     # fallback beside them or GZDoom can select visually incompatible frames.
