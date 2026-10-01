@@ -82,7 +82,9 @@ AREAS = [
 
     # --- 42 Arnold yard / driveway / rear ---
     A(16,16,960,320,"YARD"),
-    A(16,320,960,1600,"YARD"),
+    A(16,320,96,1312,"YARD"),
+    A(704,320,960,1312,"YARD"),
+    A(16,1312,960,1600,"YARD"),
     A(16,1600,960,2944,"YARD"),
     A(384,16,448,320,"FOOT"),
     A(736,16,928,1600,"DRIVE"),
@@ -175,10 +177,21 @@ def _is_house_exterior(p1,p2,st):
         if y==1312 and 96 <= lo and hi <= 704: return True
     return False
 
+def _segment_inside(seg,whole):
+    (a1,a2)=seg; (b1,b2)=whole
+    if a1[0]==a2[0]==b1[0]==b2[0]:
+        alo,ahi=sorted((a1[1],a2[1])); blo,bhi=sorted((b1[1],b2[1]))
+        return blo <= alo and ahi <= bhi
+    if a1[1]==a2[1]==b1[1]==b2[1]:
+        alo,ahi=sorted((a1[0],a2[0])); blo,bhi=sorted((b1[0],b2[0]))
+        return blo <= alo and ahi <= bhi
+    return False
+
 def _boundary_texture(p1,p2,st):
     key=norm_edge(p1,p2)
-    if key in LINE_TEX:
-        return LINE_TEX[key]
+    for whole,tex in LINE_TEX.items():
+        if _segment_inside(key,whole):
+            return tex
     x1,y1=p1; x2,y2=p2
     # Black metal front rail/gate appearance seen in facade photo.
     if y1==y2==16:
@@ -188,6 +201,24 @@ def _boundary_texture(p1,p2,st):
     if _is_house_exterior(p1,p2,st):
         return "H42SIDN"
     return STYLE[st][5]
+
+OUTDOOR_STYLES={"PORCH","DRIVE","YARD","PATIO","FOOT","VERGE","ROAD","RESERVE","PLAY","LOT"}
+
+def _solid_boundary(p1,p2,st0,st1):
+    pair={st0,st1}
+    # House envelope is physically walled from exterior sectors. Door connector
+    # rectangles already replace the wall exactly where passage is intended.
+    if (st0 in HOUSE_STYLES and st1 in OUTDOOR_STYLES) or (st1 in HOUSE_STYLES and st0 in OUTDOOR_STYLES):
+        return True
+    # Shed is solid except its south-facing doorway.
+    if "SHED" in pair and (st0 in OUTDOOR_STYLES or st1 in OUTDOOR_STYLES):
+        (x1,y1),(x2,y2)=p1,p2
+        if y1==y2==1750:
+            lo,hi=sorted((x1,x2))
+            if 640 <= lo and hi <= 768:
+                return False
+        return True
+    return False
 
 def build_house42_map():
     xs={v for a in AREAS for v in (a[0],a[2])}
@@ -246,10 +277,20 @@ def build_house42_map():
             linedefs.append((vid(*p1),vid(*p2),1,special,0,side(sec0,middle=wall),0xFFFF))
         else:
             w0=STYLE[st0][5]; w1=STYLE[st1][5]
-            # Two-sided line. Height differences (neighbour massing) get upper/lower walls.
-            linedefs.append((vid(*p1),vid(*p2),4,0,0,
-                             side(sec0,upper=w0,lower=w0),
-                             side(sec1,upper=w1,lower=w1)))
+            if _solid_boundary(p1,p2,st0,st1):
+                # Blocking two-sided midtexture = actual wall while retaining valid
+                # sectors on both sides for the yard/porch/driveway.
+                hst=st0 if st0 in HOUSE_STYLES else (st1 if st1 in HOUSE_STYLES else ("SHED" if "SHED" in (st0,st1) else st0))
+                wall=_boundary_texture(p1,p2,hst)
+                linedefs.append((vid(*p1),vid(*p2),5,0,0,
+                                 side(sec0,middle=wall),
+                                 side(sec1,middle=wall)))
+            else:
+                # Normal open two-sided transition. Height differences (neighbour
+                # massing) get upper/lower walls and remain physically impassable.
+                linedefs.append((vid(*p1),vid(*p2),4,0,0,
+                                 side(sec0,upper=w0,lower=w0),
+                                 side(sec1,upper=w1,lower=w1)))
 
     # Vertical boundaries.
     for bx in range(len(xs)):
