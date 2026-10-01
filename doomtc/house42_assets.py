@@ -1,7 +1,7 @@
 from pathlib import Path
 import math, random
 
-from world_assets import _png, _canvas, _rect, _line, _disc
+from world_assets import _png, _canvas, _rect, _line, _disc, _wav
 
 # Source-matched domestic material pass for MAP01.
 # This does not pretend to be a survey/photo-scan. Colours, pattern scale and
@@ -302,6 +302,50 @@ def _atlas(root):
             _rect(p,w,h,cx+7+j*10,cy+112,cx+13+j*10,cy+120,(v,v,v))
     _png(root/"graphics"/"H42ATLAS.png",w,h,p)
 
+
+def _front_door(root):
+    # Front reference: dark domestic front door beneath the cream porch.
+    w=64; h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            _set(p,w,h,x,y,_noise((62,55,49),x,y,4,52))
+    for x0,y0,x1,y1 in ((8,8,56,48),(8,57,56,116)):
+        _line(p,w,h,x0,y0,x1,y0,2,(34,31,29))
+        _line(p,w,h,x0,y1,x1,y1,2,(34,31,29))
+        _line(p,w,h,x0,y0,x0,y1,2,(34,31,29))
+        _line(p,w,h,x1,y0,x1,y1,2,(34,31,29))
+    _disc(p,w,h,52,64,3,3,(173,168,157))
+    _png(root/"textures"/"H42FRNT.png",w,h,p)
+
+def _sofa(root):
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            c=_noise((92,78,67),x,y,7,59)
+            if x%32 in (0,1) or y%32 in (0,1): c=_shade(c,-10)
+            _set(p,w,h,x,y,c)
+    _png(root/"textures"/"H42SOFA.png",w,h,p)
+
+def _appliance(root):
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            _set(p,w,h,x,y,_noise((204,201,191),x,y,3,61))
+    _rect(p,w,h,10,12,118,116,(217,214,205))
+    _rect(p,w,h,16,20,112,58,(85,90,91))
+    _rect(p,w,h,101,68,107,108,(92,90,85))
+    _png(root/"textures"/"H42APPL.png",w,h,p)
+
+def _doorbell_sprite(root):
+    # Deliberately small: a believable wall button, not a pickup-sized prop.
+    w=20; h=28; p=_canvas(w,h)
+    _rect(p,w,h,5,3,15,25,(205,201,188))
+    _rect(p,w,h,6,4,14,24,(154,151,141))
+    _disc(p,w,h,10,11,3,3,(52,50,47))
+    _disc(p,w,h,10,11,1,1,(191,185,169))
+    _rect(p,w,h,8,18,12,21,(74,72,68))
+    _png(root/"sprites"/"DBELA0.png",w,h,p,10,24)
+
 def generate_house42_assets(root: Path):
     root=Path(root)
     _plaster(root,"H42WALL",(211,205,192))
@@ -318,6 +362,11 @@ def generate_house42_assets(root: Path):
     _blinds(root)
     _door(root,"H42DOOR",True)
     _door(root,"H42WDR",False)
+    _front_door(root)
+    _sofa(root)
+    _appliance(root)
+    _doorbell_sprite(root)
+    _wav(root,"doorbell.wav",780,.18,.03)
     _curb(root)
     _neighbor(root,"H42NBR1",False)
     _neighbor(root,"H42NBR2",True)
