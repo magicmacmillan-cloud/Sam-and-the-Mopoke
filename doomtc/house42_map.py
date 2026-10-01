@@ -26,26 +26,28 @@ STYLE = {
     "MEALS":   (0,128,"H42VNYL","H42CEIL",164,"H42PANL"),
     "KITCH":   (0,128,"H42VNYL","H42CEIL",180,"H42KTCH"),
     "LAUNDRY": (0,128,"H42WOOD","H42CEIL",168,"H42PANL"),
-    "SUNROOM": (0,120,"H42CONC","H42CEIL",148,"H42WALL"),
-    "PORCH":   (0,112,"H42CONC","H42CEIL",160,"H42SIDN"),
-    "DRIVE":   (0,192,"H42DRV","F_SKY1",168,"H42FENC"),
-    "YARD":    (0,192,"H42LWN","F_SKY1",156,"H42FENC"),
-    "PATIO":   (0,192,"H42PAVE","F_SKY1",160,"H42FENC"),
+    "SUNROOM": (0,120,"H42CONC","H42CEIL",142,"H42WALL"),
+    "PORCH":   (0,112,"H42CONC","H42CEIL",176,"H42SIDN"),
+    "DRIVE":   (0,192,"H42DRV","F_SKY1",112,"H42FENC"),
+    "YARD":    (0,192,"H42LWN","F_SKY1",104,"H42FENC"),
+    "PATIO":   (0,192,"H42PAVE","F_SKY1",112,"H42FENC"),
     "SHED":    (0,128,"H42CONC","H42CEIL",132,"H42SHED"),
-    "FOOT":    (0,192,"H42PATH","F_SKY1",168,"H42CURB"),
-    "VERGE":   (0,192,"H42VERG","F_SKY1",160,"H42CURB"),
-    "ROAD":    (0,192,"H42ROAD","F_SKY1",152,"H42CURB"),
-    "RESERVE": (0,224,"H42GRAS","F_SKY1",144,"H42FENC"),
-    "PLAY":    (0,224,"H42SAFE","F_SKY1",160,"H42PLAY"),
-    "LOT":     (0,192,"H42LWN","F_SKY1",150,"H42FENC"),
+    "FOOT":    (0,192,"H42PATH","F_SKY1",108,"H42CURB"),
+    "VERGE":   (0,192,"H42VERG","F_SKY1",94,"H42CURB"),
+    "ROAD":    (0,192,"H42ROAD","F_SKY1",86,"H42CURB"),
+    "RESERVE": (0,224,"H42GRAS","F_SKY1",72,"H42FENC"),
+    "PLAY":    (0,224,"H42SAFE","F_SKY1",94,"H42PLAY"),
+    "LOT":     (0,192,"H42LWN","F_SKY1",82,"H42FENC"),
     "DOOR":    (0,0,"H42TILF","H42CEIL",160,"H42FRNT"),
     "BACKDOOR":(0,0,"H42CONC","H42CEIL",150,"H42RDR"),
-    "GATEDOOR":(0,0,"H42SAFE","F_SKY1",160,"H42GATE"),
-    "CARPORT": (0,112,"H42DRV","H42CEIL",148,"H42SHED"),
-    "GARDEN":  (0,192,"H42BED","F_SKY1",148,"H42FENC"),
-    "DIG":     (-2,192,"H42DIRT","F_SKY1",136,"H42FENC"),
+    "GATEDOOR":(0,0,"H42SAFE","F_SKY1",118,"H42GATE"),
+    "IDOOR":   (0,0,"H42TILF","H42CEIL",150,"H42DOOR"),
+    "AWNING":  (0,112,"H42PAVE","H42CEIL",126,"H42SIDN"),
+    "CARPORT": (0,112,"H42DRV","H42CEIL",138,"H42SHED"),
+    "GARDEN":  (0,192,"H42BED","F_SKY1",72,"H42FENC"),
+    "DIG":     (-2,192,"H42DIRT","F_SKY1",78,"H42FENC"),
     "STLIT":   (0,192,"H42ROAD","F_SKY1",176,"H42CURB"),
-    "PLAYLIT": (0,224,"H42SAFE","F_SKY1",176,"H42PLAY"),
+    "PLAYLIT": (0,224,"H42SAFE","F_SKY1",160,"H42PLAY"),
     "FURNWOOD":(40,128,"H42WOOD","H42CEIL",136,"H42PANL"),
     "FURNFAB": (36,128,"H42CARP","H42CEIL",132,"H42SOFA"),
     "FIXWHITE":(44,128,"H42TILF","H42CEIL",156,"H42WDR"),
@@ -68,8 +70,7 @@ AREAS = [
     # --- reserve and playground west of Collenso / up Arnold Street ---
     A(-2500,-1500,-1248,1900,"RESERVE"),
     A(-2240,-1180,-1540,-700,"PLAY"),
-    A(-2340,-1030,-2240,-760,"PLAYLIT"),
-    A(-2208,-1030,-1880,-760,"PLAYLIT"),
+    A(-1700,-930,-1652,-830,"PLAYLIT"),
     A(-1620,-980,-1248,-700,"FOOT"),
     A(-1880,-820,-1620,-750,"FOOT"),
     A(-1700,-700,-1600,-300,"FOOT"),
@@ -78,7 +79,7 @@ AREAS = [
     A(-1360,700,-1260,1150,"FOOT"),
 
     # Padlocked playground entrance. The door sector itself is the iron gate.
-    A(-2240,-960,-2208,-832,"GATEDOOR"),
+    A(-1652,-930,-1620,-830,"GATEDOOR"),
 
     # Playground equipment as sector silhouettes, supplemented by sprites.
     A(-2130,-1020,-2020,-965,"PLAYEQ"),
@@ -110,6 +111,10 @@ AREAS = [
     A(96,-1330,800,-900,"NBR1"),
     A(1104,-1330,1776,-900,"NBR2"),
 
+    # Fill the thin frontage/lot gaps: these must be real outdoor space, never void walls.
+    A(-944,-720,1980,-704,"FOOT"),
+    A(-944,0,1980,16,"FOOT"),
+
     # --- immediate neighbours 44 and 40 ---
     A(-944,16,-48,2944,"LOT"),
     A(1008,16,1980,2944,"LOT"),
@@ -125,6 +130,12 @@ AREAS = [
     A(1600,16,1820,320,"DRIVE"),
     A(1320,180,1380,320,"FOOT"),
 
+    # Fill the two side-boundary gaps and behind the rear fence so fences are
+    # two-sided midtextures with sky above, not 192-unit enclosing walls.
+    A(-48,16,16,3100,"LOT"),
+    A(960,16,1008,3100,"LOT"),
+    A(16,2944,960,3100,"LOT"),
+
     # --- 42 Arnold yard / front / driveway / rear ---
     A(16,16,960,320,"YARD"),
     A(16,320,96,1312,"YARD"),
@@ -134,7 +145,7 @@ AREAS = [
     A(384,16,448,320,"FOOT"),
     A(736,16,928,1312,"DRIVE"),
     A(736,384,928,1312,"CARPORT"),
-    A(704,1312,928,1750,"PATIO"),
+    A(704,1312,928,1750,"AWNING"),
     A(560,1750,896,2350,"SHED"),
 
     # planted beds and dog-dig evidence
@@ -171,16 +182,16 @@ AREAS = [
     # --- proper doors/connectors ---
     A(384,352,416,384,"DOOR"),       # real front door
     A(384,512,416,544,"ENTRY"),      # entry -> hall
-    A(320,576,368,640,"HALL"),       # hall -> bathroom
-    A(432,576,480,640,"HALL"),       # hall -> lounge
-    A(320,792,368,856,"HALL"),       # hall -> master
-    A(432,792,480,856,"HALL"),       # hall -> Sam room
-    A(384,944,416,992,"HALL"),       # hall -> kitchen
-    A(320,1024,368,1088,"KITCH"),    # Lincoln room <-> kitchen
+    A(320,576,368,640,"IDOOR"),      # bathroom door
+    A(432,576,480,640,"IDOOR"),      # lounge door
+    A(320,792,368,856,"IDOOR"),      # master bedroom door
+    A(432,792,480,856,"IDOOR"),      # Sam bedroom door
+    A(384,944,416,992,"IDOOR"),      # kitchen/hall door
+    A(320,1024,368,1088,"IDOOR"),    # Lincoln bedroom door off kitchen
     A(528,1040,576,1104,"KITCH"),    # kitchen <-> laundry
     A(608,1136,656,1184,"LAUNDRY"),  # laundry <-> sunroom
-    A(320,1296,384,1312,"BACKDOOR"), # locked rear door
-    A(320,1312,384,1344,"PATIO"),    # backyard threshold outside rear door
+    A(624,1296,688,1312,"BACKDOOR"), # actual locked rear/sunroom door
+    A(624,1312,688,1344,"PATIO"),    # backyard threshold outside rear door
 
     # Front pedestrian/driveway gates.
     A(384,-16,448,32,"FOOT"),
@@ -230,15 +241,15 @@ LINE_TEX = {
     norm_edge((704,776),(704,896)):"H42WIND",    # Sam room side window
     norm_edge((96,1024),(96,1104)):"H42WIND",    # Lincoln room side
     norm_edge((704,1024),(704,1104)):"H42WIND",  # laundry side
-    norm_edge((128,1312),(288,1312)):"H42RWIN",  # rear sunroom glazing
-    norm_edge((400,1312),(560,1312)):"H42RWIN",
+    norm_edge((112,1312),(304,1312)):"H42RWIN",  # broad rear sunroom glazing
+    norm_edge((368,1312),(608,1312)):"H42RWIN",
     norm_edge((704,432),(704,608)):"H42BRIK",    # chimney mass
     norm_edge((-640,320),(-384,320)):"H42WIND",
     norm_edge((1260,320),(1516,320)):"H42WIND",
 }
 
 HOUSE_STYLES={"ENTRY","HALL","LOUNGE","BED","BEDWOOD","BATH","KITCH","LAUNDRY","SUNROOM"}
-DETAIL_STYLES={"DOOR","FURNWOOD","FURNFAB","FIXWHITE","FIXPINK","APPLI","POST","PLAYEQ"}
+DETAIL_STYLES={"DOOR","BACKDOOR","IDOOR","GATEDOOR","FURNWOOD","FURNFAB","FIXWHITE","FIXPINK","APPLI","POST","PLAYEQ"}
 
 def _is_house_exterior(p1,p2,st):
     if st not in HOUSE_STYLES:
@@ -251,6 +262,10 @@ def _is_house_exterior(p1,p2,st):
         if x==336 and 320 <= lo and hi <= 384: return True
         if x==352 and 368 <= lo and hi <= 384: return True
         if x==448 and 368 <= lo and hi <= 384: return True
+    if x1==x2:
+        x=x1; lo,hi=sorted((y1,y2))
+        if x in (16,960) and 16 <= lo and hi <= 2944:
+            return "H42FENC"
     if y1==y2:
         y=y1; lo,hi=sorted((x1,x2))
         if y==320 and 96 <= lo and hi <= 336: return True
@@ -280,9 +295,10 @@ def _boundary_texture(p1,p2,st):
             return "H42GATE"
     if y1==y2:
         y=y1; lo,hi=sorted((x1,x2))
-        # front fence/rail
-        if y==16 and 16 <= lo and hi <= 960:
-            return "H42GATE"
+        if y==2944 and 16 <= lo and hi <= 960:
+            return "H42FENC"
+        # front boundary is intentionally open at the pedestrian path/driveway;
+        # do not create another artificial street wall here.
         # rear driveway gate: see-through iron, blocks shortcut to Hilux/front
         if y==1312 and 704 <= lo and hi <= 960:
             return "H42GATE"
@@ -302,12 +318,22 @@ def _boundary_texture(p1,p2,st):
         return "H42SIDN"
     return STYLE[st][5]
 
-OUTDOOR_STYLES={"PORCH","DRIVE","CARPORT","YARD","PATIO","FOOT","VERGE","ROAD","STLIT","RESERVE","PLAY","PLAYLIT","LOT","GARDEN","DIG"}
+OUTDOOR_STYLES={"PORCH","DRIVE","CARPORT","AWNING","YARD","PATIO","FOOT","VERGE","ROAD","STLIT","RESERVE","PLAY","PLAYLIT","LOT","GARDEN","DIG"}
 
 def _solid_boundary(p1,p2,st0,st1):
     pair={st0,st1}
     (x1,y1),(x2,y2)=p1,p2
-    # no side escape from backyard: timber blocker west, iron gate east
+    # Real property fences are blocking two-sided midtextures, not full-height void walls.
+    if x1==x2 and x1 in (16,960):
+        lo,hi=sorted((y1,y2))
+        if 16 <= lo and hi <= 2944:
+            return True
+    if y1==y2==2944:
+        lo,hi=sorted((x1,x2))
+        if 16 <= lo and hi <= 960:
+            return True
+
+    # no side escape from backyard: timber blocker west, see-through iron gate east
     if y1==y2==1312:
         lo,hi=sorted((x1,x2))
         if (16 <= lo and hi <= 96) or (704 <= lo and hi <= 960):
@@ -329,7 +355,7 @@ def build_house42_map():
     for p1,p2 in LINE_TEX:
         xs.add(p1[0]); xs.add(p2[0]); ys.add(p1[1]); ys.add(p2[1])
     # Extra cuts split the right-side chimney and front facade into useful line spans.
-    xs.update((96,128,144,288,320,336,352,384,400,416,432,448,464,512,544,560,576,608,656,672,704,736,928,1260,1516,-640,-384,-2240,-2140,-1880,-1700,-1620,-1540))
+    xs.update((96,128,144,288,320,336,352,384,400,416,432,448,464,512,544,560,576,608,656,672,704,736,928,1260,1516,-640,-384,-2240,-1880,-1700,-1652,-1620,-1540))
     ys.update((320,352,368,384,512,528,544,576,640,704,736,792,856,928,944,960,976,992,1024,1040,1088,1104,1136,1152,1168,1184,1296,1312,1344,1750,2350,-1030,-960,-832,-820,-760,-704,-700,-608,-580,-300,-256,-96,0))
     xs=sorted(xs); ys=sorted(ys)
 
@@ -372,7 +398,7 @@ def build_house42_map():
 
     # MAP01 ends only after Dad actually enters the playground shown in the
     # supplied satellite view, not at the house/front boundary.
-    EXIT=norm_edge((-2340,-960),(-2340,-832))
+    EXIT=norm_edge((-1700,-930),(-1700,-830))
 
     def add_boundary(p1,p2,sec0,sec1=None,st0=None,st1=None):
         key=norm_edge(p1,p2)
@@ -391,10 +417,10 @@ def build_house42_map():
                 linedefs.append((vid(*p1),vid(*p2),4,11,0,
                                  side(sec0,upper=STYLE[st0][5],lower=STYLE[st0][5]),
                                  side(sec1,upper=STYLE[st1][5],lower=STYLE[st1][5])))
-            elif st0 in ("DOOR","BACKDOOR","GATEDOOR") or st1 in ("DOOR","BACKDOOR","GATEDOOR"):
-                door_style = st1 if st1 in ("DOOR","BACKDOOR","GATEDOOR") else st0
-                dtex = "H42FRNT" if door_style=="DOOR" else ("H42RDR" if door_style=="BACKDOOR" else "H42GATE")
-                special = 27 if door_style=="DOOR" else (26 if door_style=="BACKDOOR" else 28)
+            elif st0 in ("DOOR","BACKDOOR","GATEDOOR","IDOOR") or st1 in ("DOOR","BACKDOOR","GATEDOOR","IDOOR"):
+                door_style = st1 if st1 in ("DOOR","BACKDOOR","GATEDOOR","IDOOR") else st0
+                dtex = "H42FRNT" if door_style=="DOOR" else ("H42RDR" if door_style=="BACKDOOR" else ("H42GATE" if door_style=="GATEDOOR" else "H42DOOR"))
+                special = 27 if door_style=="DOOR" else (26 if door_style=="BACKDOOR" else (28 if door_style=="GATEDOOR" else 1))
                 if st1 == door_style:
                     linedefs.append((vid(*p1),vid(*p2),4,special,0,
                                      side(sec0,upper=dtex,lower=dtex),
@@ -449,8 +475,8 @@ def build_house42_map():
 
     # Classic Doom thing records: x,y,angle,type,flags.
     things=[
-        (420,1500,270,1,7),          # Dad starts in backyard facing locked rear door
-        (420,1260,270,15113,7),      # Sam is seen inside/rear and escapes through house
+        (540,1500,270,1,7),          # Dad starts in backyard facing the real rear/sunroom
+        (650,1260,270,15113,7),      # Sam is seen at rear door and escapes through house
         (444,356,270,15710,7),       # small front doorbell
         (720,2080,180,15740,7),      # spare back-door key hidden in garage
         (710,2060,180,15301,7),      # garage searchable cache beside key area
@@ -467,7 +493,7 @@ def build_house42_map():
         (660,900,180,15104,7),       # small Sam room note/detail
         (420,120,270,15101,7),       # footprints/front path
         (-980,-430,180,15106,7),     # false trail near Arnold/Collenso
-        (-2180,-895,180,15744,7),    # Sam's note taped to playground gate
+        (-1638,-880,180,15744,7),    # Sam's note taped to playground entrance gate
         (-610,230,180,15745,7),       # neighbour letterbox containing gate key
         (-1450,-650,180,15410,7),    # Mopoke glimpse at reserve edge
 
