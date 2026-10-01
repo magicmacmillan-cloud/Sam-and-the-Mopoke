@@ -80,7 +80,7 @@ def make_svg(path,layout):
       "NBR44":"#8b6a59","NBR40":"#6e6861","NBR39":"#946953","NBR37":"#9b6d55",
       "NBR35":"#866353","NBR1":"#81736a","NBR2":"#766a63",
       "FURNWOOD":"#65452f","FURNFAB":"#75665a","FIXWHITE":"#e4e1d8",
-      "FIXPINK":"#c998a0","APPLI":"#d1cec4","POST":"#77736c","DOOR":"#4d4138"
+      "FIXPINK":"#c998a0","APPLI":"#d1cec4","POST":"#77736c","DOOR":"#4d4138","RDOOR":"#927f67"
     }
 
     svg=[f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">']
@@ -91,10 +91,10 @@ def make_svg(path,layout):
         svg.append(f'<rect x="{ax:.1f}" y="{ay:.1f}" width="{bx-ax:.1f}" height="{by-ay:.1f}" fill="{c}" stroke="#2b2b2b" stroke-width="0.45" data-style="{style}"/>')
 
     labels=[
-      ("42 ARNOLD",480,240),("44",-470,220),("40",1450,220),
+      ("42 ARNOLD",480,240),("FRONT / ARNOLD ST",480,80),("44",-470,220),("40",1450,220),
       ("ARNOLD STREET",350,-445),("COLLENSO ST",-1100,850),
       ("PLAYGROUND",-1880,-900),("RESERVE",-1880,500),
-      ("BACKYARD",380,1500),("SHED",730,2050),
+      ("REAR / BACKYARD",380,1500),("REAR DOOR",352,1330),("FRONT DOOR",408,370),("SHED",730,2050),
       ("LOUNGE",585,535),("BED 1",210,470),("BED 2",210,715),
       ("BATH",205,885),("BED 3",585,825),("KITCHEN",450,1065),
       ("LAUNDRY",630,1065),("SUNROOM",390,1235),
@@ -164,7 +164,7 @@ def main():
     make_svg(OUT/"42-Arnold-overhead-plan.svg",layout)
 
     manifest={
-      "format":"42-arnold-map-handoff-v2",
+      "format":"42-arnold-map-handoff-v3",
       "map":"MAP01",
       "engine_dependency":"map geometry is classic Doom format; embedded scenery actors use DECORATE and PNG namespaces for ZDoom/GZDoom-family ports",
       "stats":{"sectors":stats[0],"linedefs":stats[1],"source_things":stats[2],"handoff_wad_things":kept_things},
@@ -183,7 +183,9 @@ def main():
         "The playground is up the street at the reserve/Collenso side, not behind the backyard.",
         "Neighbouring houses, footpaths, nature strips, driveways, reserve and playground are part of MAP01.",
         "The WAD contains environment-only scenery actors (Workmate, bins, trees, lamps, parked cars, shrubs and playground props) but strips story/combat actors.",
-        "The dedicated Workmate is a white single-cab tray ute placed in the 42 Arnold driveway; it is not a generic sedan."
+        "The dedicated Workmate is a white single-cab tray ute placed in the 42 Arnold driveway; it is not a generic sedan.",
+        "ORIENTATION LOCK: Arnold Street/front porch/front door are SOUTH; backyard/rear door/sunroom/shed are NORTH.",
+        "The front and rear elevations use separate texture IDs: H42FRNT/H42FWIN at the front, H42RDR/H42RWIN/H42REAR at the rear."
       ]
     }
     (OUT/"MANIFEST.json").write_text(json.dumps(manifest,indent=2)+"\n")
@@ -201,6 +203,9 @@ Priority of evidence:
 
 Key exterior layout:
 - 42 Arnold is on the north side of Arnold Street;
+- **SOUTH = FRONT**: Arnold Street, front lawn, front porch, dark front door and doorbell;
+- **NORTH = REAR**: enclosed sunroom/rear veranda, plain rear door, backyard and rear shed;
+- the front porch/front door/doorbell must never be mirrored onto the backyard elevation;
 - driveway/carport is on the east/right side toward No.40;
 - No.44 is the west/left neighbour between 42 and Collenso Street;
 - No.40 is the east/right neighbour;
@@ -215,7 +220,7 @@ not replace the map with a generic suburban or Doom layout.
 """
     (OUT/"SOURCE_FIDELITY.md").write_text(source_notes,encoding="utf-8")
 
-    zpath=ROOT.parent/"42-Arnold-MAP01-AI-HANDOFF-v2.zip"
+    zpath=ROOT.parent/"42-Arnold-MAP01-AI-HANDOFF-v3.zip"
     if zpath.exists(): zpath.unlink()
     with zipfile.ZipFile(zpath,"w",zipfile.ZIP_DEFLATED) as z:
         for p in OUT.rglob("*"):
