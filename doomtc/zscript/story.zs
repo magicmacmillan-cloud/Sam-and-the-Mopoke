@@ -64,12 +64,12 @@ class SamStoryHandler : EventHandler
       if(!beatB && y < 100)
       {
         beatB = true;
-        Console.Printf("He's gone out to Arnold Street. Keep him in sight.");
+        Console.Printf("He's through the front door. He's running west up Arnold Street.");
       }
-      if(!beatC && x < -1500 && y < -760)
+      if(!beatC && x < -1540 && y < -680)
       {
         beatC = true;
-        Console.Printf("The playground. He ran straight here.");
+        Console.Printf("There -- the playground beside the reserve. Sam ran straight off Arnold into it.");
       }
     }
     else if(n == 2)
