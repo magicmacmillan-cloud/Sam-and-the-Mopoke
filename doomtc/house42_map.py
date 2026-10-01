@@ -28,16 +28,16 @@ STYLE = {
     "LAUNDRY": (0,128,"H42WOOD","H42CEIL",168,"H42PANL"),
     "SUNROOM": (0,120,"H42CONC","H42CEIL",148,"H42WALL"),
     "PORCH":   (0,112,"H42CONC","H42CEIL",160,"H42SIDN"),
-    "DRIVE":   (0,192,"H42CONC","F_SKY1",168,"H42FENC"),
-    "YARD":    (0,192,"H42GRAS","F_SKY1",156,"H42FENC"),
+    "DRIVE":   (0,192,"H42DRV","F_SKY1",168,"H42FENC"),
+    "YARD":    (0,192,"H42LWN","F_SKY1",156,"H42FENC"),
     "PATIO":   (0,192,"H42PAVE","F_SKY1",160,"H42FENC"),
     "SHED":    (0,128,"H42CONC","H42CEIL",132,"H42SHED"),
-    "FOOT":    (0,192,"H42CONC","F_SKY1",168,"H42CURB"),
-    "VERGE":   (0,192,"H42GRAS","F_SKY1",160,"H42CURB"),
-    "ROAD":    (0,192,"H42ASPH","F_SKY1",152,"H42CURB"),
+    "FOOT":    (0,192,"H42PATH","F_SKY1",168,"H42CURB"),
+    "VERGE":   (0,192,"H42VERG","F_SKY1",160,"H42CURB"),
+    "ROAD":    (0,192,"H42ROAD","F_SKY1",152,"H42CURB"),
     "RESERVE": (0,224,"H42GRAS","F_SKY1",144,"H42FENC"),
-    "PLAY":    (0,224,"H42PAVE","F_SKY1",160,"H42PLAY"),
-    "LOT":     (0,192,"H42GRAS","F_SKY1",150,"H42FENC"),
+    "PLAY":    (0,224,"H42SAFE","F_SKY1",160,"H42PLAY"),
+    "LOT":     (0,192,"H42LWN","F_SKY1",150,"H42FENC"),
     "DOOR":    (0,0,"H42TILF","H42CEIL",160,"H42FRNT"),
     "BACKDOOR":(0,0,"H42CONC","H42CEIL",150,"H42RDR"),
     "CARPORT": (0,112,"H42DRV","H42CEIL",148,"H42SHED"),
@@ -269,6 +269,10 @@ def _boundary_texture(p1,p2,st):
         if _segment_inside(key,whole):
             return tex
     x1,y1=p1; x2,y2=p2
+    if x1==x2==-2240:
+        lo,hi=sorted((y1,y2))
+        if -960 <= lo and hi <= -832:
+            return "H42GATE"
     if y1==y2:
         y=y1; lo,hi=sorted((x1,x2))
         # front fence/rail
@@ -490,7 +494,8 @@ def build_house42_map():
         (-2050,-980,0,15725,7),
         (-1920,-900,0,15726,7),
         (-1820,-830,0,15727,7),
-    ]    bad=[t for t in things if covering(t[0],t[1]) is None]
+    ]
+    bad=[t for t in things if covering(t[0],t[1]) is None]
     if bad:
         raise ValueError(f"MAP01 house42 things outside authored geometry: {bad}")
 
