@@ -40,6 +40,7 @@ STYLE = {
     "LOT":     (0,192,"H42LWN","F_SKY1",150,"H42FENC"),
     "DOOR":    (0,0,"H42TILF","H42CEIL",160,"H42FRNT"),
     "BACKDOOR":(0,0,"H42CONC","H42CEIL",150,"H42RDR"),
+    "GATEDOOR":(0,0,"H42SAFE","F_SKY1",160,"H42GATE"),
     "CARPORT": (0,112,"H42DRV","H42CEIL",148,"H42SHED"),
     "GARDEN":  (0,192,"H42BED","F_SKY1",148,"H42FENC"),
     "DIG":     (-2,192,"H42DIRT","F_SKY1",136,"H42FENC"),
@@ -75,6 +76,9 @@ AREAS = [
     A(-1600,-300,-1480,200,"FOOT"),
     A(-1480,200,-1360,700,"FOOT"),
     A(-1360,700,-1260,1150,"FOOT"),
+
+    # Padlocked playground entrance. The door sector itself is the iron gate.
+    A(-2240,-960,-2208,-832,"GATEDOOR"),
 
     # Playground equipment as sector silhouettes, supplemented by sprites.
     A(-2130,-1020,-2020,-965,"PLAYEQ"),
@@ -387,10 +391,10 @@ def build_house42_map():
                 linedefs.append((vid(*p1),vid(*p2),4,11,0,
                                  side(sec0,upper=STYLE[st0][5],lower=STYLE[st0][5]),
                                  side(sec1,upper=STYLE[st1][5],lower=STYLE[st1][5])))
-            elif st0 in ("DOOR","BACKDOOR") or st1 in ("DOOR","BACKDOOR"):
-                door_style = st1 if st1 in ("DOOR","BACKDOOR") else st0
-                dtex = "H42FRNT" if door_style=="DOOR" else "H42RDR"
-                special = 27 if door_style=="DOOR" else 26
+            elif st0 in ("DOOR","BACKDOOR","GATEDOOR") or st1 in ("DOOR","BACKDOOR","GATEDOOR"):
+                door_style = st1 if st1 in ("DOOR","BACKDOOR","GATEDOOR") else st0
+                dtex = "H42FRNT" if door_style=="DOOR" else ("H42RDR" if door_style=="BACKDOOR" else "H42GATE")
+                special = 27 if door_style=="DOOR" else (26 if door_style=="BACKDOOR" else 28)
                 if st1 == door_style:
                     linedefs.append((vid(*p1),vid(*p2),4,special,0,
                                      side(sec0,upper=dtex,lower=dtex),
