@@ -190,6 +190,7 @@ class SamEscapeRunner : Actor
     Speed 10;
     +NOBLOCKMAP;
     +NOCLIP;
+    +NOGRAVITY;
     +NOINTERACTION;
     +FRIENDLY;
     Tag "Sam";
@@ -221,7 +222,7 @@ class SamEscapeRunner : Actor
       default:
         Vel.X=0;
         Vel.Y=0;
-        SetStateLabel("Gone");
+        Destroy();
         return;
     }
 
