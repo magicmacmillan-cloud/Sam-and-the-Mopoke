@@ -8,7 +8,7 @@ class SamWallNote : CustomInventory {
  States { Spawn: SMNT A -1; Stop; Pickup: TNT1 A 0 A_Log("SAM: Dad? Don't come this way."); Stop; }
 }
 class SamBackpackClue : CustomInventory {
- Default { Inventory.PickupMessage "Sam's backpack strap. Fresh mud."; +INVENTORY.ALWAYSPICKUP; }
+ Default { Radius 10; Height 20; Scale 0.45; Inventory.PickupMessage "Sam's backpack. Fresh mud."; +INVENTORY.ALWAYSPICKUP; }
  States { Spawn: SBAG A -1; Stop; Pickup: TNT1 A 0 A_Log("Sam was here. He was moving fast."); Stop; }
 }
 class FalseSamTrail : Actor { Default { Radius 5; Height 1; Scale 0.30; +NOBLOCKMAP +NOINTERACTION; } States { Spawn: FMSG A -1; Stop; } }
