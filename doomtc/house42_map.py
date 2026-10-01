@@ -288,7 +288,8 @@ def build_house42_map():
             else:
                 # Normal open two-sided transition. Height differences (neighbour
                 # massing) get upper/lower walls and remain physically impassable.
-                linedefs.append((vid(*p1),vid(*p2),4,0,0,
+                special=11 if key==EXIT else 0
+                linedefs.append((vid(*p1),vid(*p2),4,special,0,
                                  side(sec0,upper=w0,lower=w0),
                                  side(sec1,upper=w1,lower=w1)))
 
