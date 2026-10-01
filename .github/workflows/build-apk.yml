@@ -86,9 +86,14 @@ jobs:
               "MALLCEIL","LIBCEIL",
               "H42WALL","H42PANL","H42KTCH","H42BATH","H42SIDN","H42BRIK",
               "H42SHED","H42FENC","H42GATE","H42WIND","H42BLND","H42DOOR",
-              "H42WDR","H42CURB","H42PLAY",
+              "H42WDR","H42CURB","H42PLAY","H42FRNT","H42FACA","H42REAR","H42RWIN","H42RDR",
               "H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42ASPH",
-              "H42GRAS","H42PAVE","H42CEIL","H42ROOF","H42ATLAS"
+              "H42GRAS","H42PAVE","H42CEIL","H42ROOF","H42ATLAS",
+              "H42LWN","H42VERG","H42DRV","H42PATH","H42ROAD","H42BED","H42SAFE",
+              "BDKYA0","FDKYA0","PGKYA0","PHONA0","FDNTA0","PBOXA0","SGNTA0","LBOXA0",
+              "D0BTA0","D1BTA0","D2BTA0","D3BTA0","D4BTA0","D5BTA0","D6BTA0","D7BTA0","D8BTA0","D9BTA0",
+              "ESCOA0","XBOXA0","FRDGA0","PROJA0","PJCTA0","PJCTB0","PJCTC0","PJCTD0",
+              "DOGDA0","HILXA1","HILXA5","TREEA0","STLPA0","BINRA0","BINYA0"
           }
           required.update(f"MUSIC{i:02d}" for i in range(1,11))
           required.update({
@@ -127,8 +132,8 @@ jobs:
                   floors.add(ff.rstrip(b"\0").decode("ascii"))
                   ceilings.add(cf.rstrip(b"\0").decode("ascii"))
 
-          assert {"H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42ASPH","H42GRAS","H42PAVE",
-                  "DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
+          assert {"H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42LWN","H42VERG","H42DRV","H42PATH",
+                  "H42ROAD","H42SAFE","H42GRAS","H42PAVE","DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
           assert {"H42CEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
 
           zscript=data["ZSCRIPT"][-1].decode("utf-8")
@@ -139,11 +144,25 @@ jobs:
               "JarOfDadToenails","UnholyJandal","GoatFinger","CrowFinger","PossumFinger",
               "GoatFingerGate","CrowFingerGate","PossumFingerGate","SamRunner",
               "MopokeShambler","UndeadGoat","RotPossum","CursedCrow","StationHusk",
-              "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler"
+              "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler",
+              "HouseBackDoorKey","HouseFrontDoorKey","PlaygroundGateKey","LincolnPhone42","FrontDoorPuzzleNote","HousePuzzleBox",
+              "PuzzleDigit0","PuzzleDigit2","PuzzleDigit3","PuzzleDigit9","GarageEScooter42","LoungeXboxTV42","KitchenFridge42",
+              "MasterProjector42","SamGateNote42","NeighbourLetterbox42","DogDigEvidence","HouseHiluxWorkmate"
           ):
               assert f"class {cls}" in zscript, cls
           assert "SAML ABCDEF" in zscript
           assert "SAMF ABCDEF" in zscript
+
+          map_src=Path("game/doomtc/house42_map.py").read_text()
+          actor_src=Path("game/doomtc/zscript/actors.zs").read_text()
+          assert '"BACKDOOR"' in map_src and '"GATEDOOR"' in map_src
+          assert '15740' in map_src and '15741' in map_src and '15743' in map_src and '15744' in map_src and '15745' in map_src
+          assert map_src.count("15760") == 2, "MAP01 must contain exactly two e-scooter clues"
+          assert map_src.count("15761") == 3, "MAP01 must contain exactly three Xbox/TV clues"
+          assert "three eggs" in actor_src.lower()
+          assert "2 3 3 0" in actor_src
+          assert "neighbour's letterbox" in actor_src
+          assert "dog dug through here" in actor_src.lower()
 
           print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, sector counts={sector_counts}")
           PY
