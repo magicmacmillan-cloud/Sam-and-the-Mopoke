@@ -42,7 +42,7 @@ STYLE = {
     "BACKDOOR":(0,0,"H42CONC","H42CEIL",150,"H42RDR"),
     "GATEDOOR":(0,0,"H42SAFE","F_SKY1",118,"H42GATE"),
     "IDOOR":   (0,0,"H42TILF","H42CEIL",150,"H42DOOR"),
-    "AWNING":  (0,112,"H42PAVE","H42CEIL",126,"H42SIDN"),
+    "AWNING":  (0,112,"H42PAVE","H42ROOF",126,"H42SIDN"),
     "CARPORT": (0,112,"H42DRV","H42CEIL",138,"H42SHED"),
     "GARDEN":  (0,192,"H42BED","F_SKY1",72,"H42FENC"),
     "DIG":     (-2,192,"H42DIRT","F_SKY1",78,"H42FENC"),
@@ -289,9 +289,9 @@ def _boundary_texture(p1,p2,st):
         if _segment_inside(key,whole):
             return tex
     x1,y1=p1; x2,y2=p2
-    if x1==x2==-2240:
+    if x1==x2==-1652:
         lo,hi=sorted((y1,y2))
-        if -960 <= lo and hi <= -832:
+        if -930 <= lo and hi <= -830:
             return "H42GATE"
     if y1==y2:
         y=y1; lo,hi=sorted((x1,x2))
