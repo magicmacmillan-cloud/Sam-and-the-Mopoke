@@ -86,7 +86,13 @@ jobs:
               "TOMB","STATION","MALL","LIBRARY",
               "HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL",
               "STNFLR","MALLFLR","LIBFLR","HCEIL","TOMBCE","STNCEIL",
-              "MALLCEIL","LIBCEIL"
+              "MALLCEIL","LIBCEIL",
+              "DBELA0","SSDBELL",
+              "H42WALL","H42PANL","H42KTCH","H42BATH","H42SIDN","H42BRIK",
+              "H42SHED","H42FENC","H42GATE","H42WIND","H42BLND","H42DOOR",
+              "H42WDR","H42FRNT","H42SOFA","H42APPL","H42CURB","H42PLAY",
+              "H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42ASPH",
+              "H42GRAS","H42PAVE","H42CEIL","H42ROOF"
           }
           required.update(f"MUSIC{i:02d}" for i in range(1,11))
           required.update({
@@ -118,13 +124,16 @@ jobs:
               sector_count=len(sec_blob)//26
               sector_counts[mapname]=sector_count
               assert sector_count>=12, (mapname,sector_count)
+              if mapname=="MAP01":
+                  assert sector_count>=1000, ("MAP01 should be the detailed 42 Arnold reconstruction",sector_count)
               for off in range(0,len(sec_blob),26):
                   floor,ceil,ff,cf,light,special,tag=struct.unpack_from("<hh8s8shhh",sec_blob,off)
                   floors.add(ff.rstrip(b"\0").decode("ascii"))
                   ceilings.add(cf.rstrip(b"\0").decode("ascii"))
 
-          assert {"HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
-          assert {"HCEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
+          assert {"H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42ASPH","H42GRAS","H42PAVE",
+                  "DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
+          assert {"H42CEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
 
           zscript=data["ZSCRIPT"][-1].decode("utf-8")
           for cls in (
@@ -134,11 +143,22 @@ jobs:
               "JarOfDadToenails","UnholyJandal","GoatFinger","CrowFinger","PossumFinger",
               "GoatFingerGate","CrowFingerGate","PossumFingerGate","SamRunner",
               "MopokeShambler","UndeadGoat","RotPossum","CursedCrow","StationHusk",
-              "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler"
+              "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","SamEscapeRunner","HouseDoorbell","TheMopoke","SamStoryHandler"
           ):
               assert f"class {cls}" in zscript, cls
           assert "SAML ABCDEF" in zscript
           assert "SAMF ABCDEF" in zscript
+
+          # MAP01 story-flow regression checks: Dad starts in backyard, Sam runs
+          # from there, and the physical front-door bell exists.
+          map_i=next(i for i,(n,_) in enumerate(entries) if n=="MAP01")
+          things_blob=next(body for n,body in entries[map_i+1:map_i+12] if n=="THINGS")
+          things=[struct.unpack_from("<hhhhh",things_blob,o) for o in range(0,len(things_blob),10)]
+          backyard_start=[t for t in things if t[3]==1]
+          assert backyard_start and backyard_start[0][1] >= 1300, backyard_start
+          assert any(t[3]==15113 for t in things), "missing SamEscapeRunner"
+          assert any(t[3]==15710 for t in things), "missing HouseDoorbell"
+
 
           print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, sector counts={sector_counts}")
           PY
@@ -183,7 +203,7 @@ jobs:
           p=Path("doom/build.gradle.kts")
           s=p.read_text().replace(
               'applicationId = "com.msa.freedoom"',
-              'applicationId = "com.samandthemopoke.v6test"'
+              'applicationId = "com.samandthemopoke.house42v15"'
           )
           # Installer-safe native libraries: extract on device instead of mmap.
           # The Samsung Z Flip 6 is arm64; do not bundle unneeded 32-bit/x86 ELF.
@@ -191,7 +211,7 @@ jobs:
           s=s.replace('useLegacyPackaging = false','useLegacyPackaging = true')
           assert 'versionName = "0.50.0"' in s
           s=s.replace('versionName = "0.50.0"',
-                      'versionName = "0.50.1-install-test"\n        ndk { abiFilters += setOf("arm64-v8a") }')
+                      'versionName = "0.50.15-house42"\n        ndk { abiFilters += setOf("arm64-v8a") }')
           p.write_text(s)
 
           p=Path("doom/src/main/java/com/msa/freedoom/Utils.kt")
@@ -382,7 +402,7 @@ jobs:
                           action = Intent.ACTION_MAIN
                           putExtra("res_div", AppSettings.getIntOption(this@EntryActivity, "gzdoom_res_div", 1))
                           putExtra("game_path", base)
-                          putExtra("game", "com.samandthemopoke.v6test")
+                          putExtra("game", "com.samandthemopoke.house42v15")
                           putExtra("args", "-iwad sam-and-the-mopoke.wad +map MAP01")
                       })
                       finish()
@@ -419,7 +439,7 @@ jobs:
                   assert f.read(4) == b"IWAD"
           print("APK contains the standalone Sam and the Mopoke IWAD and no external game-data mod stack")
           PY
-          cp "$APK" Sam-and-the-Mopoke-IWAD-debug.apk
+          cp "$APK" Mopoke-Horror-House42-v15-Doom.apk
 
       - name: Verify Gradle-signed native installer variant
         run: |
@@ -441,7 +461,7 @@ jobs:
       - name: Upload Sam and the Mopoke APK
         uses: actions/upload-artifact@v4
         with:
-          name: Sam-and-the-Mopoke-NATIVE-GRADLE-INSTALL-TEST
-          path: Sam-and-the-Mopoke-IWAD-debug.apk
+          name: Mopoke-Horror-House42-v15-Doom-APK
+          path: Mopoke-Horror-House42-v15-Doom.apk
           if-no-files-found: error
           retention-days: 3
