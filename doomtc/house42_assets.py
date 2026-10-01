@@ -458,6 +458,117 @@ def _environment_sprites(root):
     _disc(p,w,h,33,56,5,5,(28,29,28))
     _png(root/"sprites"/"WBINA0.png",w,h,p,24,58)
 
+def _extra_street_details(root):
+    # White Toyota Hilux Workmate-style single-cab tray ute.
+    # Eight Doom rotations keep the ute oriented along the real driveway.
+    body=(218,218,211); shadow=(151,153,150); dark=(42,48,50); tray=(157,160,157)
+    tyre=(28,29,28); rim=(126,128,125)
+
+    def wheel(p,w,h,cx,cy):
+        _disc(p,w,h,cx,cy,8,8,tyre)
+        _disc(p,w,h,cx,cy,3,3,rim)
+
+    def hilux_view(rot):
+        if rot in (1,5):  # front / rear
+            w,h=78,62; p=_canvas(w,h)
+            wheel(p,w,h,16,50); wheel(p,w,h,62,50)
+            _rect(p,w,h,12,27,66,49,body if rot==1 else tray)
+            if rot==1:
+                _rect(p,w,h,20,16,58,31,body)
+                _rect(p,w,h,24,18,54,29,dark)
+                _rect(p,w,h,20,34,58,42,(71,74,72))
+                _rect(p,w,h,14,31,20,36,(231,220,174))
+                _rect(p,w,h,58,31,64,36,(231,220,174))
+            else:
+                _rect(p,w,h,18,23,60,34,tray)
+                _line(p,w,h,18,24,60,24,2,(102,104,102))
+                _rect(p,w,h,22,30,56,42,(139,141,138))
+                _rect(p,w,h,14,36,21,41,(153,40,36))
+                _rect(p,w,h,57,36,64,41,(153,40,36))
+            return w,h,p
+
+        if rot in (3,7):  # full side
+            w,h=126,58; p=_canvas(w,h)
+            wheel(p,w,h,31,47); wheel(p,w,h,96,47)
+            left_to_right = rot==3
+            if left_to_right:
+                _rect(p,w,h,10,28,72,45,tray)
+                _rect(p,w,h,72,21,111,45,body)
+                _rect(p,w,h,81,12,108,30,body)
+                _rect(p,w,h,84,15,105,28,dark)
+                _line(p,w,h,11,27,70,27,2,(118,121,118))
+                _rect(p,w,h,106,32,116,37,(231,220,174))
+            else:
+                _rect(p,w,h,54,28,116,45,tray)
+                _rect(p,w,h,15,21,54,45,body)
+                _rect(p,w,h,18,12,45,30,body)
+                _rect(p,w,h,21,15,42,28,dark)
+                _line(p,w,h,56,27,115,27,2,(118,121,118))
+                _rect(p,w,h,10,32,20,37,(231,220,174))
+            _line(p,w,h,12,45,114,45,2,shadow)
+            return w,h,p
+
+        # three-quarter views
+        w,h=104,60; p=_canvas(w,h)
+        mirror = rot in (6,8)
+        rearward = rot in (4,6)
+        if not mirror:
+            _rect(p,w,h,12,29,62,45,tray)
+            _rect(p,w,h,58,22,92,45,body)
+            _rect(p,w,h,65,13,89,30,body)
+            _rect(p,w,h,68,16,86,28,dark)
+            wheel(p,w,h,28,48); wheel(p,w,h,80,48)
+            _line(p,w,h,13,28,58,28,2,(113,116,113))
+            if rearward: _rect(p,w,h,13,34,20,40,(153,40,36))
+            else: _rect(p,w,h,89,32,98,38,(231,220,174))
+        else:
+            _rect(p,w,h,42,29,92,45,tray)
+            _rect(p,w,h,12,22,46,45,body)
+            _rect(p,w,h,15,13,39,30,body)
+            _rect(p,w,h,18,16,36,28,dark)
+            wheel(p,w,h,24,48); wheel(p,w,h,76,48)
+            _line(p,w,h,46,28,91,28,2,(113,116,113))
+            if rearward: _rect(p,w,h,84,34,91,40,(153,40,36))
+            else: _rect(p,w,h,6,32,15,38,(231,220,174))
+        return w,h,p
+
+    for rot in range(1,9):
+        w,h,p=hilux_view(rot)
+        _png(root/"sprites"/f"HILXA{rot}.png",w,h,p,w//2,h-4)
+
+    def bin_sprite(name,lid):
+        w,h=44,62; p=_canvas(w,h)
+        shell=(48,71,51)
+        _rect(p,w,h,10,16,34,52,shell)
+        _line(p,w,h,13,23,31,23,1,(35,54,39))
+        _line(p,w,h,13,31,31,31,1,(35,54,39))
+        _rect(p,w,h,7,10,37,18,lid)
+        _line(p,w,h,8,10,36,10,2,_shade(lid,18))
+        _disc(p,w,h,14,54,5,5,(27,28,27))
+        _disc(p,w,h,31,54,5,5,(27,28,27))
+        _png(root/"sprites"/f"{name}A0.png",w,h,p,22,57)
+    bin_sprite("BINR",(153,49,43))
+    bin_sprite("BINY",(196,166,45))
+
+    # Low garden shrub, used around 42 and the immediate neighbours.
+    w,h=64,48; p=_canvas(w,h)
+    for cx,cy,rx,ry,col in [
+        (19,27,15,15,(56,91,50)),(35,22,18,18,(48,81,44)),
+        (50,29,13,13,(64,96,52)),(30,34,17,12,(53,86,47))
+    ]:
+        _disc(p,w,h,cx,cy,rx,ry,col)
+    _rect(p,w,h,29,35,34,47,(75,54,38))
+    _png(root/"sprites"/"SHRBA0.png",w,h,p,32,46)
+
+    # Finer outdoor flats so road, footpath, driveway, lawn and garden do not
+    # all read as the same generic surface.
+    _flat(root,"H42LWN",(72,105,59),"grass")
+    _flat(root,"H42VERG",(77,102,62),"grass")
+    _flat(root,"H42DRV",(156,154,148),"concrete")
+    _flat(root,"H42PATH",(167,165,158),"concrete")
+    _flat(root,"H42ROAD",(61,63,62),"asphalt")
+    _flat(root,"H42BED",(91,69,47),"concrete")
+
 def generate_house42_assets(root: Path):
     root=Path(root)
     _plaster(root,"H42WALL",(211,205,192))
@@ -480,6 +591,7 @@ def generate_house42_assets(root: Path):
     _doorbell_sprite(root)
     _cola_sprite(root)
     _environment_sprites(root)
+    _extra_street_details(root)
     _wav(root,"doorbell.wav",780,.18,.03)
     _curb(root)
     _neighbor(root,"H42NBR1",False)
