@@ -1,0 +1,344 @@
+from pathlib import Path
+import math, random
+
+from world_assets import _png, _canvas, _rect, _line, _disc
+
+# Source-matched domestic material pass for MAP01.
+# This does not pretend to be a survey/photo-scan. Colours, pattern scale and
+# fixture vocabulary are tuned to the supplied 42 Arnold walkthrough/aerials:
+# warm cream plaster, brown carpet, polished boards, timber kitchen, pink bath,
+# cream weatherboards, dark tiled roof, brick chimney, concrete drive and shed.
+
+def _clamp(v):
+    return max(0, min(255, int(v)))
+
+def _shade(base, n):
+    return tuple(_clamp(v+n) for v in base)
+
+def _set(p,w,h,x,y,c,a=255):
+    if 0 <= x < w and 0 <= y < h:
+        i=(y*w+x)*4
+        p[i:i+4]=[*c,a]
+
+def _noise(base,x,y,amp=8,seed=0):
+    n=((x*37+y*53+seed*97) % (amp*2+1))-amp
+    return _shade(base,n)
+
+def _plaster(root,name,base=(210,204,190),grey=False):
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            c=_noise(base,x,y,5,11 if grey else 7)
+            # Subtle roller texture and age patches.
+            if ((x*7+y*11)%97)<2: c=_shade(c,-5)
+            if y > 112: c=_shade(c,-8)
+            _set(p,w,h,x,y,c)
+    # Skirting board baked into the bottom of one wall-height repeat.
+    _rect(p,w,h,0,114,w,128,(224,222,213))
+    _line(p,w,h,0,113,w-1,113,1,(166,161,150))
+    # Fine old-house hairline marks: restrained, not horror grime.
+    for x,y in [(17,33),(91,49),(55,82)]:
+        _line(p,w,h,x,y,x+5,y+8,1,(170,165,155),90)
+    _png(root/"textures"/f"{name}.png",w,h,p)
+
+def _panel(root):
+    w=h=128; p=_canvas(w,h)
+    base=(126,82,49)
+    for y in range(h):
+        for x in range(w):
+            grain=((x*5+y*19)%17)-8
+            c=_shade(base,grain)
+            if x%22 in (0,1): c=_shade(c,-28)
+            if x%22 in (20,21): c=_shade(c,12)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,0,112,w,128,(157,132,99))
+    _line(p,w,h,0,111,w-1,111,1,(75,51,34))
+    _png(root/"textures"/"H42PANL.png",w,h,p)
+
+def _kitchen(root):
+    # One 128-high wall repeat: cream upper wall/backsplash, brown marbled bench,
+    # honey timber base cabinets with dark handles.
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            if y < 42:
+                c=_noise((218,214,199),x,y,4,2)
+                if x%24 in (0,1) or y%24 in (0,1): c=(190,186,176)
+            elif y < 55:
+                c=_noise((102,72,55),x,y,8,8)
+                if ((x*3+y*7)%31)<3: c=_shade(c,20)
+            else:
+                c=_noise((142,92,52),x,y,8,12)
+                if x%32 in (0,1): c=_shade(c,-24)
+                if y in (91,92): c=_shade(c,-18)
+            _set(p,w,h,x,y,c)
+    for x in range(14,128,32):
+        _rect(p,w,h,x,76,x+4,82,(47,42,35))
+    _png(root/"textures"/"H42KTCH.png",w,h,p)
+
+def _bath(root):
+    w=h=128; p=_canvas(w,h)
+    base=(190,154,159)
+    for y in range(h):
+        for x in range(w):
+            c=_noise(base,x,y,4,5)
+            if x%24 in (0,1) or y%24 in (0,1): c=(146,137,134)
+            _set(p,w,h,x,y,c)
+    # Period cream accent band visible in the bathroom.
+    _rect(p,w,h,0,47,w,54,(221,210,190))
+    _line(p,w,h,0,46,w-1,46,1,(133,121,116))
+    _line(p,w,h,0,54,w-1,54,1,(133,121,116))
+    _png(root/"textures"/"H42BATH.png",w,h,p)
+
+def _siding(root):
+    w=h=128; p=_canvas(w,h)
+    cream=(214,211,194)
+    for y in range(h):
+        band=y%18
+        for x in range(w):
+            c=_noise(cream,x,y,4,9)
+            if band in (0,1): c=_shade(c,-28)
+            elif band in (2,3): c=_shade(c,8)
+            _set(p,w,h,x,y,c)
+    _png(root/"textures"/"H42SIDN.png",w,h,p)
+
+def _brick(root):
+    w=h=128; p=_canvas(w,h)
+    mortar=(166,153,137)
+    base=(142,73,48)
+    for y in range(h):
+        row=y//16
+        shift=16 if row%2 else 0
+        for x in range(w):
+            if y%16 in (0,1) or (x+shift)%32 in (0,1):
+                c=mortar
+            else:
+                c=_noise(base,x,y,12,row)
+            _set(p,w,h,x,y,c)
+    _png(root/"textures"/"H42BRIK.png",w,h,p)
+
+def _corrug(root):
+    w=h=128; p=_canvas(w,h)
+    base=(127,130,128)
+    for y in range(h):
+        for x in range(w):
+            phase=x%14
+            add=15 if phase<3 else (-17 if phase>10 else 0)
+            c=_shade(_noise(base,x,y,5,4),add)
+            _set(p,w,h,x,y,c)
+    _png(root/"textures"/"H42SHED.png",w,h,p)
+
+def _fence(root):
+    w=h=128; p=_canvas(w,h)
+    base=(70,61,50)
+    for y in range(h):
+        for x in range(w):
+            c=_noise(base,x,y,7,13)
+            if x%24 in (0,1,2): c=_shade(c,-25)
+            if y in (36,37,96,97): c=_shade(c,-22)
+            _set(p,w,h,x,y,c)
+    _png(root/"textures"/"H42FENC.png",w,h,p)
+
+def _gate(root):
+    w=h=128; p=_canvas(w,h)
+    # Transparent black metal railing/gate for GZDoom midtextures.
+    for x in range(8,128,20):
+        _rect(p,w,h,x,4,x+4,124,(37,38,36),235)
+        _disc(p,w,h,x+2,4,4,5,(37,38,36),235)
+    _rect(p,w,h,0,32,w,37,(37,38,36),235)
+    _rect(p,w,h,0,92,w,97,(37,38,36),235)
+    _png(root/"textures"/"H42GATE.png",w,h,p)
+
+def _window(root):
+    w=h=128; p=_canvas(w,h)
+    _rect(p,w,h,0,0,w,h,(218,216,203))
+    _rect(p,w,h,7,7,121,121,(24,29,31))
+    # Dark night reflection / curtains.
+    for y in range(10,118):
+        for x in range(10,118):
+            c=_noise((31,37,39),x,y,5,17)
+            if (x+y)%41==0: c=_shade(c,12)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,61,7,67,121,(205,203,192))
+    _rect(p,w,h,7,61,121,67,(205,203,192))
+    _png(root/"textures"/"H42WIND.png",w,h,p)
+
+def _blinds(root):
+    w=h=128; p=_canvas(w,h)
+    for x in range(0,w,13):
+        _rect(p,w,h,x,0,min(w,x+8),h,(218,215,204),230)
+        _line(p,w,h,min(w-1,x+9),0,min(w-1,x+9),h-1,1,(145,143,137),220)
+    _png(root/"textures"/"H42BLND.png",w,h,p)
+
+def _door(root,name,wood=True):
+    w=64; h=128; p=_canvas(w,h)
+    base=(126,79,47) if wood else (211,208,198)
+    for y in range(h):
+        for x in range(w):
+            c=_noise(base,x,y,6,21 if wood else 22)
+            _set(p,w,h,x,y,c)
+    edge=(69,47,33) if wood else (160,157,151)
+    for y0,y1 in [(8,55),(70,118)]:
+        _line(p,w,h,7,y0,57,y0,2,edge); _line(p,w,h,7,y1,57,y1,2,edge)
+        _line(p,w,h,7,y0,7,y1,2,edge); _line(p,w,h,57,y0,57,y1,2,edge)
+    _disc(p,w,h,52,63,3,3,(75,68,57))
+    _png(root/"textures"/f"{name}.png",w,h,p)
+
+def _curb(root):
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            c=_noise((154,151,143),x,y,7,25)
+            if y in (28,29,95,96): c=_shade(c,-20)
+            _set(p,w,h,x,y,c)
+    _png(root/"textures"/"H42CURB.png",w,h,p)
+
+def _neighbor(root,name,brick=False):
+    if brick:
+        _brick(root)
+        # copy brick appearance under a neighbour-specific name
+        src=(root/"textures"/"H42BRIK.png").read_bytes()
+        (root/"textures"/f"{name}.png").write_bytes(src)
+    else:
+        _siding(root)
+        src=(root/"textures"/"H42SIDN.png").read_bytes()
+        (root/"textures"/f"{name}.png").write_bytes(src)
+
+def _play(root):
+    w=h=128; p=_canvas(w,h)
+    base=(116,103,83)
+    for y in range(h):
+        for x in range(w):
+            c=_noise(base,x,y,7,31)
+            _set(p,w,h,x,y,c)
+    # Simple safety-fence / play-equipment silhouettes.
+    _rect(p,w,h,0,92,w,97,(62,61,58))
+    for x in range(10,128,24): _rect(p,w,h,x,58,x+3,104,(62,61,58))
+    _line(p,w,h,24,80,44,36,3,(118,53,40))
+    _line(p,w,h,44,36,63,80,3,(118,53,40))
+    _line(p,w,h,34,56,55,56,3,(118,53,40))
+    _png(root/"textures"/"H42PLAY.png",w,h,p)
+
+def _flat(root,name,base,kind):
+    w=h=64; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            c=_noise(base,x,y,7,41)
+            if kind=="carpet":
+                if ((x*5+y*7)%19)<4: c=_shade(c,-11)
+                if ((x*11+y*3)%29)<3: c=_shade(c,8)
+            elif kind=="wood":
+                if y%12 in (0,1): c=_shade(c,-24)
+                if x%32 in (0,1): c=_shade(c,-8)
+                if ((x*13+y*5)%43)<2: c=_shade(c,10)
+            elif kind=="vinyl":
+                # tan 70s/80s patterned lino
+                if x%16 in (0,1) or y%16 in (0,1): c=_shade(c,-9)
+                if (x//8+y//8)%2==0: c=_shade(c,4)
+            elif kind=="tile":
+                if x%16 in (0,1) or y%16 in (0,1): c=(139,136,128)
+            elif kind=="concrete":
+                if ((x*17+y*23)%67)<2: c=_shade(c,-22)
+                if x in (31,32) or y in (31,32): c=_shade(c,-12)
+            elif kind=="asphalt":
+                if ((x*11+y*17)%23)<4: c=_shade(c,12)
+            elif kind=="grass":
+                if ((x*3+y*5)%17)<5: c=_shade(c,-9)
+                if ((x*7+y*13)%41)<3: c=_shade(c,11)
+            elif kind=="pave":
+                if x%16 in (0,1) or y%12 in (0,1): c=_shade(c,-20)
+            elif kind=="roof":
+                if y%10 in (0,1): c=_shade(c,-20)
+                if x%24 in (0,1): c=_shade(c,-8)
+            _set(p,w,h,x,y,c)
+    _png(root/"flats"/f"{name}.png",w,h,p)
+
+def _prop_bin(root):
+    w=64;h=96;p=_canvas(w,h)
+    _rect(p,w,h,15,28,50,84,(62,78,59))
+    _rect(p,w,h,11,22,54,32,(78,89,62))
+    _disc(p,w,h,20,84,6,6,(28,29,27));_disc(p,w,h,45,84,6,6,(28,29,27))
+    _png(root/"sprites"/"H4BNA0.png",w,h,p,32,88)
+
+def _prop_bathroom(root):
+    # Tiny reference sprites for the builder; not placed by default.
+    for name,kind in [("H4TBA0","tub"),("H4WCA0","wc"),("H4BSA0","basin"),("H4WMA0","washer")]:
+        w=h=64;p=_canvas(w,h)
+        if kind=="tub":
+            _rect(p,w,h,7,30,57,50,(218,204,195));_rect(p,w,h,10,33,54,45,(181,151,157))
+        elif kind=="wc":
+            _disc(p,w,h,32,38,13,10,(223,218,205));_rect(p,w,h,22,13,42,34,(220,215,203))
+        elif kind=="basin":
+            _disc(p,w,h,32,31,18,9,(224,218,205));_rect(p,w,h,28,38,36,59,(188,181,169))
+        else:
+            _rect(p,w,h,11,9,53,58,(218,216,209));_disc(p,w,h,32,35,14,14,(89,97,99));_disc(p,w,h,32,35,9,9,(44,52,55))
+        _png(root/"sprites"/f"{name}.png",w,h,p,32,58)
+
+def _atlas(root):
+    names=[
+      "H42WALL","H42GREY","H42PANL","H42KTCH","H42BATH","H42SIDN",
+      "H42BRIK","H42SHED","H42FENC","H42GATE","H42WIND","H42BLND",
+      "H42DOOR","H42WDR","H42CURB","H42NBR1","H42NBR2","H42PLAY"
+    ]
+    w,h=768,384; p=_canvas(w,h)
+    # Dark neutral atlas background.
+    _rect(p,w,h,0,0,w,h,(28,28,28))
+    # We cannot decode the just-written PNGs without an image dependency, so render
+    # simple labelled material swatches directly from the same palette grammar.
+    swatches=[
+      ((210,204,190),"WALL"),((188,188,184),"GREY"),((126,82,49),"PANEL"),
+      ((142,92,52),"KITCH"),((190,154,159),"BATH"),((214,211,194),"SIDING"),
+      ((142,73,48),"BRICK"),((127,130,128),"SHED"),((70,61,50),"FENCE"),
+      ((37,38,36),"GATE"),((31,37,39),"WINDOW"),((218,215,204),"BLINDS"),
+      ((126,79,47),"DOOR"),((211,208,198),"W-DOOR"),((154,151,143),"CURB"),
+      ((214,211,194),"NBR-S"),((142,73,48),"NBR-B"),((116,103,83),"PLAY")
+    ]
+    for i,(col,lab) in enumerate(swatches):
+        cx=(i%6)*128; cy=(i//6)*128
+        _rect(p,w,h,cx+4,cy+4,cx+124,cy+108,col)
+        # label ticks: enough to visually separate in a no-font generator.
+        for j,ch in enumerate(lab[:10]):
+            v=20+(ord(ch)%50)*3
+            _rect(p,w,h,cx+7+j*10,cy+112,cx+13+j*10,cy+120,(v,v,v))
+    _png(root/"graphics"/"H42ATLAS.png",w,h,p)
+
+def generate_house42_assets(root: Path):
+    root=Path(root)
+    _plaster(root,"H42WALL",(211,205,192))
+    _plaster(root,"H42GREY",(188,188,184),grey=True)
+    _panel(root)
+    _kitchen(root)
+    _bath(root)
+    _siding(root)
+    _brick(root)
+    _corrug(root)
+    _fence(root)
+    _gate(root)
+    _window(root)
+    _blinds(root)
+    _door(root,"H42DOOR",True)
+    _door(root,"H42WDR",False)
+    _curb(root)
+    _neighbor(root,"H42NBR1",False)
+    _neighbor(root,"H42NBR2",True)
+    _play(root)
+
+    for spec in [
+      ("H42CARP",(95,76,63),"carpet"),
+      ("H42WOOD",(132,83,48),"wood"),
+      ("H42VNYL",(164,142,106),"vinyl"),
+      ("H42TILF",(184,174,153),"tile"),
+      ("H42CONC",(145,143,137),"concrete"),
+      ("H42ASPH",(67,69,68),"asphalt"),
+      ("H42GRAS",(62,88,53),"grass"),
+      ("H42PAVE",(135,109,86),"pave"),
+      ("H42CEIL",(217,213,202),"tile"),
+      ("H42DIRT",(95,78,59),"concrete"),
+      ("H42ROOF",(71,69,66),"roof"),
+    ]:
+        _flat(root,*spec)
+
+    _prop_bin(root)
+    _prop_bathroom(root)
+    _atlas(root)
+    print("Generated source-matched 42 Arnold MAP01 texture/detail pack")
