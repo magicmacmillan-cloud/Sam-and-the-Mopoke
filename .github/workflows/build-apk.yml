@@ -115,6 +115,8 @@ jobs:
               sector_count=len(sec_blob)//26
               sector_counts[mapname]=sector_count
               assert sector_count>=12, (mapname,sector_count)
+              if mapname=="MAP01":
+                  assert sector_count>=80, ("MAP01 should be the detailed 42 Arnold reconstruction",sector_count)
               for off in range(0,len(sec_blob),26):
                   floor,ceil,ff,cf,light,special,tag=struct.unpack_from("<hh8s8shhh",sec_blob,off)
                   floors.add(ff.rstrip(b"\0").decode("ascii"))
@@ -139,6 +141,50 @@ jobs:
 
           print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, sector counts={sector_counts}")
           PY
+
+      - name: Package 42 Arnold builder handoff
+        run: |
+          set -euo pipefail
+          HANDOFF=House42-Builder-Handoff
+          rm -rf "$HANDOFF"
+          mkdir -p "$HANDOFF/textures" "$HANDOFF/flats" "$HANDOFF/sprites" "$HANDOFF/graphics"
+          cp game/HOUSE42_HANDOFF.md "$HANDOFF/"
+          cp game/doomtc/house42_layout.json "$HANDOFF/"
+          cp game/doomtc/house42_map.py "$HANDOFF/"
+          cp game/doomtc/house42_assets.py "$HANDOFF/"
+          cp game/doomtc/build_map.py "$HANDOFF/"
+          cp game/doomtc/generate_assets.py "$HANDOFF/"
+          cp game/doomtc/sam-and-the-mopoke-map.wad "$HANDOFF/42-Arnold-MAP01-source.wad"
+          cp game/doomtc/build/sam-and-the-mopoke.wad "$HANDOFF/Sam-and-the-Mopoke-IWAD.wad"
+          cp game/doomtc/textures/H42*.png "$HANDOFF/textures/"
+          cp game/doomtc/flats/H42*.png "$HANDOFF/flats/"
+          cp game/doomtc/sprites/H4*.png "$HANDOFF/sprites/" || true
+          cp game/doomtc/graphics/H42ATLAS.png "$HANDOFF/graphics/"
+          printf '%s\n' \
+            '42 Arnold v3 handoff: source-driven house/street/playground MAP01.' \
+            'Load Sam-and-the-Mopoke-IWAD.wad in GZDoom or inspect the source map and JSON.' \
+            'Internal dimensions are reconstructed from video/aerial evidence, not a survey.' \
+            > "$HANDOFF/README.txt"
+          zip -qr House42-Builder-Handoff.zip "$HANDOFF"
+          cp game/doomtc/build/sam-and-the-mopoke.wad Sam-and-the-Mopoke-IWAD.wad
+          test -s House42-Builder-Handoff.zip
+          test -s Sam-and-the-Mopoke-IWAD.wad
+
+      - name: Upload standalone IWAD
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sam-and-the-Mopoke-IWAD
+          path: Sam-and-the-Mopoke-IWAD.wad
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload 42 Arnold builder handoff
+        uses: actions/upload-artifact@v4
+        with:
+          name: House42-Builder-Handoff
+          path: House42-Builder-Handoff.zip
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
