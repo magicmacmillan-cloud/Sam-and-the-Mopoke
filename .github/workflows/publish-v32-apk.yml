@@ -26,21 +26,23 @@ jobs:
           github-token: ${{ github.token }}
           path: downloaded-apk
 
-      - name: Publish direct APK branch
+      - name: Publish direct APK release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           APK="$(find downloaded-apk -type f -name '*.apk' | head -n1)"
           test -s "$APK"
-          mkdir -p /tmp/v32-publish
-          cp "$APK" /tmp/v32-publish/Sam-and-the-Mopoke-V32.apk
-          sha256sum /tmp/v32-publish/Sam-and-the-Mopoke-V32.apk > /tmp/v32-publish/SHA256SUMS.txt
+          cp "$APK" Sam-and-the-Mopoke-V32.apk
+          sha256sum Sam-and-the-Mopoke-V32.apk > SHA256SUMS.txt
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan v32-apk-download
-          git rm -rf .
-          cp /tmp/v32-publish/Sam-and-the-Mopoke-V32.apk .
-          cp /tmp/v32-publish/SHA256SUMS.txt .
-          git add Sam-and-the-Mopoke-V32.apk SHA256SUMS.txt
-          git commit -m "Publish verified Sam and the Mopoke V32 APK"
-          git push --force origin HEAD:v32-apk-download
+          TAG="v32-map01-test"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" Sam-and-the-Mopoke-V32.apk SHA256SUMS.txt --clobber
+          else
+            gh release create "$TAG" \
+              --target v32-map01-rebuild \
+              --title "Sam and the Mopoke V32 Test Build" \
+              --notes "Verified Android test build for the V32 MAP01 house/street/puzzle rebuild. Built and packaging-validated by GitHub Actions." \
+              Sam-and-the-Mopoke-V32.apk SHA256SUMS.txt
+          fi
