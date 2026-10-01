@@ -91,7 +91,7 @@ def make_svg(path,layout):
         svg.append(f'<rect x="{ax:.1f}" y="{ay:.1f}" width="{bx-ax:.1f}" height="{by-ay:.1f}" fill="{c}" stroke="#2b2b2b" stroke-width="0.45" data-style="{style}"/>')
 
     labels=[
-      ("42 ARNOLD",480,240),("44",-470,220),("40",1450,220),
+      ("42 ARNOLD",480,240),("FRONT / ARNOLD",470,300),("REAR / BACKYARD",400,1380),("44",-470,220),("40",1450,220),
       ("ARNOLD STREET",350,-445),("COLLENSO ST",-1100,850),
       ("PLAYGROUND",-1880,-900),("RESERVE",-1880,500),
       ("BACKYARD",380,1500),("SHED",730,2050),
@@ -164,7 +164,7 @@ def main():
     make_svg(OUT/"42-Arnold-overhead-plan.svg",layout)
 
     manifest={
-      "format":"42-arnold-map-handoff-v2",
+      "format":"42-arnold-map-handoff-v3",
       "map":"MAP01",
       "engine_dependency":"map geometry is classic Doom format; embedded scenery actors use DECORATE and PNG namespaces for ZDoom/GZDoom-family ports",
       "stats":{"sectors":stats[0],"linedefs":stats[1],"source_things":stats[2],"handoff_wad_things":kept_things},
@@ -183,7 +183,8 @@ def main():
         "The playground is up the street at the reserve/Collenso side, not behind the backyard.",
         "Neighbouring houses, footpaths, nature strips, driveways, reserve and playground are part of MAP01.",
         "The WAD contains environment-only scenery actors (Workmate, bins, trees, lamps, parked cars, shrubs and playground props) but strips story/combat actors.",
-        "The dedicated Workmate is a white single-cab tray ute placed in the 42 Arnold driveway; it is not a generic sedan."
+        "The dedicated Workmate is a white single-cab tray ute placed in the 42 Arnold driveway; it is not a generic sedan.",
+        "FRONT = Arnold Street/low-Y. REAR = backyard/high-Y. Front facade art must never appear on the rear edge."
       ]
     }
     (OUT/"MANIFEST.json").write_text(json.dumps(manifest,indent=2)+"\n")
@@ -215,7 +216,7 @@ not replace the map with a generic suburban or Doom layout.
 """
     (OUT/"SOURCE_FIDELITY.md").write_text(source_notes,encoding="utf-8")
 
-    zpath=ROOT.parent/"42-Arnold-MAP01-AI-HANDOFF-v2.zip"
+    zpath=ROOT.parent/"42-Arnold-MAP01-AI-HANDOFF-v3.zip"
     if zpath.exists(): zpath.unlink()
     with zipfile.ZipFile(zpath,"w",zipfile.ZIP_DEFLATED) as z:
         for p in OUT.rglob("*"):
