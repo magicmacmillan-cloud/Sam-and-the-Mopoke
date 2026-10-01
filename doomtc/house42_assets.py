@@ -358,6 +358,106 @@ def _doorbell_sprite(root):
     _rect(p,w,h,8,18,12,21,(74,72,68))
     _png(root/"sprites"/"DBELA0.png",w,h,p,10,24)
 
+def _environment_sprites(root):
+    # Suburban street/park props matched to the satellite/front-reference context.
+    # Kept deliberately chunky and Doom-readable rather than modern 3-D models.
+
+    # Street lamp / utility-style pole.
+    w,h=48,128; p=_canvas(w,h)
+    _rect(p,w,h,22,24,27,124,(72,73,70))
+    _rect(p,w,h,18,18,31,26,(91,92,87))
+    _rect(p,w,h,14,12,35,20,(176,171,149))
+    _disc(p,w,h,24,15,8,4,(226,215,169))
+    _rect(p,w,h,19,123,30,127,(58,59,57))
+    _png(root/"sprites"/"STLPA0.png",w,h,p,24,124)
+
+    # Broad suburban tree with dark trunk and irregular canopy.
+    w,h=96,128; p=_canvas(w,h)
+    _rect(p,w,h,43,58,52,124,(78,57,40))
+    _rect(p,w,h,35,76,45,84,(78,57,40))
+    _rect(p,w,h,51,70,62,78,(78,57,40))
+    for cx,cy,rx,ry,col in [
+        (48,44,31,30,(48,74,43)),(27,50,22,24,(54,84,47)),
+        (67,48,24,25,(42,69,40)),(46,25,22,20,(59,91,50)),
+        (72,29,16,18,(51,80,45)),(21,30,15,17,(62,93,52))
+    ]:
+        _disc(p,w,h,cx,cy,rx,ry,col)
+    _png(root/"sprites"/"TREEA0.png",w,h,p,48,124)
+
+    def car(name,body,glass):
+        w,h=112,56; p=_canvas(w,h)
+        # wheels
+        _disc(p,w,h,27,44,10,10,(27,28,28))
+        _disc(p,w,h,85,44,10,10,(27,28,28))
+        _disc(p,w,h,27,44,5,5,(112,112,108))
+        _disc(p,w,h,85,44,5,5,(112,112,108))
+        # body and roof
+        _rect(p,w,h,8,25,104,44,body)
+        _rect(p,w,h,28,13,82,30,body)
+        _line(p,w,h,8,25,19,18,2,_shade(body,-15))
+        _line(p,w,h,104,25,94,18,2,_shade(body,-15))
+        # windows
+        _rect(p,w,h,34,16,53,27,glass)
+        _rect(p,w,h,58,16,77,27,glass)
+        _rect(p,w,h,10,31,17,36,(225,218,181))
+        _rect(p,w,h,95,31,103,36,(170,45,40))
+        _line(p,w,h,9,44,103,44,2,_shade(body,-28))
+        _png(root/"sprites"/f"{name}A0.png",w,h,p,56,48)
+    car("CARW",(186,189,184),(58,67,72))
+    car("CARD",(66,73,76),(33,40,44))
+
+    # Park bench.
+    w,h=80,64; p=_canvas(w,h)
+    _rect(p,w,h,8,24,72,30,(104,71,44))
+    _rect(p,w,h,8,35,72,41,(104,71,44))
+    _rect(p,w,h,15,12,65,18,(112,75,45))
+    _rect(p,w,h,15,18,19,55,(61,61,58))
+    _rect(p,w,h,61,18,65,55,(61,61,58))
+    _png(root/"sprites"/"BNCHA0.png",w,h,p,40,56)
+
+    # Swing frame.
+    w,h=96,96; p=_canvas(w,h)
+    metal=(75,81,82)
+    _line(p,w,h,12,88,28,15,4,metal)
+    _line(p,w,h,84,88,68,15,4,metal)
+    _line(p,w,h,26,15,70,15,4,metal)
+    for x in (39,57):
+        _line(p,w,h,x,18,x,60,1,(46,47,46))
+        _line(p,w,h,x+8,18,x+8,60,1,(46,47,46))
+        _rect(p,w,h,x,60,x+8,64,(121,71,44))
+    _png(root/"sprites"/"SWNGA0.png",w,h,p,48,90)
+
+    # Slide.
+    w,h=96,80; p=_canvas(w,h)
+    _rect(p,w,h,24,18,48,25,(149,62,46))
+    _line(p,w,h,26,25,16,70,4,(72,78,79))
+    _line(p,w,h,46,25,78,67,6,(169,80,52))
+    _line(p,w,h,80,67,90,70,3,(169,80,52))
+    _line(p,w,h,22,18,22,68,3,(72,78,79))
+    _line(p,w,h,50,18,50,56,3,(72,78,79))
+    _png(root/"sprites"/"SLIDA0.png",w,h,p,48,72)
+
+    # Small climbing frame / platform.
+    w,h=96,80; p=_canvas(w,h)
+    metal=(74,82,83)
+    for x in (18,38,58,78):
+        _line(p,w,h,x,22,x,72,3,metal)
+    _line(p,w,h,18,22,78,22,3,metal)
+    _line(p,w,h,18,46,78,46,2,metal)
+    _line(p,w,h,18,70,78,70,3,metal)
+    _rect(p,w,h,30,28,66,36,(139,65,45))
+    _png(root/"sprites"/"CLMBA0.png",w,h,p,48,72)
+
+    # Green wheelie bin seen around the property/street.
+    w,h=48,64; p=_canvas(w,h)
+    _rect(p,w,h,11,16,37,54,(53,79,56))
+    _rect(p,w,h,8,12,40,19,(69,92,64))
+    _line(p,w,h,14,22,34,22,1,(39,60,43))
+    _line(p,w,h,14,30,34,30,1,(39,60,43))
+    _disc(p,w,h,15,56,5,5,(28,29,28))
+    _disc(p,w,h,33,56,5,5,(28,29,28))
+    _png(root/"sprites"/"WBINA0.png",w,h,p,24,58)
+
 def generate_house42_assets(root: Path):
     root=Path(root)
     _plaster(root,"H42WALL",(211,205,192))
@@ -379,6 +479,7 @@ def generate_house42_assets(root: Path):
     _appliance(root)
     _doorbell_sprite(root)
     _cola_sprite(root)
+    _environment_sprites(root)
     _wav(root,"doorbell.wav",780,.18,.03)
     _curb(root)
     _neighbor(root,"H42NBR1",False)
