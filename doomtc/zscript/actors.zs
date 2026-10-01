@@ -210,15 +210,23 @@ class SamEscapeRunner : Actor
     double ty;
     switch(waypoint)
     {
-      case 0: tx=760;   ty=1360;  break; // cut across backyard toward side drive
-      case 1: tx=820;   ty=900;   break; // down the east/right driveway
-      case 2: tx=820;   ty=220;   break; // front gate
-      case 3: tx=620;   ty=-360;  break; // Arnold Street
-      case 4: tx=-420;  ty=-430;  break; // west along Arnold
-      case 5: tx=-1080; ty=-430;  break; // Collenso intersection
-      case 6: tx=-1080; ty=-820;  break; // down Collenso edge
-      case 7: tx=-1500; ty=-900;  break; // reserve path
-      case 8: tx=-1840; ty=-960;  break; // playground entrance
+      case 0:  tx=350;   ty=1330;  break; // backyard -> rear/sunroom door
+      case 1:  tx=350;   ty=1240;  break; // inside enclosed rear veranda
+      case 2:  tx=455;   ty=1160;  break; // kitchen/rear opening
+      case 3:  tx=420;   ty=1060;  break; // kitchen/meals
+      case 4:  tx=410;   ty=960;   break; // rear hall opening
+      case 5:  tx=410;   ty=760;   break; // central hall
+      case 6:  tx=410;   ty=520;   break; // tiled front hall
+      case 7:  tx=410;   ty=390;   break; // front entry
+      case 8:  tx=410;   ty=345;   break; // through the real front door
+      case 9:  tx=410;   ty=120;   break; // front path
+      case 10: tx=410;   ty=-420;  break; // Arnold Street
+      case 11: tx=-420;  ty=-430;  break; // west/up Arnold
+      case 12: tx=-980;  ty=-430;  break; // Arnold/Collenso corner
+      case 13: tx=-1280; ty=-560;  break; // cross toward reserve
+      case 14: tx=-1540; ty=-690;  break; // playground-side path
+      case 15: tx=-1740; ty=-790;  break; // playground entrance
+      case 16: tx=-1940; ty=-880;  break; // deep into playground
       default:
         Vel.X=0;
         Vel.Y=0;
@@ -273,4 +281,59 @@ class HouseDoorbell : Actor
     A_Log("The doorbell rings inside the empty house.");
     return true;
   }
+}
+
+
+class HouseStreetLamp : Actor
+{
+  Default { Radius 7; Height 104; +SOLID; +NOBLOCKMAP; }
+  States { Spawn: STLP A -1; Stop; }
+}
+
+class HouseTree : Actor
+{
+  Default { Radius 18; Height 96; +SOLID; +NOBLOCKMAP; }
+  States { Spawn: TREE A -1; Stop; }
+}
+
+class HouseCarLight : Actor
+{
+  Default { Radius 34; Height 30; +SOLID; +NOBLOCKMAP; }
+  States { Spawn: CARW A -1; Stop; }
+}
+
+class HouseCarDark : Actor
+{
+  Default { Radius 34; Height 30; +SOLID; +NOBLOCKMAP; }
+  States { Spawn: CARD A -1; Stop; }
+}
+
+class ParkBench42 : Actor
+{
+  Default { Radius 20; Height 24; +SOLID; +NOBLOCKMAP; }
+  States { Spawn: BNCH A -1; Stop; }
+}
+
+class ParkSwing42 : Actor
+{
+  Default { Radius 24; Height 72; +SOLID; +NOBLOCKMAP; }
+  States { Spawn: SWNG A -1; Stop; }
+}
+
+class ParkSlide42 : Actor
+{
+  Default { Radius 22; Height 60; +SOLID; +NOBLOCKMAP; }
+  States { Spawn: SLID A -1; Stop; }
+}
+
+class ParkClimber42 : Actor
+{
+  Default { Radius 22; Height 54; +SOLID; +NOBLOCKMAP; }
+  States { Spawn: CLMB A -1; Stop; }
+}
+
+class HouseWheelieBin : Actor
+{
+  Default { Radius 8; Height 32; +SOLID; +NOBLOCKMAP; }
+  States { Spawn: WBIN A -1; Stop; }
 }
