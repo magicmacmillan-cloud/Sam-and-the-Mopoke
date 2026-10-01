@@ -19,6 +19,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: sam-and-the-mopoke-${{ github.ref }}
@@ -40,6 +41,30 @@ jobs:
           ref: master
           path: engine
 
+      - name: Download approved v6 Doom art baseline
+        uses: actions/download-artifact@v4
+        with:
+          name: Sam-and-the-Mopoke-NATIVE-GRADLE-INSTALL-TEST
+          path: approved-v6
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: magicmacmillan-cloud/Sam-and-the-Mopoke
+          run-id: 36725462627
+
+      - name: Extract approved Doom IWAD art source
+        run: |
+          set -euo pipefail
+          APK="$(find approved-v6 -type f -name '*.apk' | head -n1)"
+          test -n "$APK"
+          unzip -p "$APK" assets/sam-and-the-mopoke.wad > approved-v6.wad
+          test -s approved-v6.wad
+          python3 - <<'PY'
+          import struct
+          b=open("approved-v6.wad","rb").read()
+          assert b[:4]==b"IWAD"
+          n,off=struct.unpack_from("<II",b,4)
+          print("Approved Doom baseline:",len(b),"bytes",n,"lumps")
+          PY
+
       - name: Generate Sam and the Mopoke game data
         run: |
           set -euo pipefail
@@ -47,6 +72,10 @@ jobs:
           python3 game/doomtc/generate_assets.py
           python3 game/doomtc/build_map.py
           python3 game/doomtc/build_iwad.py engine/doom/src/main/assets/freedoom2.wad
+          # Critical art lock: restore the approved detailed 320x200 Doom sprites
+          # from the known-good Samsung build. This prevents the newer procedural
+          # 128x128 "green oval" hands from ever reaching the APK.
+          python3 game/doomtc/restore_approved_doom_art.py approved-v6.wad game/doomtc/build/sam-and-the-mopoke.wad
           # Repair placement in the exact WAD that will be installed. This avoids
           # double-offset first-person canvases and upward-shifted HUD art.
           python3 game/doomtc/repair_iwad_offsets.py game/doomtc/build/sam-and-the-mopoke.wad
@@ -103,6 +132,17 @@ jobs:
           })
           missing=sorted(required-set(names))
           assert not missing, missing
+          
+          # Block the exact bad-art regression seen on device.
+          def png_wh(body):
+              assert body.startswith(b"\x89PNG\r\n\x1a\n")
+              return struct.unpack(">II", body[16:24])
+          for prefix in ("ZHND","DMST","AMUL","VIRS","DOLL","BLOD","FEEB","DACR","SCOT","GAUN","FEAT","SAUS","TOES","JAND"):
+              for fr in "ABCDEFGH":
+                  name=f"{prefix}{fr}0"
+                  assert name in data, name
+                  assert png_wh(data[name][-1]) == (320,200), (name,png_wh(data[name][-1]))
+          print("Approved Doom art lock passed: 112 first-person frames are 320x200; green-oval regression impossible in this artifact")
           for mus in [f"MUSIC{i:02d}" for i in range(1,11)]:
               assert data[mus][-1][:4] == b"MThd", mus
 
