@@ -1,4 +1,4 @@
-# 42 Arnold Street — MAP01 builder handoff v3
+# 42 Arnold Street — MAP01 builder handoff v16
 
 This branch replaces the generic MAP01 house blockout with a source-driven reconstruction based on the supplied walkthrough video, aerial screenshots and front-facade image.
 
@@ -10,7 +10,8 @@ This branch replaces the generic MAP01 house blockout with a source-driven recon
 - Removed the earlier invented separate WC. The walkthrough bathroom contains the toilet.
 - Added explicit front/side/rear window segments, the east-side brick chimney, black front metal rail/gate treatment and cream weatherboard exterior.
 - Added a new source-matched material set for MAP01: brown carpet, polished timber, tan vinyl, cream wall tile, pink bathroom tile, timber kitchen cabinetry, cream weatherboards, brick chimney, concrete, asphalt, pavers, grass, fences, windows, blinds and domestic doors.
-- The route from the house to the playground is now physically represented in MAP01 before the exit to MAP02.
+- Dad starts in the backyard; Sam flees through the rear house, central hall and real front door, then west/up Arnold Street to the Collenso-side playground before the MAP02 exit.
+- The exterior block now includes neighbour massing, lawns, footpaths/nature strips, street lamps/poles, parked cars, reserve trees, bins and recognisable playground equipment.
 
 ## Source hierarchy
 
@@ -50,9 +51,9 @@ The internal dimensions are still an approximation, not a cadastral or architect
 - 42 Arnold lot = approximately `x 0..960, y 0..2944`.
 - Arnold Street is immediately south of the property.
 - No. 44 is west/left; No. 40 is east/right.
-- Collenso Street and the reserve/playground sit west/south-west.
+- Collenso Street and the reserve sit west of the house. The playground is reached from Arnold Street at that Collenso/reserve side; it is not behind the backyard.
 
-The detailed machine-readable dimensions, door openings and window segments are in `doomtc/house42_layout.json`.
+The detailed machine-readable dimensions, door openings, window segments, story route and satellite-derived street dressing are in `doomtc/house42_layout.json`.
 
 ## Material names
 
