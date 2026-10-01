@@ -336,6 +336,18 @@ def _appliance(root):
     _rect(p,w,h,101,68,107,108,(92,90,85))
     _png(root/"textures"/"H42APPL.png",w,h,p)
 
+
+def _cola_sprite(root):
+    # Small crushed red cola can, replacing the old paper-placeholder SMCL art.
+    w=24; h=34; p=_canvas(w,h)
+    _rect(p,w,h,7,5,18,29,(139,37,34))
+    _rect(p,w,h,8,3,17,7,(172,166,153))
+    _rect(p,w,h,8,27,17,31,(104,102,96))
+    _line(p,w,h,8,9,17,24,2,(198,193,179))
+    _line(p,w,h,17,9,8,24,1,(84,27,25))
+    _disc(p,w,h,12,4,3,1,(76,76,73))
+    _png(root/"sprites"/"SMCLA0.png",w,h,p,12,30)
+
 def _doorbell_sprite(root):
     # Deliberately small: a believable wall button, not a pickup-sized prop.
     w=20; h=28; p=_canvas(w,h)
@@ -366,6 +378,7 @@ def generate_house42_assets(root: Path):
     _sofa(root)
     _appliance(root)
     _doorbell_sprite(root)
+    _cola_sprite(root)
     _wav(root,"doorbell.wav",780,.18,.03)
     _curb(root)
     _neighbor(root,"H42NBR1",False)
