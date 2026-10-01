@@ -163,9 +163,9 @@ def main():
     make_svg(OUT/"42-Arnold-overhead-plan.svg",layout)
 
     manifest={
-      "format":"42-arnold-map-handoff-v1",
+      "format":"42-arnold-map-handoff-v2",
       "map":"MAP01",
-      "engine_dependency":"none; classic Doom-format PWAD geometry with PNG GZDoom texture namespaces",
+      "engine_dependency":"map geometry is classic Doom format; embedded scenery actors use DECORATE and PNG namespaces for ZDoom/GZDoom-family ports",
       "stats":{"sectors":stats[0],"linedefs":stats[1],"source_things":stats[2],"handoff_wad_things":kept_things},
       "files":{
         "wad":wad.name,
@@ -181,7 +181,8 @@ def main():
         "Sam route metadata runs backyard -> rear house -> hall -> front door -> Arnold Street -> Collenso-side playground.",
         "The playground is up the street at the reserve/Collenso side, not behind the backyard.",
         "Neighbouring houses, footpaths, nature strips, driveways, reserve and playground are part of MAP01.",
-        "The WAD contains environment-only scenery actors (Workmate, bins, trees, lamps, parked cars, shrubs and playground props) but strips story/combat actors."
+        "The WAD contains environment-only scenery actors (Workmate, bins, trees, lamps, parked cars, shrubs and playground props) but strips story/combat actors.",
+        "The dedicated Workmate is a white single-cab tray ute placed in the 42 Arnold driveway; it is not a generic sedan."
       ]
     }
     (OUT/"MANIFEST.json").write_text(json.dumps(manifest,indent=2)+"\n")
