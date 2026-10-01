@@ -548,16 +548,16 @@
     ],
     "front_door": {
       "bounds": [
-        384,
+        376,
         368,
-        416,
+        432,
         384
       ],
       "texture": "H42FRNT",
       "interaction": "reusable Doom door"
     },
     "doorbell": {
-      "x": 432,
+      "x": 444,
       "y": 356,
       "actor": "HouseDoorbell",
       "sound": "sam/doorbell"
@@ -565,11 +565,11 @@
     "level_exit": {
       "segment": [
         [
-          -1888,
+          -2000,
           -1024
         ],
         [
-          -1888,
+          -2000,
           -896
         ]
       ],
