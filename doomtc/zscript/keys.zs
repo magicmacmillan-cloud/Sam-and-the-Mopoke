@@ -1,3 +1,14 @@
+class HouseBackDoorKey : BlueCard
+{
+  Default
+  {
+    Inventory.PickupMessage "Spare back-door key";
+    Inventory.Icon "BDKYA0";
+    Tag "Spare back-door key";
+  }
+  States { Spawn: BDKY A -1; Stop; }
+}
+
 class GoatFinger : Key {
  Default { Inventory.PickupMessage "Goat Finger"; Inventory.Icon "GTFGA0"; Tag "Goat Finger"; }
  States { Spawn: GTFG A -1; Stop; }
