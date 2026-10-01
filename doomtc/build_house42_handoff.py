@@ -97,7 +97,8 @@ def make_svg(path,layout):
       ("BACKYARD",380,1500),("SHED",730,2050),
       ("LOUNGE",585,535),("BED 1",210,470),("BED 2",210,715),
       ("BATH",205,885),("BED 3",585,825),("KITCHEN",450,1065),
-      ("LAUNDRY",630,1065),("SUNROOM",390,1235)
+      ("LAUNDRY",630,1065),("SUNROOM",390,1235),
+      ("WORKMATE",832,170),("BINS",820,-220),("STREET TREE",270,-165)
     ]
     for t,x,y in labels:
         px,py=pt(x,y)
@@ -214,7 +215,7 @@ not replace the map with a generic suburban or Doom layout.
 """
     (OUT/"SOURCE_FIDELITY.md").write_text(source_notes,encoding="utf-8")
 
-    zpath=ROOT.parent/"42-Arnold-MAP01-AI-HANDOFF.zip"
+    zpath=ROOT.parent/"42-Arnold-MAP01-AI-HANDOFF-v2.zip"
     if zpath.exists(): zpath.unlink()
     with zipfile.ZipFile(zpath,"w",zipfile.ZIP_DEFLATED) as z:
         for p in OUT.rglob("*"):
