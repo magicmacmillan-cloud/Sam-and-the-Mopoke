@@ -155,7 +155,7 @@ class AbandonedCarCache : SearchableCache { Default { Tag "Abandoned Car"; } }
 class VendingCache : SearchableCache { Default { Tag "Vending Machine"; } }
 
 class SamMessage : Actor {
- Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; }
+ Default { Radius 5; Height 12; Scale 0.30; +USESPECIAL +NOBLOCKMAP; }
  States { Spawn: SMSG A -1; Stop; }
  override bool Used(Actor u){A_Log("SAM: DAD? DON'T COME THIS WAY.");return true;}
 }
