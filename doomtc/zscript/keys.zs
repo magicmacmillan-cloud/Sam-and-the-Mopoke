@@ -9,6 +9,35 @@ class HouseBackDoorKey : BlueCard
   States { Spawn: BDKY A -1; Stop; }
 }
 
+class HouseFrontDoorKey : YellowCard
+{
+  Default
+  {
+    Inventory.PickupMessage "Front-door key";
+    Inventory.Icon "FDKYA0";
+    Tag "Front-door key";
+  }
+  States { Spawn: FDKY A -1; Stop; }
+}
+
+class PlaygroundGateKey : RedCard
+{
+  Default
+  {
+    Inventory.PickupMessage "Playground padlock key";
+    Inventory.Icon "PGKYA0";
+    Tag "Playground gate key";
+  }
+  States { Spawn: PGKY A -1; Stop; }
+}
+
+class LincolnPhoneRead : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; } }
+class FrontDoorNoteRead : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; } }
+class GateNoteRead : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; } }
+class PuzzleStep1 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; } }
+class PuzzleStep2 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; } }
+class PuzzleStep3 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; } }
+
 class GoatFinger : Key {
  Default { Inventory.PickupMessage "Goat Finger"; Inventory.Icon "GTFGA0"; Tag "Goat Finger"; }
  States { Spawn: GTFG A -1; Stop; }
