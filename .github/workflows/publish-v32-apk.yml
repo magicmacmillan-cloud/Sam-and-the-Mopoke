@@ -1,0 +1,46 @@
+name: Publish V32 APK direct download
+
+on:
+  push:
+    branches: [v32-map01-rebuild]
+    paths:
+      - '.github/workflows/publish-v32-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download verified V32 APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Sam-and-the-Mopoke-IWAD-APK
+          run-id: 36923947058
+          github-token: ${{ github.token }}
+          path: downloaded-apk
+
+      - name: Publish direct APK branch
+        run: |
+          set -euo pipefail
+          APK="$(find downloaded-apk -type f -name '*.apk' | head -n1)"
+          test -s "$APK"
+          mkdir -p /tmp/v32-publish
+          cp "$APK" /tmp/v32-publish/Sam-and-the-Mopoke-V32.apk
+          sha256sum /tmp/v32-publish/Sam-and-the-Mopoke-V32.apk > /tmp/v32-publish/SHA256SUMS.txt
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan v32-apk-download
+          git rm -rf .
+          cp /tmp/v32-publish/Sam-and-the-Mopoke-V32.apk .
+          cp /tmp/v32-publish/SHA256SUMS.txt .
+          git add Sam-and-the-Mopoke-V32.apk SHA256SUMS.txt
+          git commit -m "Publish verified Sam and the Mopoke V32 APK"
+          git push --force origin HEAD:v32-apk-download
