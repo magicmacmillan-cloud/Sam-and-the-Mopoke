@@ -1,5 +1,5 @@
 {
-  "title": "42 Arnold Street MAP01 source-driven reconstruction — AI handoff",
+  "title": "42 Arnold Street MAP01 source-driven reconstruction — v3 correct front/rear",
   "purpose": "Engine-independent MAP01 handoff for another AI to build into a Doom II/GZDoom IWAD. No APK or Android engine is included.",
   "coordinate_system": {
     "north": "+Y/backyard",
@@ -31,7 +31,49 @@
     ],
     "facade": "cream horizontal weatherboard, dark tiled hip roof, brick chimney on right/east, covered porch, black metal front rails/gates",
     "driveway": "east/right side, concrete, covered carport continuing toward rear",
-    "rear": "enclosed veranda/sunroom, patio, long grass yard, large shed"
+    "rear": "enclosed veranda/sunroom, patio, long grass yard, large shed",
+    "orientation": {
+      "front": "south / low-Y / Arnold Street",
+      "rear": "north / high-Y / backyard",
+      "east": "right-side driveway/carport toward No.40",
+      "west": "toward No.44 and Collenso Street"
+    },
+    "front_elevation": {
+      "features": [
+        "covered porch",
+        "dark front/security door",
+        "doorbell",
+        "front windows",
+        "cream weatherboards",
+        "brick chimney/right side",
+        "black railings/gate"
+      ],
+      "allowed_textures": [
+        "H42FACA",
+        "H42FRNT",
+        "H42WIND",
+        "H42BRIK",
+        "H42GATE"
+      ],
+      "coordinate_rule": "front facade lives only around y=320..384"
+    },
+    "rear_elevation": {
+      "features": [
+        "enclosed rear veranda/sunroom",
+        "rear glazing",
+        "utility/rear door",
+        "patio",
+        "backyard lawn",
+        "shed beyond"
+      ],
+      "allowed_textures": [
+        "H42REAR",
+        "H42RWIN",
+        "H42RDR",
+        "H42PAVE"
+      ],
+      "coordinate_rule": "rear elevation lives only around y=1312; do not reuse front-door/front-porch treatment here"
+    }
   },
   "rooms": [
     {
@@ -406,7 +448,11 @@
       "H42DOOR": "varnished timber domestic door",
       "H42WDR": "white painted domestic door",
       "H42CURB": "aged suburban concrete kerb",
-      "H42PLAY": "playground/fence material cue"
+      "H42PLAY": "playground/fence material cue",
+      "H42FACA": "front/Arnold Street cream weatherboard facade with brick base",
+      "H42REAR": "rear veranda/sunroom exterior with older cream boards and darker trim",
+      "H42RWIN": "rear veranda/sunroom glazing",
+      "H42RDR": "rear utility/veranda door; intentionally different from the front entry door"
     },
     "flats": {
       "H42CARP": "brown/tan mottled carpet",
@@ -498,6 +544,8 @@
     "exact_internal_dimensions": "medium/approximate; not a survey"
   },
   "builder_rules": [
+    "Do not place H42FRNT/front porch/front facade art on the backyard/rear edge. Use H42REAR/H42RWIN/H42RDR there.",
+    "FRONT IS ARNOLD STREET / LOW-Y; REAR IS BACKYARD / HIGH-Y. Never mirror these ends.",
     "Dad starts in the backyard. Do not move MAP01 player start to the front of the property.",
     "Sam must visibly flee from the backyard through the rear house, hall and front door, then west/up Arnold Street into the Collenso-side playground.",
     "MAP01 must not finish at the house or property boundary; the exit is inside the playground.",
@@ -622,6 +670,17 @@
       ],
       "location": "inside the playground reached from Arnold Street at the Collenso/reserve side",
       "next": "MAP02"
+    },
+    "rear_entry": {
+      "bounds": [
+        320,
+        1296,
+        384,
+        1312
+      ],
+      "texture": "H42RDR",
+      "location": "rear veranda/sunroom threshold facing the backyard",
+      "note": "This is the backyard-side entry. It is not the front door."
     }
   },
   "environment": {
