@@ -26,18 +26,18 @@ STYLE = {
     "LAUNDRY": (0,128,"H42WOOD","H42CEIL",168,"H42PANL"),
     "SUNROOM": (0,120,"H42CONC","H42CEIL",148,"H42WALL"),
     "PORCH":   (0,112,"H42CONC","H42CEIL",160,"H42SIDN"),
-    "DRIVE":   (0,192,"H42CONC","F_SKY1",168,"H42FENC"),
-    "CARPORT": (0,112,"H42CONC","H42SHED",148,"H42SHED"),
-    "YARD":    (0,192,"H42GRAS","F_SKY1",156,"H42FENC"),
+    "DRIVE":   (0,192,"H42DRV","F_SKY1",168,"H42FENC"),
+    "CARPORT": (0,112,"H42DRV","H42SHED",148,"H42SHED"),
+    "YARD":    (0,192,"H42LWN","F_SKY1",156,"H42FENC"),
     "PATIO":   (0,192,"H42PAVE","F_SKY1",160,"H42FENC"),
     "SHED":    (0,128,"H42CONC","H42CEIL",132,"H42SHED"),
-    "FOOT":    (0,192,"H42CONC","F_SKY1",168,"H42CURB"),
-    "VERGE":   (0,192,"H42GRAS","F_SKY1",160,"H42CURB"),
-    "ROAD":    (0,192,"H42ASPH","F_SKY1",152,"H42CURB"),
+    "FOOT":    (0,192,"H42PATH","F_SKY1",168,"H42CURB"),
+    "VERGE":   (0,192,"H42VERG","F_SKY1",160,"H42CURB"),
+    "ROAD":    (0,192,"H42ROAD","F_SKY1",152,"H42CURB"),
     "RESERVE": (0,224,"H42GRAS","F_SKY1",144,"H42FENC"),
     "PLAY":    (0,224,"H42SAFE","F_SKY1",160,"H42PLAY"),
-    "LOT":     (0,192,"H42GRAS","F_SKY1",150,"H42FENC"),
-    "GARDEN":  (0,192,"H42DIRT","F_SKY1",150,"H42FENC"),
+    "LOT":     (0,192,"H42LWN","F_SKY1",150,"H42FENC"),
+    "GARDEN":  (0,192,"H42BED","F_SKY1",150,"H42FENC"),
     "DOOR":    (0,0,"H42TILF","H42CEIL",160,"H42FRNT"),
     "FURNWOOD":(40,128,"H42WOOD","H42CEIL",136,"H42PANL"),
     "FURNFAB": (36,128,"H42CARP","H42CEIL",132,"H42SOFA"),
@@ -131,6 +131,9 @@ AREAS = [
     # Planted beds visible around the front facade and backyard edges.
     A(32,96,320,160,"GARDEN"),
     A(448,256,704,320,"GARDEN"),
+    # front garden pockets around porch/drive, matching the planted frontage
+    A(64,176,304,304,"GARDEN"),
+    A(472,224,672,304,"GARDEN"),
     A(32,1360,96,2200,"GARDEN"),
     A(896,1750,944,2500,"GARDEN"),
     # Narrow rear path/paving beside the house/shed.
@@ -456,11 +459,25 @@ def build_house42_map():
         (-650,180,90,15721,7),       # No.44 front lawn tree
         (1460,180,90,15721,7),       # No.40 front lawn tree
         (180,-760,90,15721,7),       # opposite verge tree
+        (1480,-170,90,15721,7),       # extra Arnold verge tree toward No.40
+        (-430,-165,90,15721,7),       # tree near No.44 frontage
+        (-880,760,90,15720,7),        # Collenso-side lamp/pole north of Arnold
         (1050,-430,90,15722,7),      # light parked car on Arnold
         (-520,-430,90,15723,7),      # darker parked car near Collenso
-        (830,90,180,15722,7),        # car in/near No.42 driveway
+        (832,170,90,15729,7),        # white Hilux Workmate single-cab tray in No.42 driveway
         (-280,110,180,15723,7),      # No.44 driveway car
         (1680,120,180,15722,7),      # No.40 driveway car
+
+        # 42 Arnold frontage details: kerbside bins, street tree and planted shrubs.
+        (780,-220,0,15730,7),         # red-lid general-waste bin near kerb
+        (820,-220,0,15731,7),         # yellow-lid recycling bin near kerb
+        (860,-220,0,15728,7),         # green/garden bin near kerb
+        (270,-165,0,15721,7),         # mature street/front tree offset from Sam route
+        (180,210,0,15732,7),          # front garden shrub
+        (560,275,0,15732,7),          # porch garden shrub
+        (100,1450,0,15732,7),         # backyard-side shrub
+        (-560,205,0,15732,7),         # No.44 front garden shrub
+        (1410,210,0,15732,7),         # No.40 front garden shrub
         (-1710,-940,0,15724,7),      # playground bench
         (-2050,-980,0,15725,7),      # swing visual
         (-1920,-900,0,15726,7),      # slide/climber visual
