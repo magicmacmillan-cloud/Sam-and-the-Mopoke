@@ -127,3 +127,28 @@ The CI handoff artifact contains the generated IWAD, map WAD, layout JSON, hando
 - The reserve is west of Collenso Street and includes the winding pedestrian path visible in the satellite reference.
 - The playground sits at the Arnold/Collenso reserve side. It is **not** behind the backyard.
 - Keep visible suburban dressing: lawns, garden beds, driveways, rear sheds/outbuildings, street lamps/poles, parked cars, bins, reserve trees, bench, swings and slide/climber.
+
+
+## V2 exterior detail upgrade
+
+This handoff now carries the suburban dressing in the actual MAP01 PWAD rather
+than leaving it only as prose for the next builder.
+
+- Dedicated **white Toyota Hilux Workmate-style single-cab tray ute** in the
+  east/right driveway of No.42, using an eight-rotation Doom sprite.
+- Three wheelie bins positioned on the Arnold Street nature strip at the kerb:
+  red-lid, yellow-lid and green/garden treatment.
+- Mature street/reserve trees placed around No.42, No.44, No.40, the opposite
+  verge and the reserve/playground.
+- Additional low shrubs/garden planting around the front garden and immediate
+  neighbours so the yards do not read as empty flat rectangles.
+- Street lamps/poles retained along Arnold and Collenso.
+- Parked cars retained on Arnold Street and neighbouring driveways; No.42 uses
+  the dedicated Workmate instead of a generic car.
+- Playground bench, swings, slide and climber remain present as both sector
+  geometry and scenery objects.
+- Outdoor materials are split into distinct mown lawn, nature strip, footpath,
+  driveway, residential asphalt and garden-bed surfaces.
+
+The map-only PWAD contains environment scenery actors and their PNG sprites, but
+continues to omit Sam, enemies, weapons, HUD, Android code and all APK/engine files.
