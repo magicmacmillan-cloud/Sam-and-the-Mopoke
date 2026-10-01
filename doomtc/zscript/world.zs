@@ -161,13 +161,13 @@ class SamMessage : Actor {
 }
 
 class FalseMessage : Actor {
- Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; }
+ Default { Radius 5; Height 12; Scale 0.30; +USESPECIAL +NOBLOCKMAP; }
  States { Spawn: FMSG A -1; Stop; }
  override bool Used(Actor u){A_Log("IT KNOWS YOU ARE FOLLOWING.");return true;}
 }
 
 class LincolnMessage : Actor {
- Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; }
+ Default { Radius 5; Height 12; Scale 0.30; +USESPECIAL +NOBLOCKMAP; }
  States { Spawn: LNTE A -1; Stop; }
  override bool Used(Actor u){
   if(!u||!u.player)return false;
