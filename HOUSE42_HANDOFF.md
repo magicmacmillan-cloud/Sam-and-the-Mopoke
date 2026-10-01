@@ -1,6 +1,6 @@
-# 42 Arnold Street — MAP01 builder handoff v16
+# 42 Arnold Street — MAP01 AI builder handoff
 
-This branch replaces the generic MAP01 house blockout with a source-driven reconstruction based on the supplied walkthrough video, aerial screenshots and front-facade image.
+This is an engine-independent MAP01 handoff based on the supplied walkthrough video, satellite/top-down screenshots and front-facade image. It contains map geometry, layout data and source-matched environment assets only — no APK or Android engine.
 
 ## What changed
 
@@ -107,12 +107,23 @@ Keep the supplied geometry and materials as the baseline, then add Doom-sector/m
 
 Do not enlarge rooms into oversized Doom corridors. The house should read as a real small suburban home.
 
-## Build files
+## Handoff files
 
 - `doomtc/house42_map.py` — detailed MAP01 classic-Doom map compiler
 - `doomtc/house42_assets.py` — source-matched texture/flat/reference-sprite generator
 - `doomtc/house42_layout.json` — machine-readable layout/evidence
-- `doomtc/build_map.py` — invokes the detailed MAP01 compiler
-- `doomtc/generate_assets.py` — installs the 42 Arnold material pass after generic polish
+- `doomtc/build_house42_handoff.py` — builds the standalone MAP01 handoff PWAD/ZIP
+- `doomtc/house42_assets.py` — generates only the H42 house/street/park material and prop set
 
 The CI handoff artifact contains the generated IWAD, map WAD, layout JSON, handoff notes and the generated H42 textures/flats so another AI can inspect or continue without reconstructing the asset names.
+
+
+## Non-negotiable exterior relationships
+
+- No.44 sits between No.42 and Collenso Street.
+- No.40 is immediately east/right of No.42.
+- Nos.39, 37 and 35 are represented opposite Arnold Street.
+- Arnold Street has separate asphalt, footpaths and grass nature strips.
+- The reserve is west of Collenso Street and includes the winding pedestrian path visible in the satellite reference.
+- The playground sits at the Arnold/Collenso reserve side. It is **not** behind the backyard.
+- Keep visible suburban dressing: lawns, garden beds, driveways, rear sheds/outbuildings, street lamps/poles, parked cars, bins, reserve trees, bench, swings and slide/climber.
