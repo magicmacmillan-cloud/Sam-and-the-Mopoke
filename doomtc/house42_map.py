@@ -478,8 +478,8 @@ def build_house42_map():
         (540,1500,270,1,7),          # Dad starts in backyard facing the real rear/sunroom
         (650,1260,270,15113,7),      # Sam is seen at rear door and escapes through house
         (444,356,270,15710,7),       # small front doorbell
-        (720,2080,180,15740,7),      # spare back-door key hidden in garage
-        (710,2060,180,15301,7),      # garage searchable cache beside key area
+        (842,2145,180,15740,7),      # spare back-door key tucked beside garage workbench/shelving
+        (710,2060,180,15301,7),      # garage searchable cache nudges the player to search
 
         # house puzzle chain
         (220,1060,180,15741,7),      # Lincoln's phone in his bedroom
@@ -493,7 +493,7 @@ def build_house42_map():
         (660,900,180,15104,7),       # small Sam room note/detail
         (420,120,270,15101,7),       # footprints/front path
         (-980,-430,180,15106,7),     # false trail near Arnold/Collenso
-        (-1638,-880,180,15744,7),    # Sam's note taped to playground entrance gate
+        (-1595,-880,180,15744,7),    # Sam's note on approach side of locked playground gate
         (-610,230,180,15745,7),       # neighbour letterbox containing gate key
         (-1450,-650,180,15410,7),    # Mopoke glimpse at reserve edge
 
