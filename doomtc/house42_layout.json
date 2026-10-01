@@ -424,7 +424,13 @@
       "H40ROOF": "No.40 darker grey/brown tiled roof",
       "H39ROOF": "No.39 red-brown tiled roof",
       "H37ROOF": "No.37 red-brown tiled roof",
-      "H35ROOF": "No.35 brown-red tiled roof"
+      "H35ROOF": "No.35 brown-red tiled roof",
+      "H42LWN": "mown residential lawn, slightly cleaner/denser than the reserve grass",
+      "H42VERG": "rougher grass nature strip/verge",
+      "H42DRV": "aged concrete driveway with expansion-joint texture",
+      "H42PATH": "lighter concrete footpath with slab joints",
+      "H42ROAD": "patched residential asphalt distinct from driveway concrete",
+      "H42BED": "dark garden-bed soil/mulch"
     }
   },
   "walkthrough": [
@@ -501,7 +507,10 @@
     "Do not replace the house with generic Doom tech/hell textures.",
     "Use source-matched H42 textures for MAP01.",
     "Keep the right-side driveway/carport, long backyard, large rear shed, no.44/no.40 massing, Arnold Street, Collenso Street, reserve and playground.",
-    "Refine only when the supplied walkthrough/aerial evidence supports a correction."
+    "Refine only when the supplied walkthrough/aerial evidence supports a correction.",
+    "Keep the Workmate in the 42 Arnold driveway and do not replace it with a generic sedan.",
+    "Keep the bins at the Arnold Street kerb/nature strip, not in the backyard.",
+    "Do not remove the suburban trees, shrubs, street lamps/poles, neighbour cars or playground props when importing MAP01."
   ],
   "story_flow": {
     "player_start": {
@@ -649,7 +658,87 @@
       "39, 37 and 35 are represented opposite Arnold Street.",
       "Playground is in the reserve at the Arnold/Collenso side and is not connected to the backyard.",
       "Footpaths and grass nature strips are separately represented from the asphalt carriageways.",
-      "Neighbour roofs are given separate material IDs so the other AI can keep the satellite colour differences."
+      "Neighbour roofs are given separate material IDs so the other AI can keep the satellite colour differences.",
+      "The 42 Arnold driveway now contains a dedicated white single-cab tray Workmate-style ute, aligned north-south with the driveway.",
+      "Three wheelie bins are placed on the Arnold Street nature strip close to the kerb rather than inside the yard.",
+      "Outdoor surfaces are split into distinct lawn, verge, footpath, driveway, road and garden-bed materials so the block reads more like the satellite/reference images."
+    ],
+    "props": [
+      {
+        "name": "Toyota Hilux Workmate",
+        "type": "white single-cab tray ute",
+        "editor_number": 15729,
+        "position": [
+          832,
+          170
+        ],
+        "angle": 90,
+        "location": "42 Arnold east/right-side driveway behind the front boundary",
+        "note": "Dedicated 8-rotation Doom sprite; replaces the generic car previously used at this property."
+      },
+      {
+        "name": "42 Arnold kerb bins",
+        "location": "nature strip at Arnold Street kerb in front/right of 42",
+        "positions": [
+          {
+            "editor_number": 15730,
+            "position": [
+              780,
+              -220
+            ],
+            "appearance": "green wheelie-bin body with red lid"
+          },
+          {
+            "editor_number": 15731,
+            "position": [
+              820,
+              -220
+            ],
+            "appearance": "green wheelie-bin body with yellow lid"
+          },
+          {
+            "editor_number": 15728,
+            "position": [
+              860,
+              -220
+            ],
+            "appearance": "green wheelie-bin / garden-bin treatment"
+          }
+        ]
+      },
+      {
+        "name": "street and reserve trees",
+        "editor_number": 15721,
+        "note": "Mature trees are placed on the Arnold frontage, opposite verge, No.44/No.40 frontages and through the Collenso reserve/playground area; positions are satellite-derived approximations."
+      },
+      {
+        "name": "street lamps / poles",
+        "editor_number": 15720,
+        "note": "Placed along Arnold and Collenso to give the block the visible suburban street rhythm while keeping the chase lane clear."
+      },
+      {
+        "name": "front and side shrubs",
+        "editor_number": 15732,
+        "note": "Low planting at 42, No.44 and No.40 so lawns do not read as empty rectangles."
+      },
+      {
+        "name": "parked cars",
+        "editor_numbers": [
+          15722,
+          15723
+        ],
+        "note": "Cars remain on Arnold and neighbouring driveways; the vehicle at 42 is specifically the Workmate actor rather than a generic car."
+      },
+      {
+        "name": "playground furniture/equipment",
+        "editor_numbers": [
+          15724,
+          15725,
+          15726,
+          15727
+        ],
+        "note": "Bench, swings, slide and climber supplement the existing playground sector geometry."
+      }
     ]
   }
 }
