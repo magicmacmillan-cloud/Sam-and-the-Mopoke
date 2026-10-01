@@ -1,5 +1,5 @@
 {
-  "title": "42 Arnold Street MAP01 source-driven reconstruction — AI handoff",
+  "title": "42 Arnold Street MAP01 source-driven reconstruction — v3 corrected front/rear elevations",
   "purpose": "Engine-independent MAP01 handoff for another AI to build into a Doom II/GZDoom IWAD. No APK or Android engine is included.",
   "coordinate_system": {
     "north": "+Y/backyard",
@@ -31,7 +31,43 @@
     ],
     "facade": "cream horizontal weatherboard, dark tiled hip roof, brick chimney on right/east, covered porch, black metal front rails/gates",
     "driveway": "east/right side, concrete, covered carport continuing toward rear",
-    "rear": "enclosed veranda/sunroom, patio, long grass yard, large shed"
+    "rear": "enclosed veranda/sunroom, patio, long grass yard, large shed",
+    "orientation": {
+      "front": "south toward Arnold Street",
+      "rear": "north toward backyard and rear shed",
+      "east": "right-side driveway/carport toward No.40",
+      "west": "left side toward No.44 and Collenso Street"
+    },
+    "front_elevation": {
+      "side": "south",
+      "y_range": [
+        256,
+        400
+      ],
+      "elements": [
+        "front lawn/garden",
+        "covered porch",
+        "dark front door",
+        "doorbell",
+        "front windows",
+        "black rail/gate",
+        "brick chimney on east/right"
+      ],
+      "rule": "These front-elevation elements must never appear on the backyard/north side."
+    },
+    "rear_elevation": {
+      "side": "north",
+      "y": 1312,
+      "elements": [
+        "enclosed rear veranda/sunroom",
+        "rear glazing",
+        "plain rear door",
+        "small rear landing/patio",
+        "backyard lawn",
+        "rear shed beyond"
+      ],
+      "rule": "No front porch, dark front door, front rail/gate or doorbell on this elevation."
+    }
   },
   "rooms": [
     {
@@ -406,7 +442,11 @@
       "H42DOOR": "varnished timber domestic door",
       "H42WDR": "white painted domestic door",
       "H42CURB": "aged suburban concrete kerb",
-      "H42PLAY": "playground/fence material cue"
+      "H42PLAY": "playground/fence material cue",
+      "H42FWIN": "Arnold Street/front facade window",
+      "H42RWIN": "backyard/rear sunroom window with blind treatment",
+      "H42REAR": "rear cream weatherboard siding, slightly more weathered",
+      "H42RDR": "plain backyard/rear domestic door, distinct from front door"
     },
     "flats": {
       "H42CARP": "brown/tan mottled carpet",
@@ -498,6 +538,8 @@
     "exact_internal_dimensions": "medium/approximate; not a survey"
   },
   "builder_rules": [
+    "ABSOLUTE ORIENTATION: Arnold Street/front porch/front door are SOUTH/front. Backyard/rear door/sunroom/shed are NORTH/rear.",
+    "Never place the Arnold Street front facade, front porch, doorbell or dark H42FRNT door on the backyard side.",
     "Dad starts in the backyard. Do not move MAP01 player start to the front of the property.",
     "Sam must visibly flee from the backyard through the rear house, hall and front door, then west/up Arnold Street into the Collenso-side playground.",
     "MAP01 must not finish at the house or property boundary; the exit is inside the playground.",
@@ -601,7 +643,8 @@
         384
       ],
       "texture": "H42FRNT",
-      "interaction": "reusable Doom door"
+      "interaction": "reusable Doom door",
+      "location": "south/Arnold Street porch"
     },
     "doorbell": {
       "x": 444,
@@ -622,6 +665,18 @@
       ],
       "location": "inside the playground reached from Arnold Street at the Collenso/reserve side",
       "next": "MAP02"
+    },
+    "rear_door": {
+      "bounds": [
+        320,
+        1296,
+        384,
+        1312
+      ],
+      "texture": "H42RDR",
+      "location": "north/backyard side of enclosed rear veranda/sunroom",
+      "interaction": "reusable Doom door",
+      "note": "This is not the front door."
     }
   },
   "environment": {
@@ -661,7 +716,9 @@
       "Neighbour roofs are given separate material IDs so the other AI can keep the satellite colour differences.",
       "The 42 Arnold driveway now contains a dedicated white single-cab tray Workmate-style ute, aligned north-south with the driveway.",
       "Three wheelie bins are placed on the Arnold Street nature strip close to the kerb rather than inside the yard.",
-      "Outdoor surfaces are split into distinct lawn, verge, footpath, driveway, road and garden-bed materials so the block reads more like the satellite/reference images."
+      "Outdoor surfaces are split into distinct lawn, verge, footpath, driveway, road and garden-bed materials so the block reads more like the satellite/reference images.",
+      "Front and rear elevations now use separate texture IDs so downstream renderers cannot mirror the Arnold Street facade onto the backyard.",
+      "The backyard elevation has its own rear door and rear glazing; the front porch exists only on the Arnold Street side."
     ],
     "props": [
       {
