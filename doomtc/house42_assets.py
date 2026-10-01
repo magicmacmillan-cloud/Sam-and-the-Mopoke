@@ -569,6 +569,71 @@ def _extra_street_details(root):
     _flat(root,"H42ROAD",(61,63,62),"asphalt")
     _flat(root,"H42BED",(91,69,47),"concrete")
 
+def _front_rear_facades(root):
+    # FRONT: Arnold Street elevation — cream horizontal weatherboards with
+    # cleaner painted trim. This is only for the low-Y/front side.
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        band=y%18
+        for x in range(w):
+            c=_noise((218,214,198),x,y,4,101)
+            if band in (0,1): c=_shade(c,-25)
+            elif band in (2,3): c=_shade(c,9)
+            _set(p,w,h,x,y,c)
+    # brick base / front sill
+    _rect(p,w,h,0,104,w,128,(133,75,52))
+    for y in range(104,128):
+        if y%12 in (0,1): _line(p,w,h,0,y,w-1,y,1,(168,147,126))
+    _png(root/"textures"/"H42FACA.png",w,h,p)
+
+    # REAR: enclosed veranda/sunroom elevation — still cream, but with older
+    # shadowed boards, darker framing and a concrete/paver base. Deliberately
+    # unlike the front porch facade.
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        band=y%16
+        for x in range(w):
+            c=_noise((198,198,185),x,y,6,109)
+            if band in (0,1): c=_shade(c,-27)
+            elif band in (2,3): c=_shade(c,7)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,0,106,w,128,(135,132,124))
+    _line(p,w,h,0,105,w-1,105,2,(95,93,88))
+    # vertical veranda trim rhythm
+    for x in range(18,128,34):
+        _rect(p,w,h,x,0,x+3,106,(154,153,145))
+    _png(root/"textures"/"H42REAR.png",w,h,p)
+
+    # Rear veranda glazing: wider/darker panes than the front domestic windows.
+    w=h=128; p=_canvas(w,h)
+    _rect(p,w,h,0,0,w,h,(187,188,181))
+    _rect(p,w,h,6,6,122,116,(37,43,44))
+    for y in range(8,114):
+        for x in range(8,120):
+            c=_noise((43,51,51),x,y,5,117)
+            if (x+y)%47==0: c=_shade(c,10)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,61,6,67,116,(169,170,163))
+    _rect(p,w,h,6,57,122,63,(169,170,163))
+    _rect(p,w,h,0,116,w,128,(143,140,132))
+    _png(root/"textures"/"H42RWIN.png",w,h,p)
+
+    # Rear door: simple utility/veranda door, not the dark front entry/security door.
+    w=64; h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            _set(p,w,h,x,y,_noise((202,201,190),x,y,4,123))
+    _rect(p,w,h,7,8,57,118,(211,209,198))
+    _line(p,w,h,7,8,57,8,2,(145,143,136))
+    _line(p,w,h,7,118,57,118,2,(145,143,136))
+    _line(p,w,h,7,8,7,118,2,(145,143,136))
+    _line(p,w,h,57,8,57,118,2,(145,143,136))
+    # small upper glass panel
+    _rect(p,w,h,13,17,51,53,(48,55,56))
+    _line(p,w,h,31,17,31,53,2,(161,161,154))
+    _disc(p,w,h,51,67,3,3,(91,87,79))
+    _png(root/"textures"/"H42RDR.png",w,h,p)
+
 def generate_house42_assets(root: Path):
     root=Path(root)
     _plaster(root,"H42WALL",(211,205,192))
@@ -586,6 +651,7 @@ def generate_house42_assets(root: Path):
     _door(root,"H42DOOR",True)
     _door(root,"H42WDR",False)
     _front_door(root)
+    _front_rear_facades(root)
     _sofa(root)
     _appliance(root)
     _doorbell_sprite(root)
