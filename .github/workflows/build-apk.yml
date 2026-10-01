@@ -164,6 +164,16 @@ jobs:
           assert "neighbour's letterbox" in actor_src
           assert "dog dug through here" in actor_src.lower()
 
+          # V33 visual/layout regressions that must never return.
+          assert 'A(-48,16,16,3100,"LOT")' in map_src
+          assert 'A(960,16,1008,3100,"LOT")' in map_src
+          assert 'A(16,2944,960,3100,"LOT")' in map_src
+          assert 'A(-1652,-930,-1620,-830,"GATEDOOR")' in map_src
+          assert 'A(-2240,-960,-2208,-832,"GATEDOOR")' not in map_src
+          assert '"IDOOR"' in map_src
+          assert 'A(624,1296,688,1312,"BACKDOOR")' in map_src
+          assert 'H42RWIN' in map_src and 'H42RDR' in map_src
+
           print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, sector counts={sector_counts}")
           PY
 
