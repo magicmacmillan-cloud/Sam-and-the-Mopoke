@@ -1,10 +1,10 @@
 class SamColaClue : CustomInventory {
- Default { Inventory.PickupMessage "A crushed cola can. Sam always leaves these."; +INVENTORY.ALWAYSPICKUP; }
+ Default { Radius 5; Height 8; Scale 0.32; Inventory.PickupMessage "A crushed cola can. Sam always leaves these."; +INVENTORY.ALWAYSPICKUP; }
  States { Spawn: SMCL A -1; Stop; Pickup: TNT1 A 0 A_Log("Fresh. Sam was here."); Stop; }
 }
-class SamMudPrint : Actor { Default { Radius 6; Height 1; +NOBLOCKMAP +NOINTERACTION; } States { Spawn: SMFP ABCD 12; Stop; } }
+class SamMudPrint : Actor { Default { Radius 5; Height 1; Scale 0.30; +NOBLOCKMAP +NOINTERACTION; } States { Spawn: SMFP ABCD 12; Stop; } }
 class SamWallNote : CustomInventory {
- Default { Inventory.PickupMessage "A note in Sam's writing."; +INVENTORY.ALWAYSPICKUP; }
+ Default { Radius 5; Height 12; Scale 0.30; Inventory.PickupMessage "A note in Sam's writing."; +INVENTORY.ALWAYSPICKUP; }
  States { Spawn: SMNT A -1; Stop; Pickup: TNT1 A 0 A_Log("SAM: Dad? Don't come this way."); Stop; }
 }
 class SamBackpackClue : CustomInventory {
