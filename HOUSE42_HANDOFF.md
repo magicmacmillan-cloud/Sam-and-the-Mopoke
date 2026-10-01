@@ -152,3 +152,19 @@ than leaving it only as prose for the next builder.
 
 The map-only PWAD contains environment scenery actors and their PNG sprites, but
 continues to omit Sam, enemies, weapons, HUD, Android code and all APK/engine files.
+
+
+## V3 corrected front/rear elevations
+
+The map orientation is now explicitly locked so the house cannot be rendered backwards.
+
+- **SOUTH / Arnold Street = FRONT of the house.**
+- The front lawn, covered porch, dark front door, doorbell, black front rail/gate and front windows exist only on this south/Arnold Street elevation.
+- **NORTH / backyard = REAR of the house.**
+- The rear elevation is the enclosed veranda/sunroom side with its own rear glazing, plain rear door and small landing/patio leading into the backyard.
+- The rear shed remains farther north in the backyard.
+- The east/right side remains the driveway and covered carport toward No.40.
+- Separate texture IDs are used for front and rear elements: `H42FRNT` / `H42FWIN` for the front, and `H42RDR` / `H42RWIN` / `H42REAR` for the rear.
+- Do **not** mirror or reuse the Arnold Street porch/front door on the backyard side.
+
+This correction is part of the actual MAP01 geometry and texture assignment, not just a concept-image instruction.
