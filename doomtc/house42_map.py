@@ -36,6 +36,7 @@ STYLE = {
     "RESERVE": (0,224,"H42GRAS","F_SKY1",144,"H42FENC"),
     "PLAY":    (0,224,"H42PAVE","F_SKY1",160,"H42PLAY"),
     "LOT":     (0,192,"H42GRAS","F_SKY1",150,"H42FENC"),
+    "GARDEN":  (0,192,"H42DIRT","F_SKY1",150,"H42FENC"),
     "DOOR":    (0,0,"H42TILF","H42CEIL",160,"H42FRNT"),
     "FURNWOOD":(40,128,"H42WOOD","H42CEIL",136,"H42PANL"),
     "FURNFAB": (36,128,"H42CARP","H42CEIL",132,"H42SOFA"),
@@ -58,8 +59,13 @@ def A(x0,y0,x1,y1,style):
 AREAS = [
     # --- west reserve / playground context ---
     A(-2400,-1408,-1248,1800,"RESERVE"),
-    A(-2200,-1216,-1600,-768,"PLAY"),
-    A(-1600,-1024,-1248,-704,"FOOT"),
+    # Satellite-faithful playground: west of Collenso and immediately off the
+    # Arnold Street approach, reached by walking west/up Arnold from No.42.
+    A(-2220,-1088,-1540,-704,"PLAY"),
+    # Stepped pedestrian path from Arnold/Collenso into the play area.
+    A(-1600,-768,-1248,-704,"FOOT"),
+    A(-1740,-816,-1540,-752,"FOOT"),
+    A(-1880,-864,-1700,-800,"FOOT"),
 
     # --- Collenso Street ---
     A(-1248,-1408,-960,1800,"ROAD"),
@@ -84,9 +90,17 @@ AREAS = [
     A(1008,16,1920,2944,"LOT"),
     A(-816,320,-160,1110,"NBR1"),
     A(1104,320,1776,1088,"NBR2"),
-    # rear sheds / outbuildings as solid massing
+    # rear sheds / outbuildings from the satellite massing
     A(-720,1450,-256,2080,"NBR1"),
+    A(-880,2140,-520,2580,"NBR1"),
     A(1260,1350,1740,2150,"NBR1"),
+    A(1120,2240,1600,2700,"NBR1"),
+
+    # Neighbour driveways/front paths and lawns visible around No.44/No.40.
+    A(-400,16,-160,320,"DRIVE"),
+    A(-600,160,-520,320,"FOOT"),
+    A(1600,16,1820,320,"DRIVE"),
+    A(1320,180,1380,320,"FOOT"),
 
     # --- 42 Arnold yard / driveway / rear ---
     A(16,16,960,320,"YARD"),
@@ -98,6 +112,13 @@ AREAS = [
     A(736,16,928,1600,"DRIVE"),
     A(704,1312,928,1750,"PATIO"),
     A(560,1750,896,2350,"SHED"),
+    # Planted beds visible around the front facade and backyard edges.
+    A(32,96,320,160,"GARDEN"),
+    A(448,256,704,320,"GARDEN"),
+    A(32,1360,96,2200,"GARDEN"),
+    A(896,1750,944,2500,"GARDEN"),
+    # Narrow rear path/paving beside the house/shed.
+    A(448,1312,544,1750,"PATIO"),
 
     # Front porch/covered entry from facade photo.
     A(320,256,704,368,"PORCH"),
@@ -158,10 +179,13 @@ AREAS = [
     # Porch posts matching the front photo.
     A(336,320,352,368,"POST"),
     A(688,320,704,368,"POST"),
-    # Playground equipment: swing frame, slide/climber and shelter block.
-    A(-2112,-1088,-1992,-1032,"PLAYEQ"),
-    A(-1944,-1040,-1840,-944,"PLAYEQ"),
-    A(-1784,-1160,-1640,-1104,"PLAYEQ"),
+    # Playground equipment laid out to read as a real suburban play area:
+    # swing bay, slide/climber, small platform, bench/shelter and edging.
+    A(-2112,-1016,-1992,-960,"PLAYEQ"),   # swings
+    A(-1976,-960,-1880,-864,"PLAYEQ"),    # main climber
+    A(-1904,-864,-1816,-808,"PLAYEQ"),    # slide landing
+    A(-1768,-1016,-1632,-960,"PLAYEQ"),   # shelter/bench
+    A(-2144,-800,-2048,-752,"PLAYEQ"),    # low play feature
 
     # --- door openings / room connectors ---
     # Real front-door sector: closed at map start, USE opens it like a Doom door.
@@ -254,7 +278,7 @@ def _boundary_texture(p1,p2,st):
         return "H42SIDN"
     return STYLE[st][5]
 
-OUTDOOR_STYLES={"PORCH","DRIVE","YARD","PATIO","FOOT","VERGE","ROAD","RESERVE","PLAY","LOT"}
+OUTDOOR_STYLES={"PORCH","DRIVE","YARD","PATIO","FOOT","VERGE","ROAD","RESERVE","PLAY","LOT","GARDEN"}
 
 def _solid_boundary(p1,p2,st0,st1):
     pair={st0,st1}
@@ -278,8 +302,8 @@ def build_house42_map():
     for p1,p2 in LINE_TEX:
         xs.add(p1[0]); xs.add(p2[0]); ys.add(p1[1]); ys.add(p2[1])
     # Extra cuts split the right-side chimney and front facade into useful line spans.
-    xs.update((144,288,512,672,128,560,1260,1516,-640,-384,-2000))
-    ys.update((432,608,688,768,848,928,1024,1104,-1024,-896))
+    xs.update((144,288,512,672,128,560,1260,1516,-640,-384,-2050,-1880,-1740,-1540))
+    ys.update((432,608,688,768,848,928,1024,1104,-960,-864,-832,-768,-704))
     xs=sorted(xs); ys=sorted(ys)
 
     def covering(cx,cy):
@@ -321,7 +345,7 @@ def build_house42_map():
 
     # MAP01 ends only after Dad actually enters the playground shown in the
     # supplied satellite view, not at the house/front boundary.
-    EXIT=norm_edge((-2000,-1024),(-2000,-896))
+    EXIT=norm_edge((-2050,-960),(-2050,-832))
 
     def add_boundary(p1,p2,sec0,sec1=None,st0=None,st1=None):
         key=norm_edge(p1,p2)
@@ -389,17 +413,37 @@ def build_house42_map():
 
     # Classic Doom thing records: x,y,angle,type,flags.
     things=[
-        (420,1500,270,1,7),          # Dad starts in the backyard facing house/front route
-        (420,1420,270,15113,7),      # scripted Sam escape: backyard -> drive -> Arnold -> playground
+        (420,1500,270,1,7),          # Dad starts in the real backyard
+        (420,1420,270,15113,7),      # Sam flees THROUGH the house/front door, then up Arnold
         (444,356,270,15710,7),       # small usable doorbell beside the real front door
-        (820,760,270,15103,7),       # crushed cola can on the side-drive route
-        (820,180,270,15101,7),       # footprints near the front gate
-        (560,820,180,15104,7),       # small natural Sam note in bedroom, optional
+        (820,760,270,15103,7),       # crushed cola can at the side driveway
+        (420,120,270,15101,7),       # footprints on the front path/gate
+        (560,820,180,15104,7),       # small natural Sam note in bedroom
         (220,1060,180,15109,7),      # Lincoln note at meals/rear area
-        (-1080,-420,180,15106,7),    # false trail near Collenso
-        (-1500,-820,180,15410,7),    # Mopoke glimpse toward reserve
-        (-1740,-940,180,15108,7),    # Sam note at playground approach
+        (-980,-430,180,15106,7),     # false trail at Arnold/Collenso corner
+        (-1450,-650,180,15410,7),    # brief Mopoke glimpse at reserve edge
+        (-1700,-790,180,15108,7),    # Sam note at playground approach
         (720,2060,180,15301,7),      # searchable shed/cache
+
+        # Satellite/neighbourhood dressing: street lights/poles, trees, cars,
+        # park furniture and extra wheelie bins. These are scenery actors.
+        (120,-150,0,15720,7),        # Arnold lamp east of No.42
+        (-620,-150,0,15720,7),       # Arnold lamp toward Collenso
+        (-1160,-560,90,15720,7),     # Collenso lamp
+        (-1200,360,90,15721,7),      # reserve tree
+        (-1450,120,90,15721,7),
+        (-1750,360,90,15721,7),
+        (-2050,620,90,15721,7),
+        (-1850,-620,90,15721,7),     # playground shade tree
+        (1050,-430,90,15722,7),      # light parked car on Arnold
+        (-520,-430,90,15723,7),      # darker parked car near Collenso
+        (830,90,180,15722,7),        # car in/near No.42 driveway
+        (-1710,-940,0,15724,7),      # playground bench
+        (-2050,-980,0,15725,7),      # swing visual
+        (-1920,-900,0,15726,7),      # slide/climber visual
+        (-1820,-830,0,15727,7),      # second play feature
+        (900,40,0,15728,7),          # bin near front/drive
+        (-340,40,0,15728,7),         # neighbour bin
     ]
     bad=[t for t in things if covering(t[0],t[1]) is None]
     if bad:
