@@ -67,6 +67,7 @@ AREAS = [
     # --- reserve and playground west of Collenso / up Arnold Street ---
     A(-2500,-1500,-1248,1900,"RESERVE"),
     A(-2240,-1180,-1540,-700,"PLAY"),
+    A(-2240,-1030,-2140,-760,"PLAYLIT"),
     A(-2140,-1030,-1880,-760,"PLAYLIT"),
     A(-1620,-980,-1248,-700,"FOOT"),
     A(-1880,-820,-1620,-750,"FOOT"),
@@ -367,20 +368,29 @@ def build_house42_map():
 
     # MAP01 ends only after Dad actually enters the playground shown in the
     # supplied satellite view, not at the house/front boundary.
-    EXIT=norm_edge((-2240,-960),(-2240,-832))
+    EXIT=norm_edge((-2140,-960),(-2140,-832))
 
     def add_boundary(p1,p2,sec0,sec1=None,st0=None,st1=None):
         key=norm_edge(p1,p2)
         if sec1 is None:
             wall=_boundary_texture(p1,p2,st0)
-            special=11 if _segment_inside(key,EXIT) else 0
-            linedefs.append((vid(*p1),vid(*p2),1,special,0,side(sec0,middle=wall),0xFFFF))
+            if _segment_inside(key,EXIT):
+                # Padlocked playground gate: red key opens it; crossing the far side
+                # is handled by a separate small exit trigger sector.
+                linedefs.append((vid(*p1),vid(*p2),1,28,0,side(sec0,middle="H42GATE"),0xFFFF))
+            else:
+                linedefs.append((vid(*p1),vid(*p2),1,0,0,side(sec0,middle=wall),0xFFFF))
         else:
             w0=STYLE[st0][5]; w1=STYLE[st1][5]
-            if st0 in ("DOOR","BACKDOOR") or st1 in ("DOOR","BACKDOOR"):
+            if key==EXIT:
+                # Crossing this line after the red-key gate opens ends MAP01.
+                linedefs.append((vid(*p1),vid(*p2),4,11,0,
+                                 side(sec0,upper=STYLE[st0][5],lower=STYLE[st0][5]),
+                                 side(sec1,upper=STYLE[st1][5],lower=STYLE[st1][5])))
+            elif st0 in ("DOOR","BACKDOOR") or st1 in ("DOOR","BACKDOOR"):
                 door_style = st1 if st1 in ("DOOR","BACKDOOR") else st0
                 dtex = "H42FRNT" if door_style=="DOOR" else "H42RDR"
-                special = 1 if door_style=="DOOR" else 26
+                special = 27 if door_style=="DOOR" else 26
                 if st1 == door_style:
                     linedefs.append((vid(*p1),vid(*p2),4,special,0,
                                      side(sec0,upper=dtex,lower=dtex),
@@ -441,12 +451,15 @@ def build_house42_map():
         (720,2080,180,15740,7),      # spare back-door key hidden in garage
         (710,2060,180,15301,7),      # garage searchable cache beside key area
 
-        # natural-scale story clues
-        (220,1060,180,15109,7),      # Lincoln note in Lincoln's room
-        (560,820,180,15104,7),       # small Sam note in Sam's room
+        # house puzzle chain
+        (220,1060,180,15741,7),      # Lincoln's phone in his bedroom
+        (404,410,180,15742,7),       # note on inside of front door
+        (560,820,180,15743,7),       # Sam's puzzle box in Sam's room
+        (560,820,180,15104,7),       # small Sam note/room detail
         (420,120,270,15101,7),       # footprints/front path
         (-980,-430,180,15106,7),     # false trail near Arnold/Collenso
-        (-1705,-790,180,15108,7),    # small note/message near playground bench
+        (-2180,-895,180,15744,7),    # Sam's note taped to playground gate
+        (-610,230,180,15745,7),       # neighbour letterbox containing gate key
         (-1450,-650,180,15410,7),    # Mopoke glimpse at reserve edge
 
         # dog dug under rear fence
