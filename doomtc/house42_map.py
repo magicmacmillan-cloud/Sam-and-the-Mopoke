@@ -458,13 +458,24 @@ def build_house42_map():
         # house puzzle chain
         (220,1060,180,15741,7),      # Lincoln's phone in his bedroom
         (404,410,180,15742,7),       # note on inside of front door
-        (560,820,180,15743,7),       # Sam's puzzle box in Sam's room
+        (602,880,180,15743,7),       # Sam's puzzle box in Sam's room
+        # in-world keypad: 1 2 3 4 5 / 6 7 8 9 0
+        (570,890,180,15751,7),(586,890,180,15752,7),(602,890,180,15753,7),
+        (618,890,180,15754,7),(634,890,180,15755,7),
+        (570,908,180,15756,7),(586,908,180,15757,7),(602,908,180,15758,7),
+        (618,908,180,15759,7),(634,908,180,15750,7),
         (660,900,180,15104,7),       # small Sam room note/detail
         (420,120,270,15101,7),       # footprints/front path
         (-980,-430,180,15106,7),     # false trail near Arnold/Collenso
         (-2180,-895,180,15744,7),    # Sam's note taped to playground gate
         (-610,230,180,15745,7),       # neighbour letterbox containing gate key
         (-1450,-650,180,15410,7),    # Mopoke glimpse at reserve edge
+
+        # physical puzzle evidence: 2 scooters, 3 Xbox/TV setups, 3 eggs, projector countdown
+        (640,1880,90,15760,7),(760,1880,90,15760,7),
+        (500,690,180,15761,7),(575,690,180,15761,7),(640,690,180,15761,7),
+        (480,1012,180,15762,7),
+        (250,900,180,15763,7),
 
         # dog dug under rear fence
         (245,2860,180,15733,7),
