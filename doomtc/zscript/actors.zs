@@ -177,3 +177,108 @@ class TheMopoke : Actor
     Level.ExitLevel(0, false);
   }
 }
+
+
+class SamEscapeRunner : Actor
+{
+  int waypoint;
+  Default
+  {
+    Radius 10; Height 48; Speed 9;
+    +NOBLOCKMAP +NOCLIP +NOGRAVITY +NOINTERACTION +FRIENDLY;
+    Tag "Sam";
+  }
+  override void Tick()
+  {
+    Super.Tick();
+    if(level.levelnum != 1) { Vel.X=0; Vel.Y=0; return; }
+    double tx; double ty;
+    switch(waypoint)
+    {
+      case 0: tx=620; ty=1210; break; // long sunroom
+      case 1: tx=620; ty=1090; break; // laundry
+      case 2: tx=520; ty=1060; break; // kitchen
+      case 3: tx=410; ty=960; break;  // hallway
+      case 4: tx=410; ty=820; break;
+      case 5: tx=410; ty=620; break;
+      case 6: tx=410; ty=500; break;  // entry
+      case 7: tx=410; ty=360; break;  // front door
+      case 8: tx=410; ty=120; break;  // front path
+      case 9: tx=410; ty=-430; break; // Arnold Street
+      case 10: tx=-420; ty=-430; break;
+      case 11: tx=-980; ty=-430; break;
+      case 12: tx=-1280; ty=-560; break;
+      case 13: tx=-1600; ty=-760; break;
+      case 14: tx=-1920; ty=-900; break;
+      default: Destroy(); return;
+    }
+    double dx=tx-Pos.X; double dy=ty-Pos.Y; double d=sqrt(dx*dx+dy*dy);
+    if(d<24) { waypoint++; Vel.X=0; Vel.Y=0; return; }
+    Vel.X=dx/d*Speed; Vel.Y=dy/d*Speed; Vel.Z=0;
+  }
+  States { Spawn: SAMR ABCDEF 3; Loop; }
+}
+
+class HouseDoorbell : Actor
+{
+  Default { Radius 5; Height 16; Scale 0.45; +USESPECIAL +NOBLOCKMAP; Tag "Doorbell"; }
+  States { Spawn: DBEL A -1; Stop; }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    A_PlaySound("sam/doorbell",CHAN_BODY);
+    A_Log("The doorbell rings inside the empty house.");
+    return true;
+  }
+}
+
+class HouseStreetLamp : Actor
+{ Default { Radius 7; Height 104; +SOLID; } States { Spawn: STLP A -1; Stop; } }
+
+class HouseTree : Actor
+{ Default { Radius 18; Height 96; +SOLID; } States { Spawn: TREE A -1; Stop; } }
+
+class HouseCarLight : Actor
+{ Default { Radius 34; Height 30; +SOLID; } States { Spawn: CARW A -1; Stop; } }
+
+class HouseCarDark : Actor
+{ Default { Radius 34; Height 30; +SOLID; } States { Spawn: CARD A -1; Stop; } }
+
+class ParkBench42 : Actor
+{ Default { Radius 20; Height 24; +SOLID; } States { Spawn: BNCH A -1; Stop; } }
+
+class ParkSwing42 : Actor
+{ Default { Radius 24; Height 72; +SOLID; } States { Spawn: SWNG A -1; Stop; } }
+
+class ParkSlide42 : Actor
+{ Default { Radius 22; Height 60; +SOLID; } States { Spawn: SLID A -1; Stop; } }
+
+class ParkClimber42 : Actor
+{ Default { Radius 22; Height 54; +SOLID; } States { Spawn: CLMB A -1; Stop; } }
+
+class HouseWheelieBin : Actor
+{ Default { Radius 8; Height 32; +SOLID; } States { Spawn: WBIN A -1; Stop; } }
+
+class HouseHiluxWorkmate : Actor
+{ Default { Radius 34; Height 40; +SOLID; Tag "Hilux Workmate"; } States { Spawn: HILX A -1; Stop; } }
+
+class HouseBinRed : Actor
+{ Default { Radius 8; Height 32; +SOLID; } States { Spawn: BINR A -1; Stop; } }
+
+class HouseBinYellow : Actor
+{ Default { Radius 8; Height 32; +SOLID; } States { Spawn: BINY A -1; Stop; } }
+
+class HouseShrub : Actor
+{ Default { Radius 10; Height 28; } States { Spawn: SHRB A -1; Stop; } }
+
+class DogDigEvidence : Actor
+{
+  Default { Radius 12; Height 8; +USESPECIAL +NOBLOCKMAP; Tag "Disturbed ground"; }
+  States { Spawn: DOGD A -1; Stop; }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    A_Log("Fresh dirt. Scratches under the fence. The dog dug through here.");
+    return true;
+  }
+}
