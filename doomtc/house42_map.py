@@ -27,6 +27,7 @@ STYLE = {
     "SUNROOM": (0,120,"H42CONC","H42CEIL",148,"H42WALL"),
     "PORCH":   (0,112,"H42CONC","H42CEIL",160,"H42SIDN"),
     "DRIVE":   (0,192,"H42CONC","F_SKY1",168,"H42FENC"),
+    "CARPORT": (0,112,"H42CONC","H42SHED",148,"H42SHED"),
     "YARD":    (0,192,"H42GRAS","F_SKY1",156,"H42FENC"),
     "PATIO":   (0,192,"H42PAVE","F_SKY1",160,"H42FENC"),
     "SHED":    (0,128,"H42CONC","H42CEIL",132,"H42SHED"),
@@ -68,8 +69,10 @@ AREAS = [
     A(-1880,-864,-1700,-800,"FOOT"),
 
     # --- Collenso Street ---
+    A(-1312,-1408,-1248,1800,"FOOT"),
     A(-1248,-1408,-960,1800,"ROAD"),
     A(-960,-1408,-912,1800,"VERGE"),
+    A(-912,-1408,-864,1800,"FOOT"),
 
     # --- Arnold Street public realm ---
     A(-2400,-704,2000,-608,"FOOT"),
@@ -110,6 +113,8 @@ AREAS = [
     A(16,1600,960,2944,"YARD"),
     A(384,16,448,320,"FOOT"),
     A(736,16,928,1600,"DRIVE"),
+    # Covered carport roof seen along the right/east side of the house.
+    A(736,384,928,1312,"CARPORT"),
     A(704,1312,928,1750,"PATIO"),
     A(560,1750,896,2350,"SHED"),
     # Planted beds visible around the front facade and backyard edges.
@@ -278,7 +283,7 @@ def _boundary_texture(p1,p2,st):
         return "H42SIDN"
     return STYLE[st][5]
 
-OUTDOOR_STYLES={"PORCH","DRIVE","YARD","PATIO","FOOT","VERGE","ROAD","RESERVE","PLAY","LOT","GARDEN"}
+OUTDOOR_STYLES={"PORCH","DRIVE","CARPORT","YARD","PATIO","FOOT","VERGE","ROAD","RESERVE","PLAY","LOT","GARDEN"}
 
 def _solid_boundary(p1,p2,st0,st1):
     pair={st0,st1}
@@ -435,9 +440,14 @@ def build_house42_map():
         (-1750,360,90,15721,7),
         (-2050,620,90,15721,7),
         (-1850,-620,90,15721,7),     # playground shade tree
+        (-650,180,90,15721,7),       # No.44 front lawn tree
+        (1460,180,90,15721,7),       # No.40 front lawn tree
+        (180,-760,90,15721,7),       # opposite verge tree
         (1050,-430,90,15722,7),      # light parked car on Arnold
         (-520,-430,90,15723,7),      # darker parked car near Collenso
         (830,90,180,15722,7),        # car in/near No.42 driveway
+        (-280,110,180,15723,7),      # No.44 driveway car
+        (1680,120,180,15722,7),      # No.40 driveway car
         (-1710,-940,0,15724,7),      # playground bench
         (-2050,-980,0,15725,7),      # swing visual
         (-1920,-900,0,15726,7),      # slide/climber visual
