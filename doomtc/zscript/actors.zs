@@ -282,3 +282,219 @@ class DogDigEvidence : Actor
     return true;
   }
 }
+
+
+class LincolnPhone42 : Actor
+{
+  Default { Radius 5; Height 3; +USESPECIAL +NOBLOCKMAP; Tag "Lincoln's phone"; }
+  States { Spawn: PHON A -1; Stop; }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    A_Log("LINCOLN: Sam ran away to the park. I'm going after him. I've locked the doors behind us so it can't get us. If it's really still you Dad, help us stay safe.");
+    if(!u.FindInventory("LincolnPhoneRead")) u.GiveInventory("LincolnPhoneRead",1);
+    return true;
+  }
+}
+
+class FrontDoorPuzzleNote : Actor
+{
+  Default { Radius 4; Height 8; Scale 0.46; +USESPECIAL +NOBLOCKMAP; Tag "Note taped to the front door"; }
+  States { Spawn: FDNT A -1; Stop; }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    if(!u.FindInventory("LincolnPhoneRead"))
+    {
+      A_Log("A note is taped to the inside of the front door. I should check Lincoln's room first.");
+      return true;
+    }
+    A_Log("LINCOLN: I've hidden the key in Sam's puzzle box. Code is e-scooters, xbox, eggs, projector.");
+    if(!u.FindInventory("FrontDoorNoteRead")) u.GiveInventory("FrontDoorNoteRead",1);
+    return true;
+  }
+}
+
+class HousePuzzleBox : Actor
+{
+  Default { Radius 10; Height 10; +USESPECIAL +NOBLOCKMAP; Tag "Sam's puzzle box"; }
+  States { Spawn: PBOX A -1; Stop; }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    if(!u.FindInventory("FrontDoorNoteRead"))
+      A_Log("Sam's puzzle box. Four number buttons. I don't know what to enter yet.");
+    else
+      A_Log("Sam's puzzle box. Four digits. Use the numbered buttons beside it.");
+    return true;
+  }
+}
+
+class PuzzleDigitBase : Actor
+{
+  Default { Radius 3; Height 8; +USESPECIAL +NOBLOCKMAP; }
+  bool PressDigit(Actor u, int d)
+  {
+    if(!u || !u.player) return false;
+    if(!u.FindInventory("FrontDoorNoteRead"))
+    {
+      A_Log("The keypad means nothing to me yet.");
+      return true;
+    }
+    if(u.FindInventory("HouseFrontDoorKey"))
+    {
+      A_Log("The puzzle box is already open.");
+      return true;
+    }
+
+    bool a = u.FindInventory("PuzzleStep1") != null;
+    bool b = u.FindInventory("PuzzleStep2") != null;
+    bool c = u.FindInventory("PuzzleStep3") != null;
+
+    if(!a && !b && !c && d==2)
+    {
+      u.GiveInventory("PuzzleStep1",1);
+      A_Log("2 _ _ _");
+      return true;
+    }
+    if(a && !b && !c && d==3)
+    {
+      u.TakeInventory("PuzzleStep1",99);
+      u.GiveInventory("PuzzleStep2",1);
+      A_Log("2 3 _ _");
+      return true;
+    }
+    if(!a && b && !c && d==3)
+    {
+      u.TakeInventory("PuzzleStep2",99);
+      u.GiveInventory("PuzzleStep3",1);
+      A_Log("2 3 3 _");
+      return true;
+    }
+    if(!a && !b && c && d==0)
+    {
+      u.TakeInventory("PuzzleStep3",99);
+      u.GiveInventory("HouseFrontDoorKey",1);
+      A_PlaySound("sam/key",CHAN_ITEM);
+      A_Log("2 3 3 0. Click. Sam's puzzle box opens. The front-door key is inside.");
+      return true;
+    }
+
+    u.TakeInventory("PuzzleStep1",99);
+    u.TakeInventory("PuzzleStep2",99);
+    u.TakeInventory("PuzzleStep3",99);
+    if(d==2)
+    {
+      u.GiveInventory("PuzzleStep1",1);
+      A_Log("2 _ _ _");
+    }
+    else A_Log("Wrong. The puzzle box resets.");
+    return true;
+  }
+}
+
+class PuzzleDigit0 : PuzzleDigitBase { States { Spawn: D0BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,0); } }
+class PuzzleDigit1 : PuzzleDigitBase { States { Spawn: D1BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,1); } }
+class PuzzleDigit2 : PuzzleDigitBase { States { Spawn: D2BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,2); } }
+class PuzzleDigit3 : PuzzleDigitBase { States { Spawn: D3BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,3); } }
+class PuzzleDigit4 : PuzzleDigitBase { States { Spawn: D4BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,4); } }
+class PuzzleDigit5 : PuzzleDigitBase { States { Spawn: D5BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,5); } }
+class PuzzleDigit6 : PuzzleDigitBase { States { Spawn: D6BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,6); } }
+class PuzzleDigit7 : PuzzleDigitBase { States { Spawn: D7BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,7); } }
+class PuzzleDigit8 : PuzzleDigitBase { States { Spawn: D8BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,8); } }
+class PuzzleDigit9 : PuzzleDigitBase { States { Spawn: D9BT A -1; Stop; } override bool Used(Actor u){ return PressDigit(u,9); } }
+
+class GarageEScooter42 : Actor
+{
+  Default { Radius 8; Height 34; +NOBLOCKMAP; Tag "E-scooter"; }
+  States { Spawn: ESCO A -1; Stop; }
+}
+
+class LoungeXboxTV42 : Actor
+{
+  Default { Radius 8; Height 24; +NOBLOCKMAP; Tag "Xbox and TV"; }
+  States { Spawn: XBOX A -1; Stop; }
+}
+
+class KitchenFridge42 : Actor
+{
+  Default { Radius 12; Height 56; +USESPECIAL; Tag "Fridge"; }
+  States { Spawn: FRDG A -1; Stop; }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    A_Log("Inside the fridge: three eggs.");
+    return true;
+  }
+}
+
+class ProjectorCountdown42 : Actor
+{
+  Default { Radius 1; Height 1; +NOBLOCKMAP +NOINTERACTION; RenderStyle "Add"; Alpha 0.72; }
+  States
+  {
+  Spawn:
+    PJCT A 25 Bright;
+    PJCT B 25 Bright;
+    PJCT C 25 Bright;
+    PJCT D -1 Bright;
+    Stop;
+  }
+}
+
+class MasterProjector42 : Actor
+{
+  bool activated;
+  Default { Radius 6; Height 8; +USESPECIAL +NOBLOCKMAP; Tag "Projector"; }
+  States { Spawn: PROJ A -1; Stop; }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    if(!activated)
+    {
+      activated=true;
+      A_Log("The projector clicks on: 3... 2... 1... 0.");
+      Spawn("ProjectorCountdown42",Pos,ALLOW_REPLACE);
+    }
+    else A_Log("The projector stays on 0.");
+    return true;
+  }
+}
+
+class SamGateNote42 : Actor
+{
+  Default { Radius 4; Height 8; Scale 0.46; +USESPECIAL +NOBLOCKMAP; Tag "Sam's note"; }
+  States { Spawn: SGNT A -1; Stop; }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    A_Log("SAM: I left the key in the neighbour's letterbox.");
+    if(!u.FindInventory("GateNoteRead")) u.GiveInventory("GateNoteRead",1);
+    return true;
+  }
+}
+
+class NeighbourLetterbox42 : Actor
+{
+  bool looted;
+  Default { Radius 8; Height 34; +USESPECIAL; Tag "Neighbour's letterbox"; }
+  States { Spawn: LBOX A -1; Stop; }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    if(!u.FindInventory("GateNoteRead"))
+    {
+      A_Log("The neighbour's letterbox. No reason to search it.");
+      return true;
+    }
+    if(!looted)
+    {
+      looted=true;
+      u.GiveInventory("PlaygroundGateKey",1);
+      A_PlaySound("sam/key",CHAN_ITEM);
+      A_Log("A small key is tucked inside. It fits the playground gate padlock.");
+    }
+    else A_Log("The letterbox is empty now.");
+    return true;
+  }
+}
