@@ -1,7 +1,7 @@
 from pathlib import Path
 import math, random
 
-from world_assets import _png, _canvas, _rect, _line, _disc
+from world_assets import _png, _canvas, _rect, _line, _disc, _wav
 
 # Source-matched domestic material pass for MAP01.
 # This does not pretend to be a survey/photo-scan. Colours, pattern scale and
@@ -302,6 +302,237 @@ def _atlas(root):
             _rect(p,w,h,cx+7+j*10,cy+112,cx+13+j*10,cy+120,(v,v,v))
     _png(root/"graphics"/"H42ATLAS.png",w,h,p)
 
+
+def _front_door(root):
+    # Front reference: dark domestic front door beneath the cream porch.
+    w=64; h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            _set(p,w,h,x,y,_noise((62,55,49),x,y,4,52))
+    for x0,y0,x1,y1 in ((8,8,56,48),(8,57,56,116)):
+        _line(p,w,h,x0,y0,x1,y0,2,(34,31,29))
+        _line(p,w,h,x0,y1,x1,y1,2,(34,31,29))
+        _line(p,w,h,x0,y0,x0,y1,2,(34,31,29))
+        _line(p,w,h,x1,y0,x1,y1,2,(34,31,29))
+    _disc(p,w,h,52,64,3,3,(173,168,157))
+    _png(root/"textures"/"H42FRNT.png",w,h,p)
+
+def _sofa(root):
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            c=_noise((92,78,67),x,y,7,59)
+            if x%32 in (0,1) or y%32 in (0,1): c=_shade(c,-10)
+            _set(p,w,h,x,y,c)
+    _png(root/"textures"/"H42SOFA.png",w,h,p)
+
+def _appliance(root):
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            _set(p,w,h,x,y,_noise((204,201,191),x,y,3,61))
+    _rect(p,w,h,10,12,118,116,(217,214,205))
+    _rect(p,w,h,16,20,112,58,(85,90,91))
+    _rect(p,w,h,101,68,107,108,(92,90,85))
+    _png(root/"textures"/"H42APPL.png",w,h,p)
+
+
+def _cola_sprite(root):
+    # Small crushed red cola can, replacing the old paper-placeholder SMCL art.
+    w=24; h=34; p=_canvas(w,h)
+    _rect(p,w,h,7,5,18,29,(139,37,34))
+    _rect(p,w,h,8,3,17,7,(172,166,153))
+    _rect(p,w,h,8,27,17,31,(104,102,96))
+    _line(p,w,h,8,9,17,24,2,(198,193,179))
+    _line(p,w,h,17,9,8,24,1,(84,27,25))
+    _disc(p,w,h,12,4,3,1,(76,76,73))
+    _png(root/"sprites"/"SMCLA0.png",w,h,p,12,30)
+
+def _doorbell_sprite(root):
+    # Deliberately small: a believable wall button, not a pickup-sized prop.
+    w=20; h=28; p=_canvas(w,h)
+    _rect(p,w,h,5,3,15,25,(205,201,188))
+    _rect(p,w,h,6,4,14,24,(154,151,141))
+    _disc(p,w,h,10,11,3,3,(52,50,47))
+    _disc(p,w,h,10,11,1,1,(191,185,169))
+    _rect(p,w,h,8,18,12,21,(74,72,68))
+    _png(root/"sprites"/"DBELA0.png",w,h,p,10,24)
+
+def _front_rear_facades(root):
+    # Distinct front and rear elevations so the house can never read backwards.
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        band=y%18
+        for x in range(w):
+            c=_noise((218,214,198),x,y,4,101)
+            if band in (0,1): c=_shade(c,-25)
+            elif band in (2,3): c=_shade(c,9)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,0,104,w,128,(133,75,52))
+    _png(root/"textures"/"H42FACA.png",w,h,p)
+
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        band=y%16
+        for x in range(w):
+            c=_noise((198,198,185),x,y,6,109)
+            if band in (0,1): c=_shade(c,-27)
+            elif band in (2,3): c=_shade(c,7)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,0,106,w,128,(135,132,124))
+    for x in range(18,128,34): _rect(p,w,h,x,0,x+3,106,(154,153,145))
+    _png(root/"textures"/"H42REAR.png",w,h,p)
+
+    w=h=128; p=_canvas(w,h)
+    _rect(p,w,h,0,0,w,h,(187,188,181))
+    _rect(p,w,h,6,6,122,116,(37,43,44))
+    for y in range(8,114):
+        for x in range(8,120):
+            _set(p,w,h,x,y,_noise((43,51,51),x,y,5,117))
+    _rect(p,w,h,61,6,67,116,(169,170,163))
+    _rect(p,w,h,6,57,122,63,(169,170,163))
+    _png(root/"textures"/"H42RWIN.png",w,h,p)
+
+    w=64; h=128; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w): _set(p,w,h,x,y,_noise((202,201,190),x,y,4,123))
+    _rect(p,w,h,7,8,57,118,(211,209,198))
+    _rect(p,w,h,13,17,51,53,(48,55,56))
+    _line(p,w,h,31,17,31,53,2,(161,161,154))
+    _disc(p,w,h,51,67,3,3,(91,87,79))
+    _png(root/"textures"/"H42RDR.png",w,h,p)
+
+def _environment_sprites(root):
+    # Street lamp.
+    w,h=48,128; p=_canvas(w,h)
+    _rect(p,w,h,22,24,27,124,(72,73,70))
+    _rect(p,w,h,18,18,31,26,(91,92,87))
+    _rect(p,w,h,14,12,35,20,(176,171,149))
+    _disc(p,w,h,24,15,8,4,(226,215,169))
+    _png(root/"sprites"/"STLPA0.png",w,h,p,24,124)
+
+    # Mature irregular tree, not a green oval.
+    w,h=96,128; p=_canvas(w,h)
+    _rect(p,w,h,43,58,52,124,(78,57,40))
+    _rect(p,w,h,35,76,45,84,(78,57,40))
+    _rect(p,w,h,51,70,62,78,(78,57,40))
+    for cx,cy,rx,ry,col in [
+        (48,44,31,30,(48,74,43)),(27,50,22,24,(54,84,47)),
+        (67,48,24,25,(42,69,40)),(46,25,22,20,(59,91,50)),
+        (72,29,16,18,(51,80,45)),(21,30,15,17,(62,93,52))
+    ]: _disc(p,w,h,cx,cy,rx,ry,col)
+    _png(root/"sprites"/"TREEA0.png",w,h,p,48,124)
+
+    # Park bench.
+    w,h=80,64; p=_canvas(w,h)
+    _rect(p,w,h,8,24,72,30,(104,71,44)); _rect(p,w,h,8,35,72,41,(104,71,44))
+    _rect(p,w,h,15,12,65,18,(112,75,45)); _rect(p,w,h,15,18,19,55,(61,61,58)); _rect(p,w,h,61,18,65,55,(61,61,58))
+    _png(root/"sprites"/"BNCHA0.png",w,h,p,40,56)
+
+    # Swing frame.
+    w,h=96,96; p=_canvas(w,h); metal=(75,81,82)
+    _line(p,w,h,12,88,28,15,4,metal); _line(p,w,h,84,88,68,15,4,metal); _line(p,w,h,26,15,70,15,4,metal)
+    for x in (39,57):
+        _line(p,w,h,x,18,x,60,1,(46,47,46)); _line(p,w,h,x+8,18,x+8,60,1,(46,47,46)); _rect(p,w,h,x,60,x+8,64,(121,71,44))
+    _png(root/"sprites"/"SWNGA0.png",w,h,p,48,90)
+
+    # Slide and climber.
+    w,h=96,80; p=_canvas(w,h)
+    _rect(p,w,h,24,18,48,25,(149,62,46)); _line(p,w,h,26,25,16,70,4,(72,78,79)); _line(p,w,h,46,25,78,67,6,(169,80,52))
+    _line(p,w,h,22,18,22,68,3,(72,78,79)); _line(p,w,h,50,18,50,56,3,(72,78,79))
+    _png(root/"sprites"/"SLIDA0.png",w,h,p,48,72)
+
+    w,h=96,80; p=_canvas(w,h)
+    for x in (18,38,58,78): _line(p,w,h,x,22,x,72,3,metal)
+    _line(p,w,h,18,22,78,22,3,metal); _line(p,w,h,18,46,78,46,2,metal); _line(p,w,h,18,70,78,70,3,metal)
+    _rect(p,w,h,30,28,66,36,(139,65,45))
+    _png(root/"sprites"/"CLMBA0.png",w,h,p,48,72)
+
+    # General wheelie bin.
+    w,h=48,64; p=_canvas(w,h)
+    _rect(p,w,h,11,16,37,54,(53,79,56)); _rect(p,w,h,8,12,40,19,(69,92,64))
+    _disc(p,w,h,15,56,5,5,(28,29,28)); _disc(p,w,h,33,56,5,5,(28,29,28))
+    _png(root/"sprites"/"WBINA0.png",w,h,p,24,58)
+
+def _extra_street_details(root):
+    # Fixed-orientation multi-angle white single-cab tray ute.
+    body=(218,218,211); shadow=(151,153,150); dark=(42,48,50); tray=(157,160,157)
+    tyre=(28,29,28); rim=(126,128,125)
+    def wheel(p,w,h,cx,cy):
+        _disc(p,w,h,cx,cy,8,8,tyre); _disc(p,w,h,cx,cy,3,3,rim)
+    def view(rot):
+        if rot in (1,5):
+            w,h=78,62; p=_canvas(w,h); wheel(p,w,h,16,50); wheel(p,w,h,62,50)
+            _rect(p,w,h,12,27,66,49,body if rot==1 else tray)
+            if rot==1:
+                _rect(p,w,h,20,16,58,31,body); _rect(p,w,h,24,18,54,29,dark); _rect(p,w,h,20,34,58,42,(71,74,72))
+            else:
+                _rect(p,w,h,18,23,60,34,tray); _line(p,w,h,18,24,60,24,2,(102,104,102)); _rect(p,w,h,22,30,56,42,(139,141,138))
+            return w,h,p
+        if rot in (3,7):
+            w,h=126,58; p=_canvas(w,h); wheel(p,w,h,31,47); wheel(p,w,h,96,47)
+            if rot==3:
+                _rect(p,w,h,10,28,72,45,tray); _rect(p,w,h,72,21,111,45,body); _rect(p,w,h,81,12,108,30,body); _rect(p,w,h,84,15,105,28,dark)
+            else:
+                _rect(p,w,h,54,28,116,45,tray); _rect(p,w,h,15,21,54,45,body); _rect(p,w,h,18,12,45,30,body); _rect(p,w,h,21,15,42,28,dark)
+            return w,h,p
+        w,h=104,60; p=_canvas(w,h); mirror=rot in (6,8)
+        if not mirror:
+            _rect(p,w,h,12,29,62,45,tray); _rect(p,w,h,58,22,92,45,body); _rect(p,w,h,65,13,89,30,body); _rect(p,w,h,68,16,86,28,dark); wheel(p,w,h,28,48); wheel(p,w,h,80,48)
+        else:
+            _rect(p,w,h,42,29,92,45,tray); _rect(p,w,h,12,22,46,45,body); _rect(p,w,h,15,13,39,30,body); _rect(p,w,h,18,16,36,28,dark); wheel(p,w,h,24,48); wheel(p,w,h,76,48)
+        return w,h,p
+    for rot in range(1,9):
+        w,h,p=view(rot); _png(root/"sprites"/f"HILXA{rot}.png",w,h,p,w//2,h-4)
+
+    # Simple parked sedan with 8 rotational lumps, so it does not turn to face the player.
+    def sedan(prefix,base):
+        for rot in range(1,9):
+            w,h=96,50; p=_canvas(w,h)
+            if rot in (1,5):
+                _disc(p,w,h,20,42,7,7,(25,26,26)); _disc(p,w,h,76,42,7,7,(25,26,26))
+                _rect(p,w,h,12,23,84,41,base); _rect(p,w,h,25,12,71,28,base); _rect(p,w,h,30,15,66,26,(42,50,55))
+            else:
+                _disc(p,w,h,27,42,7,7,(25,26,26)); _disc(p,w,h,69,42,7,7,(25,26,26))
+                _rect(p,w,h,8,24,88,41,base); _rect(p,w,h,26,12,70,29,base); _rect(p,w,h,31,15,65,27,(42,50,55))
+            _png(root/"sprites"/f"{prefix}A{rot}.png",w,h,p,48,46)
+    sedan("CARW",(181,184,180)); sedan("CARD",(66,72,75))
+
+    def bin_sprite(name,lid):
+        w,h=44,62; p=_canvas(w,h); shell=(48,71,51)
+        _rect(p,w,h,10,16,34,52,shell); _rect(p,w,h,7,10,37,18,lid)
+        _disc(p,w,h,14,54,5,5,(27,28,27)); _disc(p,w,h,31,54,5,5,(27,28,27))
+        _png(root/"sprites"/f"{name}A0.png",w,h,p,22,57)
+    bin_sprite("BINR",(153,49,43)); bin_sprite("BINY",(196,166,45))
+
+    w,h=64,48; p=_canvas(w,h)
+    for cx,cy,rx,ry,col in [(19,27,15,15,(56,91,50)),(35,22,18,18,(48,81,44)),(50,29,13,13,(64,96,52)),(30,34,17,12,(53,86,47))]:
+        _disc(p,w,h,cx,cy,rx,ry,col)
+    _rect(p,w,h,29,35,34,47,(75,54,38))
+    _png(root/"sprites"/"SHRBA0.png",w,h,p,32,46)
+
+    # Dug-under-fence evidence: dark hole, disturbed soil and loose board.
+    w,h=72,48; p=_canvas(w,h)
+    _disc(p,w,h,34,38,24,8,(55,39,29))
+    _disc(p,w,h,34,37,15,5,(20,18,16))
+    _line(p,w,h,12,27,58,31,4,(89,65,44)); _line(p,w,h,49,19,58,37,5,(71,54,39))
+    _png(root/"sprites"/"DOGDA0.png",w,h,p,36,45)
+
+    # Small spare-key sprite.
+    w,h=32,24; p=_canvas(w,h)
+    _disc(p,w,h,8,10,6,6,(184,155,72)); _disc(p,w,h,8,10,3,3,(30,30,28))
+    _rect(p,w,h,13,8,29,12,(184,155,72)); _rect(p,w,h,23,12,27,17,(184,155,72))
+    _png(root/"sprites"/"BDKYA0.png",w,h,p,16,19)
+
+    # Finer outdoor flats.
+    _flat(root,"H42LWN",(72,105,59),"grass")
+    _flat(root,"H42VERG",(77,102,62),"grass")
+    _flat(root,"H42DRV",(156,154,148),"concrete")
+    _flat(root,"H42PATH",(167,165,158),"concrete")
+    _flat(root,"H42ROAD",(61,63,62),"asphalt")
+    _flat(root,"H42BED",(91,69,47),"concrete")
+    _flat(root,"H42SAFE",(174,112,65),"pave")
+
 def generate_house42_assets(root: Path):
     root=Path(root)
     _plaster(root,"H42WALL",(211,205,192))
@@ -318,6 +549,15 @@ def generate_house42_assets(root: Path):
     _blinds(root)
     _door(root,"H42DOOR",True)
     _door(root,"H42WDR",False)
+    _front_door(root)
+    _front_rear_facades(root)
+    _sofa(root)
+    _appliance(root)
+    _doorbell_sprite(root)
+    _cola_sprite(root)
+    _environment_sprites(root)
+    _extra_street_details(root)
+    _wav(root,"doorbell.wav",780,.18,.03)
     _curb(root)
     _neighbor(root,"H42NBR1",False)
     _neighbor(root,"H42NBR2",True)
