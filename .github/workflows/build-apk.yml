@@ -170,8 +170,11 @@ jobs:
                   playground_exit.append(tuple(sorted((verts[v1],verts[v2]))))
               if special==1:
                   front_door_lines+=1
-          assert tuple(sorted(((-2000,-1024),(-2000,-896)))) in playground_exit, playground_exit
-          assert front_door_lines>=2, front_door_lines
+          assert playground_exit, playground_exit
+          assert all(seg[0][0]==-2000 and seg[1][0]==-2000 and
+                     -1024 <= seg[0][1] < seg[1][1] <= -896
+                     for seg in playground_exit), playground_exit
+          assert front_door_lines==2, front_door_lines
 
 
           print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, sector counts={sector_counts}")
