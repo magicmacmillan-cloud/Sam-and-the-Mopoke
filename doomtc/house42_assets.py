@@ -491,13 +491,19 @@ def generate_house42_assets(root: Path):
       ("H42WOOD",(132,83,48),"wood"),
       ("H42VNYL",(164,142,106),"vinyl"),
       ("H42TILF",(184,174,153),"tile"),
-      ("H42CONC",(145,143,137),"concrete"),
-      ("H42ASPH",(67,69,68),"asphalt"),
-      ("H42GRAS",(62,88,53),"grass"),
+      ("H42CONC",(151,149,143),"concrete"),
+      ("H42ASPH",(64,66,65),"asphalt"),
+      ("H42GRAS",(66,94,56),"grass"),
       ("H42PAVE",(135,109,86),"pave"),
       ("H42CEIL",(217,213,202),"tile"),
       ("H42DIRT",(95,78,59),"concrete"),
       ("H42ROOF",(71,69,66),"roof"),
+      ("H42SAFE",(174,112,65),"pave"),
+      ("H44ROOF",(103,72,58),"roof"),
+      ("H40ROOF",(83,77,69),"roof"),
+      ("H39ROOF",(112,74,57),"roof"),
+      ("H37ROOF",(119,77,58),"roof"),
+      ("H35ROOF",(101,69,56),"roof"),
     ]:
         _flat(root,*spec)
 
