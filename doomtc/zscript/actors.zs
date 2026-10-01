@@ -291,7 +291,7 @@ class LincolnPhone42 : Actor
   override bool Used(Actor u)
   {
     if(!u || !u.player) return false;
-    A_Log("LINCOLN: Sam ran away to the park. I'm going after him. I've locked the doors behind us so it can't get us. If it's really still you Dad, help us stay safe.");
+    A_Log("LINCOLN: Sam ran away to the park. I'm going after him. I've locked the doors behind us so it can't get us. If it's really still you, Dad, help us stay safe.");
     if(!u.FindInventory("LincolnPhoneRead")) u.GiveInventory("LincolnPhoneRead",1);
     return true;
   }
@@ -299,7 +299,7 @@ class LincolnPhone42 : Actor
 
 class FrontDoorPuzzleNote : Actor
 {
-  Default { Radius 4; Height 8; Scale 0.46; +USESPECIAL +NOBLOCKMAP; Tag "Note taped to the front door"; }
+  Default { Radius 3; Height 6; Scale 0.30; +USESPECIAL +NOBLOCKMAP; Tag "Note taped to the inside of the front door"; }
   States { Spawn: FDNT A -1; Stop; }
   override bool Used(Actor u)
   {
@@ -309,7 +309,7 @@ class FrontDoorPuzzleNote : Actor
       A_Log("A note is taped to the inside of the front door. I should check Lincoln's room first.");
       return true;
     }
-    A_Log("LINCOLN: I've hidden the key in Sam's puzzle box. Code is e-scooters, xbox, eggs, projector.");
+    A_Log("LINCOLN: I've hidden the key in Sam's puzzle box. Code is: e-scooters, Xbox, eggs, projector.");
     if(!u.FindInventory("FrontDoorNoteRead")) u.GiveInventory("FrontDoorNoteRead",1);
     return true;
   }
@@ -454,7 +454,11 @@ class MasterProjector42 : Actor
     {
       activated=true;
       A_Log("The projector clicks on: 3... 2... 1... 0.");
-      Spawn("ProjectorCountdown42",Pos,ALLOW_REPLACE);
+      Vector3 wallspot = Pos;
+      wallspot.X = 118;
+      wallspot.Y = 820;
+      wallspot.Z = 52;
+      Spawn("ProjectorCountdown42",wallspot,ALLOW_REPLACE);
     }
     else A_Log("The projector stays on 0.");
     return true;
@@ -463,7 +467,7 @@ class MasterProjector42 : Actor
 
 class SamGateNote42 : Actor
 {
-  Default { Radius 4; Height 8; Scale 0.46; +USESPECIAL +NOBLOCKMAP; Tag "Sam's note"; }
+  Default { Radius 3; Height 6; Scale 0.30; +USESPECIAL +NOBLOCKMAP; Tag "Sam's note taped to the gate"; }
   States { Spawn: SGNT A -1; Stop; }
   override bool Used(Actor u)
   {
