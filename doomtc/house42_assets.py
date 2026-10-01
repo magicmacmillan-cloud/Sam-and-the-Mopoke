@@ -533,6 +533,99 @@ def _extra_street_details(root):
     _flat(root,"H42BED",(91,69,47),"concrete")
     _flat(root,"H42SAFE",(174,112,65),"pave")
 
+def _puzzle_story_assets(root):
+    # Small coloured keys for the two house/gate locks.
+    for name,col in [("FDKY",(204,177,57)),("PGKY",(158,49,45))]:
+        w,h=32,24; p=_canvas(w,h)
+        _disc(p,w,h,8,10,6,6,col); _disc(p,w,h,8,10,3,3,(28,28,27))
+        _rect(p,w,h,13,8,29,12,col); _rect(p,w,h,23,12,27,18,col)
+        _png(root/"sprites"/f"{name}A0.png",w,h,p,16,19)
+
+    # Lincoln's phone.
+    w,h=30,46; p=_canvas(w,h)
+    _rect(p,w,h,4,2,26,44,(34,36,38)); _rect(p,w,h,6,6,24,38,(49,63,71))
+    for yy in (12,17,22,27,32): _rect(p,w,h,8,yy,22,yy+1,(184,196,194))
+    _disc(p,w,h,15,41,2,2,(97,99,98))
+    _png(root/"sprites"/"PHONA0.png",w,h,p,15,42)
+
+    # Notes taped to front door / playground gate.
+    for name,base,ink in [("FDNT",(215,203,166),(76,58,49)),("SGNT",(196,184,146),(111,33,31))]:
+        w,h=34,42; p=_canvas(w,h)
+        _rect(p,w,h,4,4,30,38,base)
+        for yy in (11,16,21,26,31): _line(p,w,h,8,yy,26,yy,1,ink)
+        _rect(p,w,h,13,1,21,6,(176,166,139),210)
+        _png(root/"sprites"/f"{name}A0.png",w,h,p,17,38)
+
+    # Sam's puzzle box.
+    w,h=72,42; p=_canvas(w,h)
+    _rect(p,w,h,6,12,66,38,(104,70,47)); _rect(p,w,h,9,7,63,16,(139,93,57))
+    _line(p,w,h,8,17,64,17,2,(64,45,34)); _rect(p,w,h,28,19,44,29,(46,44,42))
+    for x in (31,36,41): _disc(p,w,h,x,24,1,1,(195,173,82))
+    _png(root/"sprites"/"PBOXA0.png",w,h,p,36,38)
+
+    # Number buttons 0-9: compact high-contrast keypad tiles.
+    segs={
+      0:"abcedf",1:"bc",2:"abdeg",3:"abcdg",4:"bcfg",
+      5:"acdfg",6:"acdefg",7:"abc",8:"abcdefg",9:"abcdfg"
+    }
+    coords={
+      "a":(8,5,22,8),"b":(21,7,24,18),"c":(21,19,24,30),
+      "d":(8,29,22,32),"e":(5,19,8,30),"f":(5,7,8,18),"g":(8,17,22,20)
+    }
+    # Correct the zero map explicitly; typo-safe and visually complete.
+    segs[0]="abcdef"
+    for d in range(10):
+        w=h=36; p=_canvas(w,h)
+        _rect(p,w,h,2,2,34,34,(54,51,47)); _rect(p,w,h,4,4,32,32,(25,25,24))
+        for key in segs[d]:
+            x0,y0,x1,y1=coords[key]; _rect(p,w,h,x0,y0,x1,y1,(210,171,61))
+        _png(root/"sprites"/f"D{d}BTA0.png",w,h,p,18,32)
+
+    # Two e-scooters in the garage.
+    w,h=42,70; p=_canvas(w,h)
+    _disc(p,w,h,10,60,7,7,(27,28,28)); _disc(p,w,h,32,60,7,7,(27,28,28))
+    _line(p,w,h,10,57,28,57,4,(78,82,83)); _line(p,w,h,28,57,25,15,4,(78,82,83))
+    _line(p,w,h,18,16,34,16,3,(78,82,83)); _disc(p,w,h,34,16,4,4,(35,36,36))
+    _png(root/"sprites"/"ESCOA0.png",w,h,p,21,64)
+
+    # TV with Xbox console underneath.
+    w,h=70,54; p=_canvas(w,h)
+    _rect(p,w,h,8,5,62,37,(40,42,43)); _rect(p,w,h,12,9,58,33,(31,45,55))
+    _rect(p,w,h,15,40,55,49,(46,47,46)); _rect(p,w,h,25,42,45,47,(65,69,67))
+    _disc(p,w,h,49,44,2,2,(77,161,89))
+    _png(root/"sprites"/"XBOXA0.png",w,h,p,35,49)
+
+    # Fridge; interaction tells player there are exactly three eggs.
+    w,h=46,82; p=_canvas(w,h)
+    _rect(p,w,h,7,4,39,78,(210,208,199)); _line(p,w,h,7,31,39,31,2,(158,157,150))
+    _rect(p,w,h,11,12,14,27,(119,118,113)); _rect(p,w,h,11,39,14,63,(119,118,113))
+    _png(root/"sprites"/"FRDGA0.png",w,h,p,23,78)
+
+    # Projector body.
+    w,h=48,30; p=_canvas(w,h)
+    _rect(p,w,h,5,9,43,25,(112,115,113)); _disc(p,w,h,37,16,7,7,(49,59,64))
+    _disc(p,w,h,37,16,4,4,(174,201,205)); _rect(p,w,h,10,5,24,10,(83,86,84))
+    _png(root/"sprites"/"PROJA0.png",w,h,p,24,25)
+
+    # Projected countdown: 3 -> 2 -> 1 -> 0, then remain on 0.
+    def projected_digit(name,d):
+        w=h=64; p=_canvas(w,h); glow=(193,222,213)
+        seg={
+          0:"abcdef",1:"bc",2:"abdeg",3:"abcdg"
+        }[d]
+        cc={"a":(18,10,46,14),"b":(44,13,49,31),"c":(44,33,49,51),
+            "d":(18,50,46,54),"e":(15,33,20,51),"f":(15,13,20,31),"g":(18,30,46,35)}
+        for k in seg:
+            x0,y0,x1,y1=cc[k]; _rect(p,w,h,x0,y0,x1,y1,glow,150)
+        _png(root/"sprites"/f"{name}.png",w,h,p,32,54)
+    projected_digit("PJCTA0",3); projected_digit("PJCTB0",2); projected_digit("PJCTC0",1); projected_digit("PJCTD0",0)
+
+    # Neighbour letterbox.
+    w,h=42,62; p=_canvas(w,h)
+    _rect(p,w,h,17,26,23,60,(93,87,77)); _rect(p,w,h,6,9,36,31,(119,106,87))
+    _rect(p,w,h,9,13,33,18,(54,52,48)); _disc(p,w,h,30,23,2,2,(181,172,151))
+    _png(root/"sprites"/"LBOXA0.png",w,h,p,21,59)
+
 def generate_house42_assets(root: Path):
     root=Path(root)
     _plaster(root,"H42WALL",(211,205,192))
@@ -557,6 +650,7 @@ def generate_house42_assets(root: Path):
     _cola_sprite(root)
     _environment_sprites(root)
     _extra_street_details(root)
+    _puzzle_story_assets(root)
     _wav(root,"doorbell.wav",780,.18,.03)
     _curb(root)
     _neighbor(root,"H42NBR1",False)
