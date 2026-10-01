@@ -5,6 +5,7 @@ from sam_weapon_assets import generate_sam_assets
 from world_assets import generate_world_assets
 from polish_assets import generate_polish_assets
 from visual_stability import apply_visual_stability
+from house42_assets import generate_house42_assets
 
 ROOT = Path(__file__).resolve().parent
 
@@ -53,6 +54,9 @@ generate_polish_assets(ROOT)
 # Final cleanup prevents the two bugs seen in the older APKs: first-person sprites
 # hovering in the top-left and mixed A0/A1..A8 monster frames flickering between art sets.
 apply_visual_stability(ROOT)
+
+# MAP01 source-specific domestic pass comes last so generic polish cannot overwrite it.
+generate_house42_assets(ROOT)
 
 print(f"Installed {len(expected)} definitive Sam sprite frames from uploaded sheet")
 print("Sam and the Mopoke polished Doom II assets generated")
