@@ -1,6 +1,6 @@
 {
-  "title": "42 Arnold Street MAP01 source-driven reconstruction v16",
-  "purpose": "Builder handoff for Doom II/GZDoom IWAD. Use this geometry/material vocabulary rather than inventing a generic house.",
+  "title": "42 Arnold Street MAP01 source-driven reconstruction — AI handoff",
+  "purpose": "Engine-independent MAP01 handoff for another AI to build into a Doom II/GZDoom IWAD. No APK or Android engine is included.",
   "coordinate_system": {
     "north": "+Y/backyard",
     "east": "+X/driveway toward no.40",
@@ -418,7 +418,13 @@
       "H42GRAS": "suburban grass",
       "H42PAVE": "rear/patio paving",
       "H42CEIL": "off-white ceiling",
-      "H42ROOF": "dark grey tiled-roof massing"
+      "H42ROOF": "dark grey tiled-roof massing",
+      "H42SAFE": "orange/tan playground safety surfacing",
+      "H44ROOF": "No.44 brown-red tiled roof",
+      "H40ROOF": "No.40 darker grey/brown tiled roof",
+      "H39ROOF": "No.39 red-brown tiled roof",
+      "H37ROOF": "No.37 red-brown tiled roof",
+      "H35ROOF": "No.35 brown-red tiled roof"
     }
   },
   "walkthrough": [
@@ -632,6 +638,18 @@
       "playground bench, swings, slide/climber and secondary play feature",
       "wheelie bins"
     ],
-    "route_note": "The playground is reached from the street/reserve side. It is not connected to the rear yard."
+    "route_note": "The playground is reached from the street/reserve side. It is not connected to the rear yard.",
+    "reserve_paths": [
+      "pedestrian path from Arnold/Collenso into playground",
+      "winding reserve path continues north-west/north through the open grass area"
+    ],
+    "accuracy_notes": [
+      "No.44 is between 42 Arnold and Collenso Street.",
+      "No.40 is immediately east/right of 42 Arnold.",
+      "39, 37 and 35 are represented opposite Arnold Street.",
+      "Playground is in the reserve at the Arnold/Collenso side and is not connected to the backyard.",
+      "Footpaths and grass nature strips are separately represented from the asphalt carriageways.",
+      "Neighbour roofs are given separate material IDs so the other AI can keep the satellite colour differences."
+    ]
   }
 }
