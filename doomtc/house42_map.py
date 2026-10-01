@@ -68,8 +68,8 @@ AREAS = [
     # --- reserve and playground west of Collenso / up Arnold Street ---
     A(-2500,-1500,-1248,1900,"RESERVE"),
     A(-2240,-1180,-1540,-700,"PLAY"),
-    A(-2240,-1030,-2140,-760,"PLAYLIT"),
-    A(-2140,-1030,-1880,-760,"PLAYLIT"),
+    A(-2340,-1030,-2240,-760,"PLAYLIT"),
+    A(-2208,-1030,-1880,-760,"PLAYLIT"),
     A(-1620,-980,-1248,-700,"FOOT"),
     A(-1880,-820,-1620,-750,"FOOT"),
     A(-1700,-700,-1600,-300,"FOOT"),
@@ -372,7 +372,7 @@ def build_house42_map():
 
     # MAP01 ends only after Dad actually enters the playground shown in the
     # supplied satellite view, not at the house/front boundary.
-    EXIT=norm_edge((-2140,-960),(-2140,-832))
+    EXIT=norm_edge((-2340,-960),(-2340,-832))
 
     def add_boundary(p1,p2,sec0,sec1=None,st0=None,st1=None):
         key=norm_edge(p1,p2)
@@ -459,7 +459,7 @@ def build_house42_map():
         (220,1060,180,15741,7),      # Lincoln's phone in his bedroom
         (404,410,180,15742,7),       # note on inside of front door
         (560,820,180,15743,7),       # Sam's puzzle box in Sam's room
-        (560,820,180,15104,7),       # small Sam note/room detail
+        (660,900,180,15104,7),       # small Sam room note/detail
         (420,120,270,15101,7),       # footprints/front path
         (-980,-430,180,15106,7),     # false trail near Arnold/Collenso
         (-2180,-895,180,15744,7),    # Sam's note taped to playground gate
