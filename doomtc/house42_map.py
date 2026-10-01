@@ -1,7 +1,9 @@
 import struct
 
 # Detailed classic-Doom MAP01 reconstruction of the 42 Arnold house/street block.
-# Coordinate convention: north/backyard = +Y, east/driveway = +X.
+# Coordinate convention: north/backyard = +Y, east/right-side driveway = +X.
+# FRONT FACADE / ARNOLD STREET = low Y. REAR VERANDA / BACKYARD = high Y.
+# Never mirror these ends when rebuilding MAP01.
 # Approximate scale: 64 map units ~= 1 metre.
 
 def lump(name,data=b""):
@@ -39,6 +41,7 @@ STYLE = {
     "LOT":     (0,192,"H42LWN","F_SKY1",150,"H42FENC"),
     "GARDEN":  (0,192,"H42BED","F_SKY1",150,"H42FENC"),
     "DOOR":    (0,0,"H42TILF","H42CEIL",160,"H42FRNT"),
+    "REARDOOR":(0,0,"H42CONC","H42CEIL",152,"H42RDR"),
     "FURNWOOD":(40,128,"H42WOOD","H42CEIL",136,"H42PANL"),
     "FURNFAB": (36,128,"H42CARP","H42CEIL",132,"H42SOFA"),
     "FIXWHITE":(44,128,"H42TILF","H42CEIL",156,"H42WDR"),
@@ -221,7 +224,8 @@ AREAS = [
     A(528,1040,576,1104,"KITCH"),    # kitchen <-> laundry
     A(432,1136,480,1184,"KITCH"),    # kitchen -> sunroom
     A(608,1136,656,1184,"LAUNDRY"),  # laundry -> sunroom
-    A(320,1296,384,1344,"PATIO"),    # sunroom -> backyard
+    A(320,1296,384,1312,"REARDOOR"),# actual rear door / veranda threshold
+    A(320,1312,384,1344,"PATIO"),    # rear door -> backyard/patio
     A(688,1216,752,1280,"DRIVE"),    # sunroom -> carport side
 
     # Front fence openings. The 16-unit front boundary gap becomes the fence;
@@ -243,8 +247,8 @@ LINE_TEX = {
     norm_edge((704,768),(704,896)):"H42WIND",   # bedroom 3 east
     norm_edge((96,1024),(96,1104)):"H42WIND",   # meals/rear side
     norm_edge((704,1024),(704,1104)):"H42WIND", # laundry side
-    norm_edge((128,1312),(288,1312)):"H42WIND", # sunroom rear glazing
-    norm_edge((384,1312),(560,1312)):"H42WIND",
+    norm_edge((128,1312),(288,1312)):"H42RWIN", # rear veranda/sunroom glazing
+    norm_edge((400,1312),(560,1312)):"H42RWIN",
     norm_edge((704,432),(704,608)):"H42BRIK",   # chimney mass on right facade
     # neighbour facade windows for context
     norm_edge((-640,320),(-384,320)):"H42WIND",
@@ -252,7 +256,7 @@ LINE_TEX = {
 }
 
 HOUSE_STYLES={"ENTRY","HALL","LOUNGE","BED","BEDWOOD","BATH","MEALS","KITCH","LAUNDRY","SUNROOM"}
-DETAIL_STYLES={"DOOR","FURNWOOD","FURNFAB","FIXWHITE","FIXPINK","APPLI","POST","PLAYEQ"}
+DETAIL_STYLES={"DOOR","REARDOOR","FURNWOOD","FURNFAB","FIXWHITE","FIXPINK","APPLI","POST","PLAYEQ"}
 
 def _is_house_exterior(p1,p2,st):
     if st not in HOUSE_STYLES:
@@ -293,6 +297,16 @@ def _boundary_texture(p1,p2,st):
         lo,hi=sorted((x1,x2))
         if 16 <= lo and hi <= 960:
             return "H42GATE"
+
+    # FRONT and REAR are intentionally different. Arnold Street is south/low-Y.
+    # The rear veranda/sunroom is north/high-Y. Never use front-facade art there.
+    if y1==y2:
+        y=y1; lo,hi=sorted((x1,x2))
+        if y in (320,384) and 96 <= lo and hi <= 704:
+            return "H42FACA"
+        if y==1312 and 96 <= lo and hi <= 704:
+            return "H42REAR"
+
     if _is_house_exterior(p1,p2,st):
         return "H42SIDN"
     return STYLE[st][5]
@@ -321,7 +335,7 @@ def build_house42_map():
     for p1,p2 in LINE_TEX:
         xs.add(p1[0]); xs.add(p2[0]); ys.add(p1[1]); ys.add(p2[1])
     # Extra cuts split the right-side chimney and front facade into useful line spans.
-    xs.update((144,288,512,672,128,560,1260,1516,-640,-384,-2050,-1880,-1740,-1540))
+    xs.update((128,144,288,320,384,400,512,560,672,1260,1516,-640,-384,-2050,-1880,-1740,-1540))
     ys.update((432,608,688,768,848,928,1024,1104,-960,-864,-832,-768,-704))
     xs=sorted(xs); ys=sorted(ys)
 
@@ -374,18 +388,19 @@ def build_house42_map():
             linedefs.append((vid(*p1),vid(*p2),1,special,0,side(sec0,middle=wall),0xFFFF))
         else:
             w0=STYLE[st0][5]; w1=STYLE[st1][5]
-            if "DOOR" in (st0,st1):
-                # Doom special 1 acts on the linedef back sector. Always orient
-                # the line so the narrow DOOR sector is the back sector, whether
-                # Dad presses USE from the porch or from the entry hall.
-                if st1 == "DOOR":
+            if st0 in ("DOOR","REARDOOR") or st1 in ("DOOR","REARDOOR"):
+                door_style = st1 if st1 in ("DOOR","REARDOOR") else st0
+                dtex = "H42FRNT" if door_style=="DOOR" else "H42RDR"
+                # Doom special 1 acts on the linedef back sector. Orient so the
+                # narrow door sector is always the back sector.
+                if st1 == door_style:
                     linedefs.append((vid(*p1),vid(*p2),4,1,0,
-                                     side(sec0,upper="H42FRNT",lower="H42FRNT"),
-                                     side(sec1,upper="H42FRNT",lower="H42FRNT")))
+                                     side(sec0,upper=dtex,lower=dtex),
+                                     side(sec1,upper=dtex,lower=dtex)))
                 else:
                     linedefs.append((vid(*p2),vid(*p1),4,1,0,
-                                     side(sec1,upper="H42FRNT",lower="H42FRNT"),
-                                     side(sec0,upper="H42FRNT",lower="H42FRNT")))
+                                     side(sec1,upper=dtex,lower=dtex),
+                                     side(sec0,upper=dtex,lower=dtex)))
             elif _solid_boundary(p1,p2,st0,st1):
                 # Blocking two-sided midtexture = actual wall while retaining valid
                 # sectors on both sides for the yard/porch/driveway.
