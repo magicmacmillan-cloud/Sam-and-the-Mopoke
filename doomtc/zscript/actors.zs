@@ -177,3 +177,99 @@ class TheMopoke : Actor
     Level.ExitLevel(0, false);
   }
 }
+
+
+class SamEscapeRunner : Actor
+{
+  int waypoint;
+
+  Default
+  {
+    Radius 10;
+    Height 48;
+    Speed 10;
+    +NOBLOCKMAP;
+    +NOCLIP;
+    +NOINTERACTION;
+    +FRIENDLY;
+    Tag "Sam";
+  }
+
+  override void Tick()
+  {
+    Super.Tick();
+    if(level.levelnum != 1)
+    {
+      Vel.X = 0;
+      Vel.Y = 0;
+      return;
+    }
+
+    double tx;
+    double ty;
+    switch(waypoint)
+    {
+      case 0: tx=760;   ty=1360;  break; // cut across backyard toward side drive
+      case 1: tx=820;   ty=900;   break; // down the east/right driveway
+      case 2: tx=820;   ty=220;   break; // front gate
+      case 3: tx=620;   ty=-360;  break; // Arnold Street
+      case 4: tx=-420;  ty=-430;  break; // west along Arnold
+      case 5: tx=-1080; ty=-430;  break; // Collenso intersection
+      case 6: tx=-1080; ty=-820;  break; // down Collenso edge
+      case 7: tx=-1500; ty=-900;  break; // reserve path
+      case 8: tx=-1840; ty=-960;  break; // playground entrance
+      default:
+        Vel.X=0;
+        Vel.Y=0;
+        SetStateLabel("Gone");
+        return;
+    }
+
+    double dx=tx-Pos.X;
+    double dy=ty-Pos.Y;
+    double dist=sqrt(dx*dx+dy*dy);
+    if(dist < 24)
+    {
+      waypoint++;
+      Vel.X=0;
+      Vel.Y=0;
+      return;
+    }
+
+    Vel.X=dx/dist*Speed;
+    Vel.Y=dy/dist*Speed;
+    Vel.Z=0;
+  }
+
+  States
+  {
+  Spawn:
+    SAMR ABCDEF 3;
+    Loop;
+  Gone:
+    TNT1 A -1;
+    Stop;
+  }
+}
+
+class HouseDoorbell : Actor
+{
+  Default
+  {
+    Radius 5;
+    Height 16;
+    Scale 0.45;
+    +USESPECIAL;
+    +NOBLOCKMAP;
+    Tag "Doorbell";
+  }
+  States { Spawn: DBEL A -1; Stop; }
+
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    A_PlaySound("sam/doorbell", CHAN_BODY);
+    A_Log("The doorbell rings inside the empty house.");
+    return true;
+  }
+}
