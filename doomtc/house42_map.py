@@ -332,11 +332,17 @@ def build_house42_map():
         else:
             w0=STYLE[st0][5]; w1=STYLE[st1][5]
             if "DOOR" in (st0,st1):
-                # Doom special 1: normal reusable front door. Put the special on
-                # both door boundaries so USE works naturally from porch or entry.
-                linedefs.append((vid(*p1),vid(*p2),4,1,0,
-                                 side(sec0,upper=w0,lower=w0),
-                                 side(sec1,upper=w1,lower=w1)))
+                # Doom special 1 acts on the linedef back sector. Always orient
+                # the line so the narrow DOOR sector is the back sector, whether
+                # Dad presses USE from the porch or from the entry hall.
+                if st1 == "DOOR":
+                    linedefs.append((vid(*p1),vid(*p2),4,1,0,
+                                     side(sec0,upper="H42FRNT",lower="H42FRNT"),
+                                     side(sec1,upper="H42FRNT",lower="H42FRNT")))
+                else:
+                    linedefs.append((vid(*p2),vid(*p1),4,1,0,
+                                     side(sec1,upper="H42FRNT",lower="H42FRNT"),
+                                     side(sec0,upper="H42FRNT",lower="H42FRNT")))
             elif _solid_boundary(p1,p2,st0,st1):
                 # Blocking two-sided midtexture = actual wall while retaining valid
                 # sectors on both sides for the yard/porch/driveway.
