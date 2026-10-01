@@ -35,13 +35,17 @@ def write_wad(path,lumps,ident=b"PWAD"):
 def geometry_map_lumps():
     lumps,stats=build_house42_map()
     clean=[]
+    kept_count=0
     for name,body in lumps:
         if wad_name(name)=="THINGS":
-            # Clean handoff: only a player start. Story/scenery placements are supplied
-            # in JSON so another AI does not inherit unknown custom actor classes.
-            body=struct.pack("<hhhhh",420,1500,270,1,7)
+            # Keep player start plus environment-only scenery. Strip story/combat
+            # actors so this remains a reusable MAP01 handoff rather than a game build.
+            recs=[struct.unpack_from("<hhhhh",body,i) for i in range(0,len(body),10)]
+            recs=[t for t in recs if t[3]==1 or t[3]==15710 or 15720 <= t[3] <= 15732]
+            kept_count=len(recs)
+            body=b"".join(struct.pack("<hhhhh",*t) for t in recs)
         clean.append((name,body))
-    return clean,stats
+    return clean,stats,kept_count
 
 def collect_assets():
     generate_house42_assets(ROOT)
@@ -49,8 +53,10 @@ def collect_assets():
     flats=sorted(list((ROOT/"flats").glob("H42*.png"))+
                  [p for p in (ROOT/"flats").glob("H??ROOF.png")])
     sprite_names=("DBELA0","SMCLA0","STLPA0","TREEA0","CARWA0","CARDA0",
-                  "BNCHA0","SWNGA0","SLIDA0","CLMBA0","WBINA0")
+                  "BNCHA0","SWNGA0","SLIDA0","CLMBA0","WBINA0",
+                  "BINRA0","BINYA0","SHRBA0")
     sprites=[ROOT/"sprites"/f"{n}.png" for n in sprite_names if (ROOT/"sprites"/f"{n}.png").exists()]
+    sprites += sorted((ROOT/"sprites").glob("HILXA?.png"))
     gfx=[ROOT/"graphics"/"H42ATLAS.png"] if (ROOT/"graphics"/"H42ATLAS.png").exists() else []
     return tex,flats,sprites,gfx
 
@@ -120,10 +126,11 @@ def main():
     (OUT/"references").mkdir()
 
     layout=json.loads((ROOT/"house42_layout.json").read_text())
-    map_lumps,stats=geometry_map_lumps()
+    map_lumps,stats,kept_things=geometry_map_lumps()
     tex,flats,sprites,gfx=collect_assets()
 
     wad_lumps=[
+      ("DECORATE","actor HouseDoorbell 15710\n{\n  Radius 5\n  Height 24\n  States { Spawn: DBEL A -1 Stop }\n}\n\nactor HouseStreetLamp 15720\n{\n  Radius 6\n  Height 104\n  +SOLID\n  States { Spawn: STLP A -1 Stop }\n}\n\nactor HouseTree 15721\n{\n  Radius 18\n  Height 96\n  +SOLID\n  States { Spawn: TREE A -1 Stop }\n}\n\nactor HouseCarLight 15722\n{\n  Radius 32\n  Height 30\n  +SOLID\n  States { Spawn: CARW A -1 Stop }\n}\n\nactor HouseCarDark 15723\n{\n  Radius 32\n  Height 30\n  +SOLID\n  States { Spawn: CARD A -1 Stop }\n}\n\nactor ParkBench42 15724\n{\n  Radius 20\n  Height 24\n  +SOLID\n  States { Spawn: BNCH A -1 Stop }\n}\n\nactor ParkSwing42 15725\n{\n  Radius 24\n  Height 72\n  +SOLID\n  States { Spawn: SWNG A -1 Stop }\n}\n\nactor ParkSlide42 15726\n{\n  Radius 22\n  Height 60\n  +SOLID\n  States { Spawn: SLID A -1 Stop }\n}\n\nactor ParkClimber42 15727\n{\n  Radius 22\n  Height 54\n  +SOLID\n  States { Spawn: CLMB A -1 Stop }\n}\n\nactor HouseWheelieBin 15728\n{\n  Radius 8\n  Height 32\n  +SOLID\n  States { Spawn: WBIN A -1 Stop }\n}\n\nactor HouseHiluxWorkmate 15729\n{\n  Radius 34\n  Height 40\n  +SOLID\n  States { Spawn: HILX A -1 Stop }\n}\n\nactor HouseBinRed 15730\n{\n  Radius 8\n  Height 32\n  +SOLID\n  States { Spawn: BINR A -1 Stop }\n}\n\nactor HouseBinYellow 15731\n{\n  Radius 8\n  Height 32\n  +SOLID\n  States { Spawn: BINY A -1 Stop }\n}\n\nactor HouseShrub 15732\n{\n  Radius 10\n  Height 28\n  States { Spawn: SHRB A -1 Stop }\n}\n".encode("utf-8")),
       ("MAPINFO",b'map MAP01 "42 Arnold Street" { next = "MAP02" }\n'),
     ]
     wad_lumps.extend(map_lumps)
@@ -135,6 +142,10 @@ def main():
     for p in flats:
         wad_lumps.append((p.stem.upper()[:8],p.read_bytes()))
     wad_lumps.append(("F_END",b""))
+    wad_lumps.append(("S_START",b""))
+    for p in sprites:
+        wad_lumps.append((p.stem.upper()[:8],p.read_bytes()))
+    wad_lumps.append(("S_END",b""))
 
     wad=OUT/"42-Arnold-MAP01-geometry-and-textures.wad"
     write_wad(wad,wad_lumps)
@@ -155,7 +166,7 @@ def main():
       "format":"42-arnold-map-handoff-v1",
       "map":"MAP01",
       "engine_dependency":"none; classic Doom-format PWAD geometry with PNG GZDoom texture namespaces",
-      "stats":{"sectors":stats[0],"linedefs":stats[1],"source_things":stats[2],"handoff_wad_things":1},
+      "stats":{"sectors":stats[0],"linedefs":stats[1],"source_things":stats[2],"handoff_wad_things":kept_things},
       "files":{
         "wad":wad.name,
         "layout":"house42_layout.json",
@@ -170,7 +181,7 @@ def main():
         "Sam route metadata runs backyard -> rear house -> hall -> front door -> Arnold Street -> Collenso-side playground.",
         "The playground is up the street at the reserve/Collenso side, not behind the backyard.",
         "Neighbouring houses, footpaths, nature strips, driveways, reserve and playground are part of MAP01.",
-        "The WAD intentionally contains no custom gameplay actors; their placements remain in house42_layout.json."
+        "The WAD contains environment-only scenery actors (Workmate, bins, trees, lamps, parked cars, shrubs and playground props) but strips story/combat actors."
       ]
     }
     (OUT/"MANIFEST.json").write_text(json.dumps(manifest,indent=2)+"\n")
