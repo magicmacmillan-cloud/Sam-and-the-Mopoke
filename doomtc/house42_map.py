@@ -36,6 +36,14 @@ STYLE = {
     "RESERVE": (0,224,"H42GRAS","F_SKY1",144,"H42FENC"),
     "PLAY":    (0,224,"H42PAVE","F_SKY1",160,"H42PLAY"),
     "LOT":     (0,192,"H42GRAS","F_SKY1",150,"H42FENC"),
+    "DOOR":    (0,0,"H42TILF","H42CEIL",160,"H42FRNT"),
+    "FURNWOOD":(40,128,"H42WOOD","H42CEIL",136,"H42PANL"),
+    "FURNFAB": (36,128,"H42CARP","H42CEIL",132,"H42SOFA"),
+    "FIXWHITE":(44,128,"H42TILF","H42CEIL",156,"H42WDR"),
+    "FIXPINK": (38,128,"H42TILF","H42CEIL",164,"H42BATH"),
+    "APPLI":   (44,128,"H42TILF","H42CEIL",150,"H42APPL"),
+    "POST":    (128,128,"H42CONC","H42CONC",128,"H42SIDN"),
+    "PLAYEQ":  (36,224,"H42PAVE","F_SKY1",150,"H42PLAY"),
     # Zero-height sectors form solid neighbour-house massing while keeping
     # the site legible in automap/node builders.
     "NBR1":    (128,128,"H42ROOF","H42ROOF",128,"H42NBR1"),
@@ -115,8 +123,51 @@ AREAS = [
     # Enclosed rear veranda/sunroom strip.
     A(96,1168,704,1312,"SUNROOM"),
 
+    # --- room-scale furniture / fixtures from the walkthrough ---
+    # Lounge: sofa, coffee table and TV cabinet.
+    A(500,438,688,482,"FURNFAB"),
+    A(532,520,628,564,"FURNWOOD"),
+    A(660,548,700,640,"FURNWOOD"),
+    # Front bedroom: bed + robe.
+    A(112,364,232,492,"FURNFAB"),
+    A(272,352,328,456,"FURNWOOD"),
+    # Middle-left bedroom.
+    A(112,660,224,764,"FURNFAB"),
+    A(272,656,328,760,"FURNWOOD"),
+    # Bathroom: bath, basin and toilet, kept clear of doorway.
+    A(104,824,216,858,"FIXPINK"),
+    A(108,884,164,946,"FIXPINK"),
+    A(246,884,310,948,"FIXWHITE"),
+    # Bedroom 3: bed + long built-in robe.
+    A(488,728,608,848,"FURNFAB"),
+    A(648,720,696,944,"FURNWOOD"),
+    # Meals table and chairs massing.
+    A(144,1016,272,1080,"FURNWOOD"),
+    # Kitchen benches follow the long timber cabinetry seen in the video.
+    A(360,992,400,1136,"FURNWOOD"),
+    A(400,1104,528,1144,"FURNWOOD"),
+    A(500,988,540,1044,"APPLI"),
+    # Laundry bench / washer.
+    A(572,992,696,1032,"FURNWOOD"),
+    A(648,1048,696,1128,"APPLI"),
+    # Sunroom storage bench.
+    A(112,1184,288,1218,"FURNWOOD"),
+    # Rear shed workbench/cabinet.
+    A(584,2190,872,2240,"FURNWOOD"),
+    A(828,1800,884,1976,"FURNWOOD"),
+    # Porch posts matching the front photo.
+    A(336,320,352,368,"POST"),
+    A(688,320,704,368,"POST"),
+    # Playground equipment: swing frame, slide/climber and shelter block.
+    A(-2112,-1088,-1992,-1032,"PLAYEQ"),
+    A(-1944,-1040,-1840,-944,"PLAYEQ"),
+    A(-1784,-1160,-1640,-1104,"PLAYEQ"),
+
     # --- door openings / room connectors ---
-    A(384,352,416,400,"ENTRY"),      # porch -> front entry
+    # Real front-door sector: closed at map start, USE opens it like a Doom door.
+    A(384,368,416,384,"DOOR"),
+    A(384,352,416,368,"PORCH"),
+    A(384,384,416,400,"ENTRY"),
     A(320,448,368,512,"HALL"),       # entry -> front-left room
     A(432,448,480,512,"HALL"),       # entry -> lounge
     A(320,688,368,752,"HALL"),       # hall -> bed 2
@@ -158,6 +209,7 @@ LINE_TEX = {
 }
 
 HOUSE_STYLES={"ENTRY","HALL","LOUNGE","BED","BEDWOOD","BATH","MEALS","KITCH","LAUNDRY","SUNROOM"}
+DETAIL_STYLES={"DOOR","FURNWOOD","FURNFAB","FIXWHITE","FIXPINK","APPLI","POST","PLAYEQ"}
 
 def _is_house_exterior(p1,p2,st):
     if st not in HOUSE_STYLES:
@@ -226,8 +278,8 @@ def build_house42_map():
     for p1,p2 in LINE_TEX:
         xs.add(p1[0]); xs.add(p2[0]); ys.add(p1[1]); ys.add(p2[1])
     # Extra cuts split the right-side chimney and front facade into useful line spans.
-    xs.update((144,288,512,672,128,400,560,1260,1516,-640,-384))
-    ys.update((432,608,688,768,848,928,1024,1104))
+    xs.update((144,288,512,672,128,400,560,1260,1516,-640,-384,-1888))
+    ys.update((432,608,688,768,848,928,1024,1104,-1024,-896))
     xs=sorted(xs); ys=sorted(ys)
 
     def covering(cx,cy):
@@ -267,7 +319,9 @@ def build_house42_map():
         sidedefs.append((0,0,tex8(upper),tex8(lower),tex8(middle),sec))
         return i
 
-    EXIT=norm_edge((-2200,-1024),(-2200,-896))
+    # MAP01 ends only after Dad actually enters the playground shown in the
+    # supplied satellite view, not at the house/front boundary.
+    EXIT=norm_edge((-1888,-1024),(-1888,-896))
 
     def add_boundary(p1,p2,sec0,sec1=None,st0=None,st1=None):
         key=norm_edge(p1,p2)
@@ -277,7 +331,13 @@ def build_house42_map():
             linedefs.append((vid(*p1),vid(*p2),1,special,0,side(sec0,middle=wall),0xFFFF))
         else:
             w0=STYLE[st0][5]; w1=STYLE[st1][5]
-            if _solid_boundary(p1,p2,st0,st1):
+            if "DOOR" in (st0,st1):
+                # Doom special 1: normal reusable front door. Put the special on
+                # both door boundaries so USE works naturally from porch or entry.
+                linedefs.append((vid(*p1),vid(*p2),4,1,0,
+                                 side(sec0,upper=w0,lower=w0),
+                                 side(sec1,upper=w1,lower=w1)))
+            elif _solid_boundary(p1,p2,st0,st1):
                 # Blocking two-sided midtexture = actual wall while retaining valid
                 # sectors on both sides for the yard/porch/driveway.
                 hst=st0 if st0 in HOUSE_STYLES else (st1 if st1 in HOUSE_STYLES else ("SHED" if "SHED" in (st0,st1) else st0))
@@ -323,15 +383,17 @@ def build_house42_map():
 
     # Classic Doom thing records: x,y,angle,type,flags.
     things=[
-        (400,470,90,1,7),           # player: tiled entry
-        (560,520,180,15105,7),      # Sam runner in/near front lounge
-        (416,120,180,15103,7),      # cola clue at front path
-        (416,-180,180,15101,7),     # footprints near Arnold Street
-        (-1080,-420,180,15106,7),   # false trail on Collenso
-        (-1500,-820,180,15410,7),   # Mopoke glimpse toward reserve
-        (-1840,-940,180,15108,7),   # Sam message by playground approach
-        (720,2060,180,15301,7),     # searchable shed/cache
-        (820,1500,180,15403,7),     # small backyard threat
+        (420,1500,270,1,7),          # Dad starts in the backyard facing house/front route
+        (420,1420,270,15113,7),      # scripted Sam escape: backyard -> drive -> Arnold -> playground
+        (432,356,270,15710,7),       # small usable doorbell beside the real front door
+        (820,760,270,15103,7),       # crushed cola can on the side-drive route
+        (820,180,270,15101,7),       # footprints near the front gate
+        (560,820,180,15104,7),       # small natural Sam note in bedroom, optional
+        (220,1060,180,15109,7),      # Lincoln note at meals/rear area
+        (-1080,-420,180,15106,7),    # false trail near Collenso
+        (-1500,-820,180,15410,7),    # Mopoke glimpse toward reserve
+        (-1740,-940,180,15108,7),    # Sam note at playground approach
+        (720,2060,180,15301,7),      # searchable shed/cache
     ]
     bad=[t for t in things if covering(t[0],t[1]) is None]
     if bad:
