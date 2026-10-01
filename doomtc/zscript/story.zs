@@ -10,7 +10,7 @@ class SamStoryHandler : EventHandler
     switch(n)
     {
       case 1:
-        Console.Printf("Cold... No. I remember this house. I remember dying.");
+        Console.Printf("Cold grass... the backyard. Wait... Sam?");
         break;
       case 2:
         Console.Printf("He's ahead. Don't scare him again. Just keep moving.");
@@ -43,7 +43,7 @@ class SamStoryHandler : EventHandler
     if(players[0].mo == null) return;
 
     int n = level.levelnum;
-    double x = players[0].mo.Pos.X;
+    double x = players[0].mo.Pos.X;\n    double y = players[0].mo.Pos.Y;
 
     if(n != lastLevel)
     {
@@ -56,15 +56,20 @@ class SamStoryHandler : EventHandler
 
     if(n == 1)
     {
-      if(!beatA && x > 500)
+      if(!beatA && y < 1380)
       {
         beatA = true;
-        Console.Printf("Wait... Sam? Sam! It's Dad...");
+        Console.Printf("Sam! Wait! ...He only hears the zombie noise.");
       }
-      if(!beatB && x > 1500)
+      if(!beatB && y < 100)
       {
         beatB = true;
-        Console.Printf("Why is he running? ...He only hears that noise. That noise is me.");
+        Console.Printf("He's gone out to Arnold Street. Keep him in sight.");
+      }
+      if(!beatC && x < -1500 && y < -760)
+      {
+        beatC = true;
+        Console.Printf("The playground. He ran straight here.");
       }
     }
     else if(n == 2)
