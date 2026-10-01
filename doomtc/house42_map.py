@@ -165,9 +165,9 @@ AREAS = [
 
     # --- door openings / room connectors ---
     # Real front-door sector: closed at map start, USE opens it like a Doom door.
-    A(384,368,416,384,"DOOR"),
-    A(384,352,416,368,"PORCH"),
-    A(384,384,416,400,"ENTRY"),
+    A(376,368,432,384,"DOOR"),
+    A(376,352,432,368,"PORCH"),
+    A(376,384,432,400,"ENTRY"),
     A(320,448,368,512,"HALL"),       # entry -> front-left room
     A(432,448,480,512,"HALL"),       # entry -> lounge
     A(320,688,368,752,"HALL"),       # hall -> bed 2
@@ -278,7 +278,7 @@ def build_house42_map():
     for p1,p2 in LINE_TEX:
         xs.add(p1[0]); xs.add(p2[0]); ys.add(p1[1]); ys.add(p2[1])
     # Extra cuts split the right-side chimney and front facade into useful line spans.
-    xs.update((144,288,512,672,128,400,560,1260,1516,-640,-384,-1888))
+    xs.update((144,288,512,672,128,400,560,1260,1516,-640,-384,-2000))
     ys.update((432,608,688,768,848,928,1024,1104,-1024,-896))
     xs=sorted(xs); ys=sorted(ys)
 
@@ -321,7 +321,7 @@ def build_house42_map():
 
     # MAP01 ends only after Dad actually enters the playground shown in the
     # supplied satellite view, not at the house/front boundary.
-    EXIT=norm_edge((-1888,-1024),(-1888,-896))
+    EXIT=norm_edge((-2000,-1024),(-2000,-896))
 
     def add_boundary(p1,p2,sec0,sec1=None,st0=None,st1=None):
         key=norm_edge(p1,p2)
@@ -391,7 +391,7 @@ def build_house42_map():
     things=[
         (420,1500,270,1,7),          # Dad starts in the backyard facing house/front route
         (420,1420,270,15113,7),      # scripted Sam escape: backyard -> drive -> Arnold -> playground
-        (432,356,270,15710,7),       # small usable doorbell beside the real front door
+        (444,356,270,15710,7),       # small usable doorbell beside the real front door
         (820,760,270,15103,7),       # crushed cola can on the side-drive route
         (820,180,270,15101,7),       # footprints near the front gate
         (560,820,180,15104,7),       # small natural Sam note in bedroom, optional
