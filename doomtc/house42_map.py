@@ -144,8 +144,8 @@ AREAS = [
     # Meals table and chairs massing.
     A(144,1016,272,1080,"FURNWOOD"),
     # Kitchen benches follow the long timber cabinetry seen in the video.
-    A(360,992,400,1136,"FURNWOOD"),
-    A(400,1104,528,1144,"FURNWOOD"),
+    A(360,992,384,1136,"FURNWOOD"),
+    A(384,1104,528,1144,"FURNWOOD"),
     A(500,988,540,1044,"APPLI"),
     # Laundry bench / washer.
     A(572,992,696,1032,"FURNWOOD"),
@@ -165,18 +165,18 @@ AREAS = [
 
     # --- door openings / room connectors ---
     # Real front-door sector: closed at map start, USE opens it like a Doom door.
-    A(376,368,432,384,"DOOR"),
-    A(376,352,432,368,"PORCH"),
-    A(376,384,432,400,"ENTRY"),
+    A(384,368,432,384,"DOOR"),
+    A(384,352,432,368,"PORCH"),
+    A(384,384,432,400,"ENTRY"),
     A(320,448,368,512,"HALL"),       # entry -> front-left room
     A(432,448,480,512,"HALL"),       # entry -> lounge
     A(320,688,368,752,"HALL"),       # hall -> bed 2
     A(304,848,368,912,"HALL"),       # hall -> bathroom
     A(432,752,480,816,"HALL"),       # hall -> bed 3
-    A(384,944,416,992,"HALL"),       # hall -> rear
+    A(384,944,432,992,"HALL"),       # hall -> rear
     A(320,1024,368,1088,"MEALS"),    # meals <-> kitchen
     A(528,1040,576,1104,"KITCH"),    # kitchen <-> laundry
-    A(416,1136,480,1184,"KITCH"),    # kitchen -> sunroom
+    A(432,1136,480,1184,"KITCH"),    # kitchen -> sunroom
     A(608,1136,656,1184,"LAUNDRY"),  # laundry -> sunroom
     A(320,1296,384,1344,"PATIO"),    # sunroom -> backyard
     A(688,1216,752,1280,"DRIVE"),    # sunroom -> carport side
@@ -201,7 +201,7 @@ LINE_TEX = {
     norm_edge((96,1024),(96,1104)):"H42WIND",   # meals/rear side
     norm_edge((704,1024),(704,1104)):"H42WIND", # laundry side
     norm_edge((128,1312),(288,1312)):"H42WIND", # sunroom rear glazing
-    norm_edge((400,1312),(560,1312)):"H42WIND",
+    norm_edge((384,1312),(560,1312)):"H42WIND",
     norm_edge((704,432),(704,608)):"H42BRIK",   # chimney mass on right facade
     # neighbour facade windows for context
     norm_edge((-640,320),(-384,320)):"H42WIND",
@@ -278,7 +278,7 @@ def build_house42_map():
     for p1,p2 in LINE_TEX:
         xs.add(p1[0]); xs.add(p2[0]); ys.add(p1[1]); ys.add(p2[1])
     # Extra cuts split the right-side chimney and front facade into useful line spans.
-    xs.update((144,288,512,672,128,400,560,1260,1516,-640,-384,-2000))
+    xs.update((144,288,512,672,128,560,1260,1516,-640,-384,-2000))
     ys.update((432,608,688,768,848,928,1024,1104,-1024,-896))
     xs=sorted(xs); ys=sorted(ys)
 
@@ -327,7 +327,7 @@ def build_house42_map():
         key=norm_edge(p1,p2)
         if sec1 is None:
             wall=_boundary_texture(p1,p2,st0)
-            special=11 if key==EXIT else 0
+            special=11 if _segment_inside(key,EXIT) else 0
             linedefs.append((vid(*p1),vid(*p2),1,special,0,side(sec0,middle=wall),0xFFFF))
         else:
             w0=STYLE[st0][5]; w1=STYLE[st1][5]
