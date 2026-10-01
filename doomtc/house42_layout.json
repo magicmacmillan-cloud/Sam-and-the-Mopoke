@@ -1,5 +1,5 @@
 {
-  "title": "42 Arnold Street MAP01 source-driven reconstruction v3",
+  "title": "42 Arnold Street MAP01 source-driven reconstruction v16",
   "purpose": "Builder handoff for Doom II/GZDoom IWAD. Use this geometry/material vocabulary rather than inventing a generic house.",
   "coordinate_system": {
     "north": "+Y/backyard",
@@ -20,7 +20,7 @@
     "front": "Arnold Street",
     "west": "No.44 then Collenso Street/reserve",
     "east": "No.40",
-    "playground": "south-west across/along Collenso in reserve"
+    "playground": "west/up Arnold Street at the Collenso/reserve side; not behind the backyard"
   },
   "house": {
     "main_envelope_hint_units": [
@@ -487,7 +487,7 @@
   },
   "builder_rules": [
     "Dad starts in the backyard. Do not move MAP01 player start to the front of the property.",
-    "Sam must visibly flee from the backyard along the side driveway, Arnold Street and Collenso route into the playground.",
+    "Sam must visibly flee from the backyard through the rear house, hall and front door, then west/up Arnold Street into the Collenso-side playground.",
     "MAP01 must not finish at the house or property boundary; the exit is inside the playground.",
     "Keep the usable dark front door and small doorbell beside it.",
     "Keep physical notes/clues small and domestic-scale; readability comes from interaction text, not billboard-sized sprites.",
@@ -510,40 +510,72 @@
         1420
       ],
       [
-        760,
-        1360
+        350,
+        1330
       ],
       [
-        820,
-        900
+        350,
+        1240
       ],
       [
-        820,
-        220
+        455,
+        1160
       ],
       [
-        620,
-        -360
+        420,
+        1060
+      ],
+      [
+        410,
+        960
+      ],
+      [
+        410,
+        760
+      ],
+      [
+        410,
+        520
+      ],
+      [
+        410,
+        390
+      ],
+      [
+        410,
+        345
+      ],
+      [
+        410,
+        120
+      ],
+      [
+        410,
+        -420
       ],
       [
         -420,
         -430
       ],
       [
-        -1080,
+        -980,
         -430
       ],
       [
-        -1080,
-        -820
+        -1280,
+        -560
       ],
       [
-        -1500,
-        -900
+        -1540,
+        -690
       ],
       [
-        -1840,
-        -960
+        -1740,
+        -790
+      ],
+      [
+        -1940,
+        -880
       ]
     ],
     "front_door": {
@@ -565,16 +597,41 @@
     "level_exit": {
       "segment": [
         [
-          -2000,
-          -1024
+          -2050,
+          -960
         ],
         [
-          -2000,
-          -896
+          -2050,
+          -832
         ]
       ],
-      "location": "inside playground",
+      "location": "inside the playground reached from Arnold Street at the Collenso/reserve side",
       "next": "MAP02"
     }
+  },
+  "environment": {
+    "satellite_reference": "supplied top-down screenshots",
+    "neighbouring_houses": [
+      "44 Arnold west/left",
+      "40 Arnold east/right",
+      "39, 37 and 35 opposite/south"
+    ],
+    "public_realm": [
+      "Arnold Street asphalt",
+      "concrete footpaths",
+      "grass nature strips",
+      "Collenso Street",
+      "reserve/park"
+    ],
+    "dressing": [
+      "street lamps/poles along Arnold and Collenso",
+      "parked cars on Arnold and at the 42 driveway",
+      "grass lawns and planted garden beds",
+      "rear and side fences/outbuildings",
+      "reserve trees",
+      "playground bench, swings, slide/climber and secondary play feature",
+      "wheelie bins"
+    ],
+    "route_note": "The playground is reached from the street/reserve side. It is not connected to the rear yard."
   }
 }
