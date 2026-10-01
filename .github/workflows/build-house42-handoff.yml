@@ -1,0 +1,84 @@
+name: Build 42 Arnold MAP01 AI handoff
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - house42-map-handoff-final
+    paths:
+      - 'doomtc/house42_map.py'
+      - 'doomtc/house42_assets.py'
+      - 'doomtc/house42_layout.json'
+      - 'doomtc/build_house42_handoff.py'
+      - 'HOUSE42_HANDOFF.md'
+      - '.github/workflows/build-house42-handoff.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out map handoff branch
+        uses: actions/checkout@v4
+
+      - name: Build clean MAP01 handoff
+        run: |
+          set -euo pipefail
+          python3 doomtc/build_house42_handoff.py
+
+      - name: Validate handoff WAD and package
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, struct, zipfile
+
+          root=Path("doomtc/house42_handoff_build")
+          wad=root/"42-Arnold-MAP01-geometry-and-textures.wad"
+          z=Path("42-Arnold-MAP01-AI-HANDOFF.zip")
+          assert wad.is_file() and wad.stat().st_size>10000
+          assert z.is_file() and z.stat().st_size>10000
+
+          b=wad.read_bytes()
+          assert b[:4]==b"PWAD"
+          count,diroff=struct.unpack_from("<II",b,4)
+          names=[]
+          for i in range(count):
+              pos,size,raw=struct.unpack_from("<II8s",b,diroff+i*16)
+              assert pos+size<=len(b)
+              names.append(raw.rstrip(b"\0").decode("ascii"))
+          for req in (
+              "MAP01","THINGS","LINEDEFS","SIDEDEFS","VERTEXES","SECTORS",
+              "H42WALL","H42KTCH","H42BATH","H42SIDN","H42FRNT","H42WIND",
+              "H42CARP","H42WOOD","H42ASPH","H42GRAS","H42SAFE",
+              "H44ROOF","H40ROOF","H39ROOF","H37ROOF","H35ROOF"
+          ):
+              assert req in names, req
+
+          manifest=json.loads((root/"MANIFEST.json").read_text())
+          assert manifest["engine_dependency"].startswith("none")
+          assert manifest["stats"]["handoff_wad_things"]==1
+          assert len(manifest["textures"])>=15
+          assert len(manifest["flats"])>=15
+
+          with zipfile.ZipFile(z) as zz:
+              packed=set(zz.namelist())
+              for req in (
+                  "42-Arnold-MAP01-geometry-and-textures.wad",
+                  "house42_map.py","house42_layout.json","MANIFEST.json",
+                  "README_MAP_HANDOFF.md","SOURCE_FIDELITY.md",
+                  "42-Arnold-overhead-plan.svg"
+              ):
+                  assert req in packed, req
+          print("42 Arnold map-only handoff validation passed")
+          PY
+
+      - name: Upload map-only AI handoff
+        uses: actions/upload-artifact@v4
+        with:
+          name: 42-Arnold-MAP01-AI-HANDOFF
+          path: 42-Arnold-MAP01-AI-HANDOFF.zip
+          if-no-files-found: error
+          retention-days: 14
