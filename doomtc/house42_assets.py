@@ -359,69 +359,110 @@ def _doorbell_sprite(root):
     _png(root/"sprites"/"DBELA0.png",w,h,p,10,24)
 
 def _front_rear_facades(root):
-    # Distinct front and rear elevations so the house can never read backwards.
-    w=h=128; p=_canvas(w,h)
-    for y in range(h):
-        band=y%18
-        for x in range(w):
-            c=_noise((218,214,198),x,y,4,101)
-            if band in (0,1): c=_shade(c,-25)
-            elif band in (2,3): c=_shade(c,9)
-            _set(p,w,h,x,y,c)
-    _rect(p,w,h,0,104,w,128,(133,75,52))
-    _png(root/"textures"/"H42FACA.png",w,h,p)
-
+    # FRONT: Arnold Street only. Cream horizontal weatherboards with brick base.
+    # REAR: enclosed sunroom/veranda from the walkthrough. It must never resemble
+    # the front porch or the earlier full-height barred facade.
     w=h=128; p=_canvas(w,h)
     for y in range(h):
         band=y%16
         for x in range(w):
-            c=_noise((198,198,185),x,y,6,109)
-            if band in (0,1): c=_shade(c,-27)
-            elif band in (2,3): c=_shade(c,7)
+            c=_noise((205,202,187),x,y,5,101)
+            if band in (0,1): c=_shade(c,-24)
+            elif band in (2,3): c=_shade(c,8)
             _set(p,w,h,x,y,c)
-    _rect(p,w,h,0,106,w,128,(135,132,124))
-    for x in range(18,128,34): _rect(p,w,h,x,0,x+3,106,(154,153,145))
+    _rect(p,w,h,0,106,w,128,(124,69,48))
+    for yy in range(106,128,11):
+        _line(p,w,h,0,yy,w-1,yy,1,(164,130,105))
+    _png(root/"textures"/"H42FACA.png",w,h,p)
+
+    # Rear opaque pieces: horizontal older cream boards, darker than the front,
+    # with a concrete/painted base. No vertical prison-bar rhythm.
+    w=h=128; p=_canvas(w,h)
+    for y in range(h):
+        band=y%15
+        for x in range(w):
+            c=_noise((187,187,174),x,y,5,109)
+            if band in (0,1): c=_shade(c,-22)
+            elif band in (2,3): c=_shade(c,7)
+            if y>98: c=_shade(c,-9)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,0,108,w,128,(126,124,116))
+    _line(p,w,h,0,107,w-1,107,2,(86,86,81))
     _png(root/"textures"/"H42REAR.png",w,h,p)
 
-    w=h=128; p=_canvas(w,h)
-    _rect(p,w,h,0,0,w,h,(187,188,181))
-    _rect(p,w,h,6,6,122,116,(37,43,44))
-    for y in range(8,114):
-        for x in range(8,120):
-            _set(p,w,h,x,y,_noise((43,51,51),x,y,5,117))
-    _rect(p,w,h,61,6,67,116,(169,170,163))
-    _rect(p,w,h,6,57,122,63,(169,170,163))
+    # Rear sunroom glazing from the video: wide domestic panes above a low
+    # cream sill/panel wall. 256px wide prevents repetitive jail-bar windows.
+    w=256; h=128; p=_canvas(w,h)
+    frame=(171,173,168); frame_dark=(112,114,111)
+    sill=(188,186,174); glass=(35,43,47)
+    _rect(p,w,h,0,0,w,h,sill)
+    _rect(p,w,h,5,7,251,82,glass)
+    for y in range(9,81):
+        for x in range(7,249):
+            c=_noise((38,46,50),x,y,5,117)
+            if ((x*3+y*5)%101)==0: c=_shade(c,12)
+            _set(p,w,h,x,y,c)
+    # Three broad window bays and one horizontal rail.
+    for x in (5,86,168,251):
+        _rect(p,w,h,max(0,x-2),5,min(w,x+2),86,frame)
+    _rect(p,w,h,5,45,251,50,frame)
+    _line(p,w,h,5,84,251,84,2,frame_dark)
+    # Lower solid veranda panels.
+    _rect(p,w,h,5,86,251,121,sill)
+    for x in (86,168):
+        _rect(p,w,h,x-2,86,x+2,121,frame_dark)
+    _rect(p,w,h,0,121,w,128,(124,122,115))
     _png(root/"textures"/"H42RWIN.png",w,h,p)
 
+    # Actual rear/sunroom screen door: dark mesh/glass upper half, solid lower
+    # panel and narrow off-white frame. This is deliberately not the front door.
     w=64; h=128; p=_canvas(w,h)
-    for y in range(h):
-        for x in range(w): _set(p,w,h,x,y,_noise((202,201,190),x,y,4,123))
-    _rect(p,w,h,7,8,57,118,(211,209,198))
-    _rect(p,w,h,13,17,51,53,(48,55,56))
-    _line(p,w,h,31,17,31,53,2,(161,161,154))
-    _disc(p,w,h,51,67,3,3,(91,87,79))
+    frame=(194,193,183); dark=(37,42,43)
+    _rect(p,w,h,0,0,w,h,(154,153,145))
+    _rect(p,w,h,5,4,59,124,frame)
+    _rect(p,w,h,10,10,54,75,dark)
+    # screen mesh
+    for y in range(12,74,6):
+        _line(p,w,h,11,y,53,y,1,(62,67,67),130)
+    for x in range(12,54,6):
+        _line(p,w,h,x,11,x,74,1,(62,67,67),130)
+    _rect(p,w,h,10,81,54,117,(181,179,167))
+    _line(p,w,h,10,80,54,80,2,(116,115,109))
+    _disc(p,w,h,51,79,3,3,(89,83,72))
     _png(root/"textures"/"H42RDR.png",w,h,p)
-
 def _environment_sprites(root):
-    # Street lamp.
+    # Street lamp with a compact warm lantern; map sectors provide the light pool.
     w,h=48,128; p=_canvas(w,h)
-    _rect(p,w,h,22,24,27,124,(72,73,70))
-    _rect(p,w,h,18,18,31,26,(91,92,87))
-    _rect(p,w,h,14,12,35,20,(176,171,149))
-    _disc(p,w,h,24,15,8,4,(226,215,169))
+    _rect(p,w,h,22,24,27,124,(67,68,66))
+    _rect(p,w,h,18,18,31,26,(88,88,83))
+    _rect(p,w,h,14,11,35,20,(129,124,107))
+    _rect(p,w,h,17,13,32,18,(225,207,148))
+    _disc(p,w,h,24,15,7,4,(240,219,157),210)
     _png(root/"sprites"/"STLPA0.png",w,h,p,24,124)
 
-    # Mature irregular tree, not a green oval.
-    w,h=96,128; p=_canvas(w,h)
-    _rect(p,w,h,43,58,52,124,(78,57,40))
-    _rect(p,w,h,35,76,45,84,(78,57,40))
-    _rect(p,w,h,51,70,62,78,(78,57,40))
-    for cx,cy,rx,ry,col in [
-        (48,44,31,30,(48,74,43)),(27,50,22,24,(54,84,47)),
-        (67,48,24,25,(42,69,40)),(46,25,22,20,(59,91,50)),
-        (72,29,16,18,(51,80,45)),(21,30,15,17,(62,93,52))
-    ]: _disc(p,w,h,cx,cy,rx,ry,col)
-    _png(root/"sprites"/"TREEA0.png",w,h,p,48,124)
+    # Mature suburban street tree: visible branching and irregular leaf masses,
+    # not a single green oval.
+    w,h=112,144; p=_canvas(w,h)
+    trunk=(75,55,40); branch=(82,59,42)
+    _rect(p,w,h,50,70,61,139,trunk)
+    _line(p,w,h,55,86,30,55,5,branch)
+    _line(p,w,h,57,80,80,49,5,branch)
+    _line(p,w,h,53,74,45,42,4,branch)
+    blobs=[
+        (29,52,23,22,(46,73,42)),(49,47,28,26,(50,79,45)),
+        (76,51,25,24,(42,69,39)),(61,29,25,22,(56,86,48)),
+        (32,30,20,19,(61,91,50)),(87,31,17,18,(48,77,43)),
+        (19,70,17,18,(54,82,45)),(90,69,17,19,(44,72,40)),
+        (51,67,27,20,(49,78,43))
+    ]
+    for cx,cy,rx,ry,col in blobs:
+        _disc(p,w,h,cx,cy,rx,ry,col)
+    # leaf speckle breaks up the blob edges in classic Doom fashion
+    for y in range(15,88,7):
+        for x in range(10,103,9):
+            if ((x*13+y*7)%5)==0:
+                _disc(p,w,h,x,y,2,2,(68,99,53),180)
+    _png(root/"sprites"/"TREEA0.png",w,h,p,56,139)
 
     # Park bench.
     w,h=80,64; p=_canvas(w,h)
@@ -451,39 +492,110 @@ def _environment_sprites(root):
     # General wheelie bin.
     w,h=48,64; p=_canvas(w,h)
     _rect(p,w,h,11,16,37,54,(53,79,56)); _rect(p,w,h,8,12,40,19,(69,92,64))
+    _line(p,w,h,14,25,34,25,1,(36,60,41)); _line(p,w,h,14,34,34,34,1,(36,60,41))
     _disc(p,w,h,15,56,5,5,(28,29,28)); _disc(p,w,h,33,56,5,5,(28,29,28))
     _png(root/"sprites"/"WBINA0.png",w,h,p,24,58)
-
 def _extra_street_details(root):
-    # Fixed-orientation multi-angle white single-cab tray ute.
-    body=(218,218,211); shadow=(151,153,150); dark=(42,48,50); tray=(157,160,157)
-    tyre=(28,29,28); rim=(126,128,125)
+    # White Toyota Hilux Workmate-style single-cab tray ute. Eight directional
+    # sprites give stable world orientation while the player walks around it.
+    body=(215,216,210); body_hi=(231,231,224); shadow=(142,145,142)
+    dark=(38,45,48); tray=(155,158,155); tyre=(25,26,25); rim=(132,134,131)
+    red=(142,42,38); amber=(207,159,71)
+
     def wheel(p,w,h,cx,cy):
-        _disc(p,w,h,cx,cy,8,8,tyre); _disc(p,w,h,cx,cy,3,3,rim)
-    def view(rot):
-        if rot in (1,5):
-            w,h=78,62; p=_canvas(w,h); wheel(p,w,h,16,50); wheel(p,w,h,62,50)
-            _rect(p,w,h,12,27,66,49,body if rot==1 else tray)
-            if rot==1:
-                _rect(p,w,h,20,16,58,31,body); _rect(p,w,h,24,18,54,29,dark); _rect(p,w,h,20,34,58,42,(71,74,72))
-            else:
-                _rect(p,w,h,18,23,60,34,tray); _line(p,w,h,18,24,60,24,2,(102,104,102)); _rect(p,w,h,22,30,56,42,(139,141,138))
-            return w,h,p
-        if rot in (3,7):
-            w,h=126,58; p=_canvas(w,h); wheel(p,w,h,31,47); wheel(p,w,h,96,47)
-            if rot==3:
-                _rect(p,w,h,10,28,72,45,tray); _rect(p,w,h,72,21,111,45,body); _rect(p,w,h,81,12,108,30,body); _rect(p,w,h,84,15,105,28,dark)
-            else:
-                _rect(p,w,h,54,28,116,45,tray); _rect(p,w,h,15,21,54,45,body); _rect(p,w,h,18,12,45,30,body); _rect(p,w,h,21,15,42,28,dark)
-            return w,h,p
-        w,h=104,60; p=_canvas(w,h); mirror=rot in (6,8)
-        if not mirror:
-            _rect(p,w,h,12,29,62,45,tray); _rect(p,w,h,58,22,92,45,body); _rect(p,w,h,65,13,89,30,body); _rect(p,w,h,68,16,86,28,dark); wheel(p,w,h,28,48); wheel(p,w,h,80,48)
+        _disc(p,w,h,cx,cy,9,9,tyre)
+        _disc(p,w,h,cx,cy,4,4,rim)
+        _disc(p,w,h,cx,cy,2,2,(64,66,65))
+
+    def tailgate_letters(p,w,h,x0,y0):
+        # Tiny block lettering reads as TOYOTA without turning into UI text.
+        patt={
+          "T":["111","010","010","010"],"O":["111","101","101","111"],
+          "Y":["101","111","010","010"],"A":["010","101","111","101"]
+        }
+        x=x0
+        for ch in "TOYOTA":
+            rows=patt[ch]
+            for yy,row in enumerate(rows):
+                for xx,v in enumerate(row):
+                    if v=="1": _rect(p,w,h,x+xx*2,y0+yy*2,x+xx*2+1,y0+yy*2+1,(84,86,83))
+            x+=8
+
+    def frontrear(front=True):
+        w,h=92,72; p=_canvas(w,h)
+        wheel(p,w,h,19,58); wheel(p,w,h,73,58)
+        if front:
+            _rect(p,w,h,13,31,79,55,body)
+            _rect(p,w,h,22,17,70,38,body_hi)
+            _rect(p,w,h,27,20,65,34,dark)
+            _rect(p,w,h,17,39,75,47,(104,108,106))
+            _rect(p,w,h,14,47,78,53,(176,178,173))
+            _rect(p,w,h,18,37,27,43,(229,214,164))
+            _rect(p,w,h,65,37,74,43,(229,214,164))
+            _rect(p,w,h,9,30,14,43,(70,72,71)); _rect(p,w,h,78,30,83,43,(70,72,71))
         else:
-            _rect(p,w,h,42,29,92,45,tray); _rect(p,w,h,12,22,46,45,body); _rect(p,w,h,15,13,39,30,body); _rect(p,w,h,18,16,36,28,dark); wheel(p,w,h,24,48); wheel(p,w,h,76,48)
+            _rect(p,w,h,10,29,82,54,tray)
+            _rect(p,w,h,16,22,76,34,(171,173,168))
+            _line(p,w,h,16,23,76,23,2,(108,111,108))
+            _rect(p,w,h,15,34,77,50,(166,169,165))
+            tailgate_letters(p,w,h,27,37)
+            _rect(p,w,h,12,42,20,49,red); _rect(p,w,h,72,42,80,49,red)
+            _rect(p,w,h,38,51,54,55,(72,73,71))
         return w,h,p
-    for rot in range(1,9):
-        w,h,p=view(rot); _png(root/"sprites"/f"HILXA{rot}.png",w,h,p,w//2,h-4)
+
+    def side(left_to_right=True):
+        w,h=142,68; p=_canvas(w,h)
+        wheel(p,w,h,34,55); wheel(p,w,h,108,55)
+        if left_to_right:
+            _rect(p,w,h,8,31,79,51,tray)
+            _line(p,w,h,11,30,76,30,2,(108,111,108))
+            _rect(p,w,h,77,25,126,51,body)
+            _rect(p,w,h,89,12,124,31,body_hi)
+            _rect(p,w,h,93,15,121,29,dark)
+            _line(p,w,h,107,15,107,29,2,(119,123,123))
+            _rect(p,w,h,124,34,134,41,(229,214,164))
+            _rect(p,w,h,82,34,86,43,shadow)
+        else:
+            _rect(p,w,h,63,31,134,51,tray)
+            _line(p,w,h,66,30,131,30,2,(108,111,108))
+            _rect(p,w,h,16,25,65,51,body)
+            _rect(p,w,h,18,12,53,31,body_hi)
+            _rect(p,w,h,21,15,49,29,dark)
+            _line(p,w,h,35,15,35,29,2,(119,123,123))
+            _rect(p,w,h,8,34,18,41,(229,214,164))
+            _rect(p,w,h,56,34,60,43,shadow)
+        return w,h,p
+
+    def threeq(mirror=False,rear=False):
+        w,h=118,70; p=_canvas(w,h)
+        if not mirror:
+            wheel(p,w,h,30,56); wheel(p,w,h,90,56)
+            _rect(p,w,h,10,32,65,51,tray)
+            _rect(p,w,h,62,26,103,51,body)
+            _rect(p,w,h,72,14,100,31,body_hi)
+            _rect(p,w,h,76,17,97,29,dark)
+            _line(p,w,h,84,17,84,29,2,(116,120,120))
+            _line(p,w,h,12,31,62,31,2,(106,109,106))
+            _rect(p,w,h,99,35,109,42,(red if rear else (229,214,164)))
+        else:
+            wheel(p,w,h,28,56); wheel(p,w,h,88,56)
+            _rect(p,w,h,53,32,108,51,tray)
+            _rect(p,w,h,15,26,56,51,body)
+            _rect(p,w,h,18,14,46,31,body_hi)
+            _rect(p,w,h,21,17,42,29,dark)
+            _line(p,w,h,34,17,34,29,2,(116,120,120))
+            _line(p,w,h,56,31,106,31,2,(106,109,106))
+            _rect(p,w,h,9,35,19,42,(red if rear else (229,214,164)))
+        return w,h,p
+
+    views={
+      1:frontrear(True), 5:frontrear(False),
+      3:side(True), 7:side(False),
+      2:threeq(False,False), 4:threeq(False,True),
+      8:threeq(True,False), 6:threeq(True,True)
+    }
+    for rot,(w,h,p) in views.items():
+        _png(root/"sprites"/f"HILXA{rot}.png",w,h,p,w//2,h-5)
 
     # Simple parked sedan with 8 rotational lumps, so it does not turn to face the player.
     def sedan(prefix,base):
