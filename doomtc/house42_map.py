@@ -1,7 +1,9 @@
 import struct
 
 # Detailed classic-Doom MAP01 reconstruction of the 42 Arnold house/street block.
-# Coordinate convention: north/backyard = +Y, east/driveway = +X.
+# V32: gameplay/visual rebuild from the supplied walkthrough + satellite references.
+# Coordinate convention: north/backyard = +Y, east/right driveway = +X.
+# FRONT = Arnold Street / low-Y. REAR = backyard / high-Y.
 # Approximate scale: 64 map units ~= 1 metre.
 
 def lump(name,data=b""):
@@ -36,6 +38,20 @@ STYLE = {
     "RESERVE": (0,224,"H42GRAS","F_SKY1",144,"H42FENC"),
     "PLAY":    (0,224,"H42PAVE","F_SKY1",160,"H42PLAY"),
     "LOT":     (0,192,"H42GRAS","F_SKY1",150,"H42FENC"),
+    "DOOR":    (0,0,"H42TILF","H42CEIL",160,"H42FRNT"),
+    "BACKDOOR":(0,0,"H42CONC","H42CEIL",150,"H42RDR"),
+    "CARPORT": (0,112,"H42DRV","H42CEIL",148,"H42SHED"),
+    "GARDEN":  (0,192,"H42BED","F_SKY1",148,"H42FENC"),
+    "DIG":     (-2,192,"H42DIRT","F_SKY1",136,"H42FENC"),
+    "STLIT":   (0,192,"H42ROAD","F_SKY1",176,"H42CURB"),
+    "PLAYLIT": (0,224,"H42SAFE","F_SKY1",176,"H42PLAY"),
+    "FURNWOOD":(40,128,"H42WOOD","H42CEIL",136,"H42PANL"),
+    "FURNFAB": (36,128,"H42CARP","H42CEIL",132,"H42SOFA"),
+    "FIXWHITE":(44,128,"H42TILF","H42CEIL",156,"H42WDR"),
+    "FIXPINK": (38,128,"H42TILF","H42CEIL",164,"H42BATH"),
+    "APPLI":   (44,128,"H42TILF","H42CEIL",150,"H42APPL"),
+    "POST":    (128,128,"H42CONC","H42CONC",128,"H42SIDN"),
+    "PLAYEQ":  (36,224,"H42PAVE","F_SKY1",150,"H42PLAY"),
     # Zero-height sectors form solid neighbour-house massing while keeping
     # the site legible in automap/node builders.
     "NBR1":    (128,128,"H42ROOF","H42ROOF",128,"H42NBR1"),
@@ -48,116 +64,176 @@ def A(x0,y0,x1,y1,style):
 
 # Area order matters: later rectangles override earlier ones.
 AREAS = [
-    # --- west reserve / playground context ---
-    A(-2400,-1408,-1248,1800,"RESERVE"),
-    A(-2200,-1216,-1600,-768,"PLAY"),
-    A(-1600,-1024,-1248,-704,"FOOT"),
+    # --- reserve and playground west of Collenso / up Arnold Street ---
+    A(-2500,-1500,-1248,1900,"RESERVE"),
+    A(-2240,-1180,-1540,-700,"PLAY"),
+    A(-2140,-1030,-1880,-760,"PLAYLIT"),
+    A(-1620,-980,-1248,-700,"FOOT"),
+    A(-1880,-820,-1620,-750,"FOOT"),
+    A(-1700,-700,-1600,-300,"FOOT"),
+    A(-1600,-300,-1480,200,"FOOT"),
+    A(-1480,200,-1360,700,"FOOT"),
+    A(-1360,700,-1260,1150,"FOOT"),
+
+    # Playground equipment as sector silhouettes, supplemented by sprites.
+    A(-2130,-1020,-2020,-965,"PLAYEQ"),
+    A(-1990,-960,-1890,-865,"PLAYEQ"),
+    A(-1905,-870,-1815,-815,"PLAYEQ"),
+    A(-1775,-1015,-1640,-960,"PLAYEQ"),
 
     # --- Collenso Street ---
-    A(-1248,-1408,-960,1800,"ROAD"),
-    A(-960,-1408,-912,1800,"VERGE"),
+    A(-1312,-1500,-1248,1900,"FOOT"),
+    A(-1248,-1500,-960,1900,"ROAD"),
+    A(-960,-1500,-912,1900,"VERGE"),
+    A(-912,-1500,-864,1900,"FOOT"),
 
-    # --- Arnold Street public realm ---
-    A(-2400,-704,2000,-608,"FOOT"),
-    A(-2400,-608,2000,-256,"ROAD"),
-    A(-2400,-256,2000,-96,"VERGE"),
-    A(-2400,-96,2000,0,"FOOT"),
+    # --- Arnold Street public realm: footpath / verge / road / verge / footpath ---
+    A(-2500,-704,2100,-608,"FOOT"),
+    A(-2500,-608,2100,-256,"ROAD"),
+    A(-2500,-256,2100,-96,"VERGE"),
+    A(-2500,-96,2100,0,"FOOT"),
+    # small pools of brighter light under street lamps
+    A(-760,-580,-500,-300,"STLIT"),
+    A(40,-580,300,-300,"STLIT"),
+    A(940,-580,1200,-300,"STLIT"),
 
-    # --- opposite lots / houses 39, 37, 35 ---
-    A(-944,-1408,-48,-720,"LOT"),
-    A(16,-1408,960,-720,"LOT"),
-    A(1008,-1408,1920,-720,"LOT"),
-    A(-816,-1328,-160,-896,"NBR2"),
-    A(96,-1328,800,-896,"NBR1"),
-    A(1104,-1328,1776,-896,"NBR2"),
+    # --- opposite lots/houses 39,37,35 ---
+    A(-944,-1500,-48,-720,"LOT"),
+    A(16,-1500,960,-720,"LOT"),
+    A(1008,-1500,1980,-720,"LOT"),
+    A(-816,-1330,-160,-900,"NBR2"),
+    A(96,-1330,800,-900,"NBR1"),
+    A(1104,-1330,1776,-900,"NBR2"),
 
     # --- immediate neighbours 44 and 40 ---
     A(-944,16,-48,2944,"LOT"),
-    A(1008,16,1920,2944,"LOT"),
+    A(1008,16,1980,2944,"LOT"),
     A(-816,320,-160,1110,"NBR1"),
     A(1104,320,1776,1088,"NBR2"),
-    # rear sheds / outbuildings as solid massing
     A(-720,1450,-256,2080,"NBR1"),
+    A(-880,2140,-520,2580,"NBR1"),
     A(1260,1350,1740,2150,"NBR1"),
+    A(1120,2240,1600,2700,"NBR1"),
+    # neighbour driveways/paths
+    A(-400,16,-160,320,"DRIVE"),
+    A(-600,160,-520,320,"FOOT"),
+    A(1600,16,1820,320,"DRIVE"),
+    A(1320,180,1380,320,"FOOT"),
 
-    # --- 42 Arnold yard / driveway / rear ---
+    # --- 42 Arnold yard / front / driveway / rear ---
     A(16,16,960,320,"YARD"),
     A(16,320,96,1312,"YARD"),
     A(704,320,960,1312,"YARD"),
     A(16,1312,960,1600,"YARD"),
     A(16,1600,960,2944,"YARD"),
     A(384,16,448,320,"FOOT"),
-    A(736,16,928,1600,"DRIVE"),
+    A(736,16,928,1312,"DRIVE"),
+    A(736,384,928,1312,"CARPORT"),
     A(704,1312,928,1750,"PATIO"),
     A(560,1750,896,2350,"SHED"),
 
-    # Front porch/covered entry from facade photo.
+    # planted beds and dog-dig evidence
+    A(64,176,304,304,"GARDEN"),
+    A(472,224,672,304,"GARDEN"),
+    A(32,1360,96,2200,"GARDEN"),
+    A(896,1750,944,2500,"GARDEN"),
+    A(160,2820,330,2944,"DIG"),
+
+    # Front porch/covered entry.
     A(320,256,704,368,"PORCH"),
 
-    # --- house rooms, separated by real wall gaps ---
-    # Front-left projecting room.
-    A(96,320,336,624,"BED"),
-    # Central tiled entry and hall.
-    A(352,384,448,544,"ENTRY"),
-    A(352,544,448,960,"HALL"),
-    # Front-right lounge with large front window/chimney.
-    A(464,384,704,688,"LOUNGE"),
-    # Middle-left second bedroom.
-    A(96,640,336,800,"BED"),
-    # Bathroom shown in walkthrough, including toilet.
-    A(96,816,320,960,"BATH"),
-    # Third bedroom with polished boards / robe.
-    A(464,704,704,960,"BEDWOOD"),
-    # Rear meals/kitchen/laundry.
-    A(96,976,336,1152,"MEALS"),
+    # --- house plan ---
+    # front entry and central hall
+    A(352,384,448,528,"ENTRY"),
+    A(352,528,448,960,"HALL"),
+
+    # pair 1: lounge opposite bathroom
+    A(464,544,704,704,"LOUNGE"),
+    A(96,544,336,704,"BATH"),
+
+    # pair 2: Sam room opposite master bedroom
+    A(464,736,704,928,"BED"),
+    A(96,736,336,928,"BEDWOOD"),
+
+    # rear: Lincoln room off kitchen, kitchen, small laundry
+    A(96,976,336,1152,"BED"),
     A(352,976,544,1152,"KITCH"),
     A(560,976,704,1152,"LAUNDRY"),
-    # Enclosed rear veranda/sunroom strip.
+
+    # long enclosed rear sunroom/veranda
     A(96,1168,704,1312,"SUNROOM"),
 
-    # --- door openings / room connectors ---
-    A(384,352,416,400,"ENTRY"),      # porch -> front entry
-    A(320,448,368,512,"HALL"),       # entry -> front-left room
-    A(432,448,480,512,"HALL"),       # entry -> lounge
-    A(320,688,368,752,"HALL"),       # hall -> bed 2
-    A(304,848,368,912,"HALL"),       # hall -> bathroom
-    A(432,752,480,816,"HALL"),       # hall -> bed 3
-    A(384,944,416,992,"HALL"),       # hall -> rear
-    A(320,1024,368,1088,"MEALS"),    # meals <-> kitchen
+    # --- proper doors/connectors ---
+    A(384,352,416,384,"DOOR"),       # real front door
+    A(384,512,416,544,"ENTRY"),      # entry -> hall
+    A(320,576,368,640,"HALL"),       # hall -> bathroom
+    A(432,576,480,640,"HALL"),       # hall -> lounge
+    A(320,792,368,856,"HALL"),       # hall -> master
+    A(432,792,480,856,"HALL"),       # hall -> Sam room
+    A(384,944,416,992,"HALL"),       # hall -> kitchen
+    A(320,1024,368,1088,"KITCH"),    # Lincoln room <-> kitchen
     A(528,1040,576,1104,"KITCH"),    # kitchen <-> laundry
-    A(416,1136,480,1184,"KITCH"),    # kitchen -> sunroom
-    A(608,1136,656,1184,"LAUNDRY"),  # laundry -> sunroom
-    A(320,1296,384,1344,"PATIO"),    # sunroom -> backyard
-    A(688,1216,752,1280,"DRIVE"),    # sunroom -> carport side
+    A(608,1136,656,1184,"LAUNDRY"),  # laundry <-> sunroom
+    A(320,1296,384,1312,"BACKDOOR"), # locked rear door
+    A(320,1312,384,1344,"PATIO"),    # backyard threshold outside rear door
 
-    # Front fence openings. The 16-unit front boundary gap becomes the fence;
-    # these two bridges are the pedestrian and driveway gates.
+    # Front pedestrian/driveway gates.
     A(384,-16,448,32,"FOOT"),
     A(736,-16,928,32,"DRIVE"),
 
-    # Neighbour front driveway hints.
-    A(-352,-16,-160,32,"DRIVE"),
-    A(1600,-16,1792,32,"DRIVE"),
+    # --- room furniture/fixtures from video ---
+    # lounge
+    A(500,570,688,614,"FURNFAB"),
+    A(532,632,628,676,"FURNWOOD"),
+    A(660,616,700,688,"FURNWOOD"),
+    # bathroom
+    A(104,552,216,586,"FIXPINK"),
+    A(108,620,164,690,"FIXPINK"),
+    A(246,620,310,692,"FIXWHITE"),
+    # master
+    A(112,760,236,880,"FURNFAB"),
+    A(272,744,328,912,"FURNWOOD"),
+    # Sam room
+    A(488,760,608,872,"FURNFAB"),
+    A(648,752,696,912,"FURNWOOD"),
+    # Lincoln room off kitchen
+    A(112,992,224,1104,"FURNFAB"),
+    A(272,992,328,1136,"FURNWOOD"),
+    # kitchen cabinetry/appliances
+    A(360,992,384,1136,"FURNWOOD"),
+    A(384,1104,528,1144,"FURNWOOD"),
+    A(500,988,540,1044,"APPLI"),
+    # laundry
+    A(572,992,696,1032,"FURNWOOD"),
+    A(648,1048,696,1128,"APPLI"),
+    # sunroom storage
+    A(112,1184,288,1218,"FURNWOOD"),
+    # garage/shed workbench where the spare key is hidden nearby
+    A(584,2190,872,2240,"FURNWOOD"),
+    A(828,1800,884,1976,"FURNWOOD"),
+    # porch posts
+    A(336,320,352,368,"POST"),
+    A(688,320,704,368,"POST"),
 ]
 
 # Explicit windows/detail panels. These coordinates are also injected as grid cuts.
 LINE_TEX = {
-    norm_edge((144,320),(288,320)):"H42WIND",   # front-left room
-    norm_edge((512,384),(672,384)):"H42WIND",   # lounge/front
-    norm_edge((96,688),(96,768)):"H42WIND",     # bedroom 2 west
-    norm_edge((96,848),(96,928)):"H42WIND",     # bathroom/frosted read
-    norm_edge((704,768),(704,896)):"H42WIND",   # bedroom 3 east
-    norm_edge((96,1024),(96,1104)):"H42WIND",   # meals/rear side
-    norm_edge((704,1024),(704,1104)):"H42WIND", # laundry side
-    norm_edge((128,1312),(288,1312)):"H42WIND", # sunroom rear glazing
-    norm_edge((400,1312),(560,1312)):"H42WIND",
-    norm_edge((704,432),(704,608)):"H42BRIK",   # chimney mass on right facade
-    # neighbour facade windows for context
+    norm_edge((512,384),(672,384)):"H42WIND",    # front lounge window
+    norm_edge((144,384),(288,384)):"H42WIND",    # front/left facade window treatment
+    norm_edge((96,576),(96,672)):"H42WIND",      # bathroom side/frosted treatment
+    norm_edge((96,776),(96,896)):"H42WIND",      # master side window
+    norm_edge((704,776),(704,896)):"H42WIND",    # Sam room side window
+    norm_edge((96,1024),(96,1104)):"H42WIND",    # Lincoln room side
+    norm_edge((704,1024),(704,1104)):"H42WIND",  # laundry side
+    norm_edge((128,1312),(288,1312)):"H42RWIN",  # rear sunroom glazing
+    norm_edge((400,1312),(560,1312)):"H42RWIN",
+    norm_edge((704,432),(704,608)):"H42BRIK",    # chimney mass
     norm_edge((-640,320),(-384,320)):"H42WIND",
     norm_edge((1260,320),(1516,320)):"H42WIND",
 }
 
-HOUSE_STYLES={"ENTRY","HALL","LOUNGE","BED","BEDWOOD","BATH","MEALS","KITCH","LAUNDRY","SUNROOM"}
+HOUSE_STYLES={"ENTRY","HALL","LOUNGE","BED","BEDWOOD","BATH","KITCH","LAUNDRY","SUNROOM"}
+DETAIL_STYLES={"DOOR","FURNWOOD","FURNFAB","FIXWHITE","FIXPINK","APPLI","POST","PLAYEQ"}
 
 def _is_house_exterior(p1,p2,st):
     if st not in HOUSE_STYLES:
@@ -193,26 +269,44 @@ def _boundary_texture(p1,p2,st):
         if _segment_inside(key,whole):
             return tex
     x1,y1=p1; x2,y2=p2
-    # Black metal front rail/gate appearance seen in facade photo.
-    if y1==y2==16:
-        lo,hi=sorted((x1,x2))
-        if 16 <= lo and hi <= 960:
+    if y1==y2:
+        y=y1; lo,hi=sorted((x1,x2))
+        # front fence/rail
+        if y==16 and 16 <= lo and hi <= 960:
             return "H42GATE"
+        # rear driveway gate: see-through iron, blocks shortcut to Hilux/front
+        if y==1312 and 704 <= lo and hi <= 960:
+            return "H42GATE"
+        # narrow west side rear blocker
+        if y==1312 and 16 <= lo and hi <= 96:
+            return "H42FENC"
+        # front and rear elevations deliberately differ
+        if y in (320,384) and 96 <= lo and hi <= 704:
+            return "H42FACA"
+        if y==1312 and 96 <= lo and hi <= 704:
+            return "H42REAR"
+    if st=="BACKDOOR":
+        return "H42RDR"
+    if st=="DOOR":
+        return "H42FRNT"
     if _is_house_exterior(p1,p2,st):
         return "H42SIDN"
     return STYLE[st][5]
 
-OUTDOOR_STYLES={"PORCH","DRIVE","YARD","PATIO","FOOT","VERGE","ROAD","RESERVE","PLAY","LOT"}
+OUTDOOR_STYLES={"PORCH","DRIVE","CARPORT","YARD","PATIO","FOOT","VERGE","ROAD","STLIT","RESERVE","PLAY","PLAYLIT","LOT","GARDEN","DIG"}
 
 def _solid_boundary(p1,p2,st0,st1):
     pair={st0,st1}
-    # House envelope is physically walled from exterior sectors. Door connector
-    # rectangles already replace the wall exactly where passage is intended.
+    (x1,y1),(x2,y2)=p1,p2
+    # no side escape from backyard: timber blocker west, iron gate east
+    if y1==y2==1312:
+        lo,hi=sorted((x1,x2))
+        if (16 <= lo and hi <= 96) or (704 <= lo and hi <= 960):
+            return True
     if (st0 in HOUSE_STYLES and st1 in OUTDOOR_STYLES) or (st1 in HOUSE_STYLES and st0 in OUTDOOR_STYLES):
         return True
-    # Shed is solid except its south-facing doorway.
+    # shed/garage is solid except its south-facing backyard doorway
     if "SHED" in pair and (st0 in OUTDOOR_STYLES or st1 in OUTDOOR_STYLES):
-        (x1,y1),(x2,y2)=p1,p2
         if y1==y2==1750:
             lo,hi=sorted((x1,x2))
             if 640 <= lo and hi <= 768:
@@ -226,8 +320,8 @@ def build_house42_map():
     for p1,p2 in LINE_TEX:
         xs.add(p1[0]); xs.add(p2[0]); ys.add(p1[1]); ys.add(p2[1])
     # Extra cuts split the right-side chimney and front facade into useful line spans.
-    xs.update((144,288,512,672,128,400,560,1260,1516,-640,-384))
-    ys.update((432,608,688,768,848,928,1024,1104))
+    xs.update((96,128,144,288,320,336,352,384,400,416,432,448,464,512,544,560,576,608,656,672,704,736,928,1260,1516,-640,-384,-2240,-2140,-1880,-1700,-1620,-1540))
+    ys.update((320,352,368,384,512,528,544,576,640,704,736,792,856,928,944,960,976,992,1024,1040,1088,1104,1136,1152,1168,1184,1296,1312,1344,1750,2350,-1030,-960,-832,-820,-760,-704,-700,-608,-580,-300,-256,-96,0))
     xs=sorted(xs); ys=sorted(ys)
 
     def covering(cx,cy):
@@ -267,17 +361,31 @@ def build_house42_map():
         sidedefs.append((0,0,tex8(upper),tex8(lower),tex8(middle),sec))
         return i
 
-    EXIT=norm_edge((-2200,-1024),(-2200,-896))
+    # MAP01 ends only after Dad actually enters the playground shown in the
+    # supplied satellite view, not at the house/front boundary.
+    EXIT=norm_edge((-2240,-960),(-2240,-832))
 
     def add_boundary(p1,p2,sec0,sec1=None,st0=None,st1=None):
         key=norm_edge(p1,p2)
         if sec1 is None:
             wall=_boundary_texture(p1,p2,st0)
-            special=11 if key==EXIT else 0
+            special=11 if _segment_inside(key,EXIT) else 0
             linedefs.append((vid(*p1),vid(*p2),1,special,0,side(sec0,middle=wall),0xFFFF))
         else:
             w0=STYLE[st0][5]; w1=STYLE[st1][5]
-            if _solid_boundary(p1,p2,st0,st1):
+            if st0 in ("DOOR","BACKDOOR") or st1 in ("DOOR","BACKDOOR"):
+                door_style = st1 if st1 in ("DOOR","BACKDOOR") else st0
+                dtex = "H42FRNT" if door_style=="DOOR" else "H42RDR"
+                special = 1 if door_style=="DOOR" else 26
+                if st1 == door_style:
+                    linedefs.append((vid(*p1),vid(*p2),4,special,0,
+                                     side(sec0,upper=dtex,lower=dtex),
+                                     side(sec1,upper=dtex,lower=dtex)))
+                else:
+                    linedefs.append((vid(*p2),vid(*p1),4,special,0,
+                                     side(sec1,upper=dtex,lower=dtex),
+                                     side(sec0,upper=dtex,lower=dtex)))
+            elif _solid_boundary(p1,p2,st0,st1):
                 # Blocking two-sided midtexture = actual wall while retaining valid
                 # sectors on both sides for the yard/porch/driveway.
                 hst=st0 if st0 in HOUSE_STYLES else (st1 if st1 in HOUSE_STYLES else ("SHED" if "SHED" in (st0,st1) else st0))
@@ -288,7 +396,7 @@ def build_house42_map():
             else:
                 # Normal open two-sided transition. Height differences (neighbour
                 # massing) get upper/lower walls and remain physically impassable.
-                special=11 if key==EXIT else 0
+                special=11 if _segment_inside(key,EXIT) else 0
                 linedefs.append((vid(*p1),vid(*p2),4,special,0,
                                  side(sec0,upper=w0,lower=w0),
                                  side(sec1,upper=w1,lower=w1)))
@@ -323,17 +431,66 @@ def build_house42_map():
 
     # Classic Doom thing records: x,y,angle,type,flags.
     things=[
-        (400,470,90,1,7),           # player: tiled entry
-        (560,520,180,15105,7),      # Sam runner in/near front lounge
-        (416,120,180,15103,7),      # cola clue at front path
-        (416,-180,180,15101,7),     # footprints near Arnold Street
-        (-1080,-420,180,15106,7),   # false trail on Collenso
-        (-1500,-820,180,15410,7),   # Mopoke glimpse toward reserve
-        (-1840,-940,180,15108,7),   # Sam message by playground approach
-        (720,2060,180,15301,7),     # searchable shed/cache
-        (820,1500,180,15403,7),     # small backyard threat
-    ]
-    bad=[t for t in things if covering(t[0],t[1]) is None]
+        (420,1500,270,1,7),          # Dad starts in backyard facing locked rear door
+        (420,1260,270,15113,7),      # Sam is seen inside/rear and escapes through house
+        (444,356,270,15710,7),       # small front doorbell
+        (720,2080,180,15740,7),      # spare back-door key hidden in garage
+        (710,2060,180,15301,7),      # garage searchable cache beside key area
+
+        # natural-scale story clues
+        (220,1060,180,15109,7),      # Lincoln note in Lincoln's room
+        (560,820,180,15104,7),       # small Sam note in Sam's room
+        (420,120,270,15101,7),       # footprints/front path
+        (-980,-430,180,15106,7),     # false trail near Arnold/Collenso
+        (-1705,-790,180,15108,7),    # small note/message near playground bench
+        (-1450,-650,180,15410,7),    # Mopoke glimpse at reserve edge
+
+        # dog dug under rear fence
+        (245,2860,180,15733,7),
+
+        # street lamps/poles
+        (120,-150,0,15720,7),
+        (-620,-150,0,15720,7),
+        (-1160,-560,90,15720,7),
+        (-880,760,90,15720,7),
+        (-1850,-620,0,15720,7),
+
+        # trees around frontages/reserve
+        (-650,180,90,15721,7),
+        (270,-165,90,15721,7),
+        (1460,180,90,15721,7),
+        (180,-760,90,15721,7),
+        (-1200,360,90,15721,7),
+        (-1450,120,90,15721,7),
+        (-1750,360,90,15721,7),
+        (-2050,620,90,15721,7),
+        (-1850,-620,90,15721,7),
+
+        # vehicles: fixed multi-angle sprites; Workmate in 42 driveway
+        (832,620,90,15729,7),
+        (1050,-430,90,15722,7),
+        (-520,-430,90,15723,7),
+
+        # kerbside bins for 42 + neighbours
+        (780,-220,0,15730,7),
+        (820,-220,0,15731,7),
+        (860,-220,0,15728,7),
+        (-340,40,0,15728,7),
+        (1500,30,0,15728,7),
+
+        # low planting
+        (180,210,0,15732,7),
+        (560,275,0,15732,7),
+        (100,1450,0,15732,7),
+        (-560,205,0,15732,7),
+        (1410,210,0,15732,7),
+
+        # playground furniture/equipment
+        (-1710,-940,0,15724,7),
+        (-2050,-980,0,15725,7),
+        (-1920,-900,0,15726,7),
+        (-1820,-830,0,15727,7),
+    ]    bad=[t for t in things if covering(t[0],t[1]) is None]
     if bad:
         raise ValueError(f"MAP01 house42 things outside authored geometry: {bad}")
 
