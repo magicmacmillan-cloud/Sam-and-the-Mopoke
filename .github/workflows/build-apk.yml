@@ -127,8 +127,9 @@ jobs:
                   floors.add(ff.rstrip(b"\0").decode("ascii"))
                   ceilings.add(cf.rstrip(b"\0").decode("ascii"))
 
-          assert {"HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
-          assert {"HCEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
+          assert {"H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42ASPH","H42GRAS","H42PAVE",
+                  "DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
+          assert {"H42CEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
 
           zscript=data["ZSCRIPT"][-1].decode("utf-8")
           for cls in (
