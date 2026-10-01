@@ -569,6 +569,59 @@ def _extra_street_details(root):
     _flat(root,"H42ROAD",(61,63,62),"asphalt")
     _flat(root,"H42BED",(91,69,47),"concrete")
 
+def _front_rear_elevation_assets(root):
+    # Distinct Arnold-Street front and backyard rear assets so a renderer
+    # cannot accidentally mirror the front porch/front-door treatment onto the rear.
+
+    # Front windows: dark framed domestic glazing, cleaner presentation.
+    w=h=128; p=_canvas(w,h)
+    _rect(p,w,h,0,0,w,h,(219,216,204))
+    _rect(p,w,h,7,7,121,121,(30,34,35))
+    for y in range(10,118):
+        for x in range(10,118):
+            c=_noise((38,43,44),x,y,4,71)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,61,7,67,121,(204,201,190))
+    _rect(p,w,h,7,61,121,67,(204,201,190))
+    _png(root/"textures"/"H42FWIN.png",w,h,p)
+
+    # Rear windows: same house, but slightly more utilitarian and with a
+    # suggestion of vertical blinds/curtains from the walkthrough.
+    p=_canvas(w,h)
+    _rect(p,w,h,0,0,w,h,(211,208,197))
+    _rect(p,w,h,7,7,121,121,(28,33,34))
+    for x in range(12,119,14):
+        _rect(p,w,h,x,10,min(119,x+7),118,(193,191,181),180)
+    _rect(p,w,h,61,7,67,121,(198,196,186))
+    _png(root/"textures"/"H42RWIN.png",w,h,p)
+
+    # Rear weatherboards: cream horizontal cladding, slightly more weathered
+    # than the street-facing facade and without porch/gate/front-door cues.
+    p=_canvas(w,h)
+    base=(205,202,187)
+    for y in range(h):
+        band=y%18
+        for x in range(w):
+            c=_noise(base,x,y,5,73)
+            if band in (0,1): c=_shade(c,-30)
+            elif band in (2,3): c=_shade(c,6)
+            if ((x*11+y*5)%113)<2: c=_shade(c,-7)
+            _set(p,w,h,x,y,c)
+    _png(root/"textures"/"H42REAR.png",w,h,p)
+
+    # Rear/back door: plain utilitarian cream/brown domestic door, not the
+    # dark ornate Arnold Street front door.
+    w2,h2=64,128; p=_canvas(w2,h2)
+    for y in range(h2):
+        for x in range(w2):
+            _set(p,w2,h2,x,y,_noise((177,164,143),x,y,5,79))
+    _rect(p,w2,h2,8,8,56,118,(186,175,155))
+    _line(p,w2,h2,8,58,56,58,2,(132,122,108))
+    _line(p,w2,h2,8,8,8,118,2,(132,122,108))
+    _line(p,w2,h2,56,8,56,118,2,(132,122,108))
+    _disc(p,w2,h2,50,66,3,3,(73,69,61))
+    _png(root/"textures"/"H42RDR.png",w2,h2,p)
+
 def generate_house42_assets(root: Path):
     root=Path(root)
     _plaster(root,"H42WALL",(211,205,192))
@@ -586,6 +639,7 @@ def generate_house42_assets(root: Path):
     _door(root,"H42DOOR",True)
     _door(root,"H42WDR",False)
     _front_door(root)
+    _front_rear_elevation_assets(root)
     _sofa(root)
     _appliance(root)
     _doorbell_sprite(root)
