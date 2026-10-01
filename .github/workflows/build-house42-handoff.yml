@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - house42-map-handoff-final
+      - house42-map-handoff-v2-detail
     paths:
       - 'doomtc/house42_map.py'
       - 'doomtc/house42_assets.py'
@@ -37,7 +38,7 @@ jobs:
 
           root=Path("doomtc/house42_handoff_build")
           wad=root/"42-Arnold-MAP01-geometry-and-textures.wad"
-          z=Path("42-Arnold-MAP01-AI-HANDOFF.zip")
+          z=Path("42-Arnold-MAP01-AI-HANDOFF-v2.zip")
           assert wad.is_file() and wad.stat().st_size>10000
           assert z.is_file() and z.stat().st_size>10000
 
@@ -53,13 +54,15 @@ jobs:
               "MAP01","THINGS","LINEDEFS","SIDEDEFS","VERTEXES","SECTORS",
               "H42WALL","H42KTCH","H42BATH","H42SIDN","H42FRNT","H42WIND",
               "H42CARP","H42WOOD","H42ASPH","H42GRAS","H42SAFE",
-              "H44ROOF","H40ROOF","H39ROOF","H37ROOF","H35ROOF"
+              "H42LWN","H42VERG","H42DRV","H42PATH","H42ROAD","H42BED",
+              "H44ROOF","H40ROOF","H39ROOF","H37ROOF","H35ROOF",
+              "DECORATE","HILXA1","HILXA5","BINRA0","BINYA0","SHRBA0"
           ):
               assert req in names, req
 
           manifest=json.loads((root/"MANIFEST.json").read_text())
-          assert manifest["engine_dependency"].startswith("none")
-          assert manifest["stats"]["handoff_wad_things"]==1
+          assert "DECORATE" in manifest["engine_dependency"]
+          assert manifest["stats"]["handoff_wad_things"] >= 20
           assert len(manifest["textures"])>=15
           assert len(manifest["flats"])>=15
 
@@ -72,13 +75,25 @@ jobs:
                   "42-Arnold-overhead-plan.svg"
               ):
                   assert req in packed, req
-          print("42 Arnold map-only handoff validation passed")
+          # Verify the actual map contains the player plus environment props,
+          # including Workmate and the three kerbside bins.
+          idx=names.index("THINGS")
+          # Re-read THINGS by directory index.
+          pos,size,raw=struct.unpack_from("<II8s",b,diroff+idx*16)
+          things=[struct.unpack_from("<hhhhh",b,pos+i) for i in range(0,size,10)]
+          types=[t[3] for t in things]
+          assert 1 in types
+          assert 15729 in types, "missing Hilux Workmate"
+          assert all(t in types for t in (15728,15730,15731)), "missing kerb bins"
+          assert types.count(15721) >= 8, "not enough trees"
+          assert types.count(15720) >= 3, "not enough street lamps/poles"
+          print("42 Arnold v2 map-only handoff validation passed")
           PY
 
       - name: Upload map-only AI handoff
         uses: actions/upload-artifact@v4
         with:
-          name: 42-Arnold-MAP01-AI-HANDOFF
-          path: 42-Arnold-MAP01-AI-HANDOFF.zip
+          name: 42-Arnold-MAP01-AI-HANDOFF-v2
+          path: 42-Arnold-MAP01-AI-HANDOFF-v2.zip
           if-no-files-found: error
           retention-days: 14
