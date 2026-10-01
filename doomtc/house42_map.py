@@ -35,7 +35,7 @@ STYLE = {
     "VERGE":   (0,192,"H42GRAS","F_SKY1",160,"H42CURB"),
     "ROAD":    (0,192,"H42ASPH","F_SKY1",152,"H42CURB"),
     "RESERVE": (0,224,"H42GRAS","F_SKY1",144,"H42FENC"),
-    "PLAY":    (0,224,"H42PAVE","F_SKY1",160,"H42PLAY"),
+    "PLAY":    (0,224,"H42SAFE","F_SKY1",160,"H42PLAY"),
     "LOT":     (0,192,"H42GRAS","F_SKY1",150,"H42FENC"),
     "GARDEN":  (0,192,"H42DIRT","F_SKY1",150,"H42FENC"),
     "DOOR":    (0,0,"H42TILF","H42CEIL",160,"H42FRNT"),
@@ -50,6 +50,11 @@ STYLE = {
     # the site legible in automap/node builders.
     "NBR1":    (128,128,"H42ROOF","H42ROOF",128,"H42NBR1"),
     "NBR2":    (128,128,"H42ROOF","H42ROOF",128,"H42NBR2"),
+    "NBR44":   (128,128,"H44ROOF","H44ROOF",128,"H42NBR1"),
+    "NBR40":   (128,128,"H40ROOF","H40ROOF",128,"H42NBR2"),
+    "NBR39":   (128,128,"H39ROOF","H39ROOF",128,"H42NBR2"),
+    "NBR37":   (128,128,"H37ROOF","H37ROOF",128,"H42NBR1"),
+    "NBR35":   (128,128,"H35ROOF","H35ROOF",128,"H42NBR2"),
 }
 
 def A(x0,y0,x1,y1,style):
@@ -67,6 +72,12 @@ AREAS = [
     A(-1600,-768,-1248,-704,"FOOT"),
     A(-1740,-816,-1540,-752,"FOOT"),
     A(-1880,-864,-1700,-800,"FOOT"),
+    # reserve path north-west / north from the playground, approximated from satellite
+    A(-1880,-704,-1800,-420,"FOOT"),
+    A(-1800,-420,-1690,-120,"FOOT"),
+    A(-1690,-120,-1570,220,"FOOT"),
+    A(-1570,220,-1460,620,"FOOT"),
+    A(-1460,620,-1360,1050,"FOOT"),
 
     # --- Collenso Street ---
     A(-1312,-1408,-1248,1800,"FOOT"),
@@ -84,20 +95,20 @@ AREAS = [
     A(-944,-1408,-48,-720,"LOT"),
     A(16,-1408,960,-720,"LOT"),
     A(1008,-1408,1920,-720,"LOT"),
-    A(-816,-1328,-160,-896,"NBR2"),
-    A(96,-1328,800,-896,"NBR1"),
-    A(1104,-1328,1776,-896,"NBR2"),
+    A(-816,-1328,-160,-896,"NBR39"),
+    A(96,-1328,800,-896,"NBR37"),
+    A(1104,-1328,1776,-896,"NBR35"),
 
     # --- immediate neighbours 44 and 40 ---
     A(-944,16,-48,2944,"LOT"),
     A(1008,16,1920,2944,"LOT"),
-    A(-816,320,-160,1110,"NBR1"),
-    A(1104,320,1776,1088,"NBR2"),
+    A(-816,320,-160,1110,"NBR44"),
+    A(1104,320,1776,1088,"NBR40"),
     # rear sheds / outbuildings from the satellite massing
-    A(-720,1450,-256,2080,"NBR1"),
-    A(-880,2140,-520,2580,"NBR1"),
-    A(1260,1350,1740,2150,"NBR1"),
-    A(1120,2240,1600,2700,"NBR1"),
+    A(-720,1450,-256,2080,"NBR44"),
+    A(-880,2140,-520,2580,"NBR44"),
+    A(1260,1350,1740,2150,"NBR40"),
+    A(1120,2240,1600,2700,"NBR40"),
 
     # Neighbour driveways/front paths and lawns visible around No.44/No.40.
     A(-400,16,-160,320,"DRIVE"),
@@ -439,6 +450,8 @@ def build_house42_map():
         (-1450,120,90,15721,7),
         (-1750,360,90,15721,7),
         (-2050,620,90,15721,7),
+        (-1700,520,90,15721,7),
+        (-1500,880,90,15721,7),
         (-1850,-620,90,15721,7),     # playground shade tree
         (-650,180,90,15721,7),       # No.44 front lawn tree
         (1460,180,90,15721,7),       # No.40 front lawn tree
