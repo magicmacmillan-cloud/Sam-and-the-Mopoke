@@ -486,10 +486,95 @@
     "exact_internal_dimensions": "medium/approximate; not a survey"
   },
   "builder_rules": [
+    "Dad starts in the backyard. Do not move MAP01 player start to the front of the property.",
+    "Sam must visibly flee from the backyard along the side driveway, Arnold Street and Collenso route into the playground.",
+    "MAP01 must not finish at the house or property boundary; the exit is inside the playground.",
+    "Keep the usable dark front door and small doorbell beside it.",
+    "Keep physical notes/clues small and domestic-scale; readability comes from interaction text, not billboard-sized sprites.",
     "Preserve domestic scale and the room/door sequence.",
     "Do not replace the house with generic Doom tech/hell textures.",
     "Use source-matched H42 textures for MAP01.",
     "Keep the right-side driveway/carport, long backyard, large rear shed, no.44/no.40 massing, Arnold Street, Collenso Street, reserve and playground.",
     "Refine only when the supplied walkthrough/aerial evidence supports a correction."
-  ]
+  ],
+  "story_flow": {
+    "player_start": {
+      "x": 420,
+      "y": 1500,
+      "location": "42 Arnold backyard",
+      "facing": "toward house/front route"
+    },
+    "sam_escape": [
+      [
+        420,
+        1420
+      ],
+      [
+        760,
+        1360
+      ],
+      [
+        820,
+        900
+      ],
+      [
+        820,
+        220
+      ],
+      [
+        620,
+        -360
+      ],
+      [
+        -420,
+        -430
+      ],
+      [
+        -1080,
+        -430
+      ],
+      [
+        -1080,
+        -820
+      ],
+      [
+        -1500,
+        -900
+      ],
+      [
+        -1840,
+        -960
+      ]
+    ],
+    "front_door": {
+      "bounds": [
+        384,
+        368,
+        416,
+        384
+      ],
+      "texture": "H42FRNT",
+      "interaction": "reusable Doom door"
+    },
+    "doorbell": {
+      "x": 432,
+      "y": 356,
+      "actor": "HouseDoorbell",
+      "sound": "sam/doorbell"
+    },
+    "level_exit": {
+      "segment": [
+        [
+          -1888,
+          -1024
+        ],
+        [
+          -1888,
+          -896
+        ]
+      ],
+      "location": "inside playground",
+      "next": "MAP02"
+    }
+  }
 }
