@@ -6,6 +6,7 @@ on:
     branches:
       - house42-map-handoff-final
       - house42-map-handoff-v2-detail
+      - house42-map-handoff-v3-correct-front-rear
     paths:
       - 'doomtc/house42_map.py'
       - 'doomtc/house42_assets.py'
@@ -38,7 +39,7 @@ jobs:
 
           root=Path("doomtc/house42_handoff_build")
           wad=root/"42-Arnold-MAP01-geometry-and-textures.wad"
-          z=Path("42-Arnold-MAP01-AI-HANDOFF-v2.zip")
+          z=Path("42-Arnold-MAP01-AI-HANDOFF-v3.zip")
           assert wad.is_file() and wad.stat().st_size>10000
           assert z.is_file() and z.stat().st_size>10000
 
@@ -53,6 +54,7 @@ jobs:
           for req in (
               "MAP01","THINGS","LINEDEFS","SIDEDEFS","VERTEXES","SECTORS",
               "H42WALL","H42KTCH","H42BATH","H42SIDN","H42FRNT","H42WIND",
+              "H42FACA","H42REAR","H42RWIN","H42RDR",
               "H42CARP","H42WOOD","H42ASPH","H42GRAS","H42SAFE",
               "H42LWN","H42VERG","H42DRV","H42PATH","H42ROAD","H42BED",
               "H44ROOF","H40ROOF","H39ROOF","H37ROOF","H35ROOF",
@@ -87,13 +89,14 @@ jobs:
           assert all(t in types for t in (15728,15730,15731)), "missing kerb bins"
           assert types.count(15721) >= 8, "not enough trees"
           assert types.count(15720) >= 3, "not enough street lamps/poles"
-          print("42 Arnold v2 map-only handoff validation passed")
+          assert "H42FACA" in names and "H42REAR" in names and "H42RDR" in names
+          print("42 Arnold v3 front/rear-correct map handoff validation passed")
           PY
 
       - name: Upload map-only AI handoff
         uses: actions/upload-artifact@v4
         with:
-          name: 42-Arnold-MAP01-AI-HANDOFF-v2
-          path: 42-Arnold-MAP01-AI-HANDOFF-v2.zip
+          name: 42-Arnold-MAP01-AI-HANDOFF-v3
+          path: 42-Arnold-MAP01-AI-HANDOFF-v3.zip
           if-no-files-found: error
           retention-days: 14
