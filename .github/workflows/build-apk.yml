@@ -88,6 +88,7 @@ jobs:
               "STNFLR","MALLFLR","LIBFLR","HCEIL","TOMBCE","STNCEIL",
               "MALLCEIL","LIBCEIL",
               "DBELA0","SSDBELL",
+              "STLPA0","TREEA0","CARWA0","CARDA0","BNCHA0","SWNGA0","SLIDA0","CLMBA0","WBINA0",
               "H42WALL","H42PANL","H42KTCH","H42BATH","H42SIDN","H42BRIK",
               "H42SHED","H42FENC","H42GATE","H42WIND","H42BLND","H42DOOR",
               "H42WDR","H42FRNT","H42SOFA","H42APPL","H42CURB","H42PLAY",
@@ -158,6 +159,10 @@ jobs:
           assert backyard_start and backyard_start[0][1] >= 1300, backyard_start
           assert any(t[3]==15113 for t in things), "missing SamEscapeRunner"
           assert any(t[3]==15710 for t in things), "missing HouseDoorbell"
+          assert sum(1 for t in things if t[3]==15720) >= 3, "missing HouseStreetLamp"
+          assert sum(1 for t in things if t[3]==15721) >= 4, "missing HouseTree"
+          assert sum(1 for t in things if t[3] in (15722,15723)) >= 3, "missing parked cars"
+          assert all(any(t[3]==typ for t in things) for typ in (15724,15725,15726,15727)), "missing playground props"
 
           vert_blob=next(body for n,body in entries[map_i+1:map_i+12] if n=="VERTEXES")
           line_blob=next(body for n,body in entries[map_i+1:map_i+12] if n=="LINEDEFS")
@@ -171,8 +176,8 @@ jobs:
               if special==1:
                   front_door_lines+=1
           assert playground_exit, playground_exit
-          assert all(seg[0][0]==-2000 and seg[1][0]==-2000 and
-                     -1024 <= seg[0][1] < seg[1][1] <= -896
+          assert all(seg[0][0]==-2050 and seg[1][0]==-2050 and
+                     -960 <= seg[0][1] < seg[1][1] <= -832
                      for seg in playground_exit), playground_exit
           assert front_door_lines==2, front_door_lines
 
@@ -456,7 +461,7 @@ jobs:
                   assert f.read(4) == b"IWAD"
           print("APK contains the standalone Sam and the Mopoke IWAD and no external game-data mod stack")
           PY
-          cp "$APK" Mopoke-Horror-House42-v15-Doom.apk
+          cp "$APK" Mopoke-Horror-House42-v16-Doom.apk
 
       - name: Verify Gradle-signed native installer variant
         run: |
@@ -478,7 +483,7 @@ jobs:
       - name: Upload Sam and the Mopoke APK
         uses: actions/upload-artifact@v4
         with:
-          name: Mopoke-Horror-House42-v15-Doom-APK
-          path: Mopoke-Horror-House42-v15-Doom.apk
+          name: Mopoke-Horror-House42-v16-Doom-APK
+          path: Mopoke-Horror-House42-v16-Doom.apk
           if-no-files-found: error
           retention-days: 3
