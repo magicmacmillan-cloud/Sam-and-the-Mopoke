@@ -18,7 +18,7 @@ on:
       - '.github/workflows/build-apk.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: sam-and-the-mopoke-${{ github.ref }}
@@ -32,45 +32,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: game
-          ref: ${{ github.head_ref || github.ref_name }}
-
-      - name: Preserve exact uploaded wanted-poster source art
-        env:
-          POSTER01_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/8341bff9-1eba-4687-a327-9c5a4c2cd0e7.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjY2OTM5OTYwZDM3MTE3YSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTA0NDYzMH0.EscrwizIYqjYdUMt9n54zfVi7LCD8D0yXu95Dy5feKI'
-          POSTER02_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/d9941de0-1e6d-45c0-ad29-3e717f0b2931.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMzQzMDY4MjQwN2MzNmU1YSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTA4MjAyMH0.VzfXTlVYsrLWIxOtETzDtisBGCbiDDHnrQjKly57WdU'
-          POSTER03_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/0326483b-099b-4015-b238-3294034d5754.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNWM2ZGJhMjNmY2VjMWVhNiIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTA1OTc0N30.TIhEaREt1uvwZG9CO4WqA5NEYgeQdfvBwJQCHPNNsbc'
-          POSTER04_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/0a2b1cac-c719-457f-9d4c-4202a4d9c440.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNGU3YzNhYzNjYWJhOTIzMSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTAxMzk1NX0.9QAj5ZNeiIqjKYDZemKEr5DlK2Sw9Pz3w34mADot_cE'
-          POSTER05_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/3c2e7c89-ccc3-4400-92db-a7751ab3bb43.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYWExYjBlOGY2NTM3YTQxYyIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTAwNzExOX0.XK7ptWk8WZ7A2Dbsg1QGGv21S-U-VNqbCAxPX8mTvY8'
-          POSTER06_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/60c4b809-5143-4ae3-8653-3ac915847e44.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiM2U0ZTc1ODIzMzY0MTRlYSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTA0NzY4Mn0.jAL-72vH4lm5hBLoDOqVUrQGzzAwuj0eGm6MG4t0I_Y'
-          POSTER07_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/b7f20297-c275-4b42-8891-35287db09d48.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjMzMGJlYWQ1ZGIwMDhmYiIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTAxMTUwMX0.f_LL3LqOrRy57dJfp7viKu7cT33sG7R6r4eXagzNqvI'
-          POSTER08_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/292c6741-7bea-4bae-8612-78d8e23875cb.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZjU1NDMwYzQ1Zjc1MWU0ZSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTA4NDIyOH0.xEmBBJQdONus2z9p3rlTQPjDoTYNIwYbhWiprUO6_3k'
-        run: |
-          set -euo pipefail
-          SRC=game/doomtc/source_posters
-          mkdir -p "$SRC"
-
-          if [ ! -s "$SRC/poster01.png" ] || [ ! -s "$SRC/poster02.png" ] ||              [ ! -s "$SRC/poster03.png" ] || [ ! -s "$SRC/poster04.png" ] ||              [ ! -s "$SRC/poster05.png" ] || [ ! -s "$SRC/poster06.png" ] ||              [ ! -s "$SRC/poster07.png" ] || [ ! -s "$SRC/poster08.jpg" ]; then
-            curl -fL --retry 3 "$POSTER01_URL" -o "$SRC/poster01.png"
-            curl -fL --retry 3 "$POSTER02_URL" -o "$SRC/poster02.png"
-            curl -fL --retry 3 "$POSTER03_URL" -o "$SRC/poster03.png"
-            curl -fL --retry 3 "$POSTER04_URL" -o "$SRC/poster04.png"
-            curl -fL --retry 3 "$POSTER05_URL" -o "$SRC/poster05.png"
-            curl -fL --retry 3 "$POSTER06_URL" -o "$SRC/poster06.png"
-            curl -fL --retry 3 "$POSTER07_URL" -o "$SRC/poster07.png"
-            curl -fL --retry 3 "$POSTER08_URL" -o "$SRC/poster08.jpg"
-
-            (cd "$SRC" && sha256sum poster01.png poster02.png poster03.png poster04.png poster05.png poster06.png poster07.png poster08.jpg > SHA256SUMS)
-
-            git -C game config user.name "Sam Mopoke Builder"
-            git -C game config user.email "actions@users.noreply.github.com"
-            git -C game add doomtc/source_posters
-            if ! git -C game diff --cached --quiet; then
-              git -C game commit -m "Add exact uploaded wanted-poster source art"
-              git -C game push origin "HEAD:${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-            fi
-          else
-            (cd "$SRC" && sha256sum -c SHA256SUMS)
-          fi
 
       - name: Check out Android Doom source port
         uses: actions/checkout@v4
@@ -214,8 +175,8 @@ jobs:
           assert "neighbour's letterbox" in actor_src
           assert "dog dug through here" in actor_src.lower()
           assert '"H42DHOL"' in map_src, "damaged rear-fence texture must be used at dog hole"
-          assert 'A(160,2820,288,2944,"DIG")' in map_src, "dog dirt depression must remain at rear fence"
-          assert '(224,2860,180,15733,7)' in map_src, "dog-hole evidence actor must remain aligned to gap"
+          assert 'A(160,2880,288,2944,"DIG")' in map_src, "dog dirt depression must remain at rear fence"
+          assert '(224,2916,180,15733,7)' in map_src, "dog-hole evidence actor must remain aligned to gap"
           assert 'if y==2944 and 160 <= lo and hi <= 288' in map_src
 
           # V37 exact poster-source and dog-hole requirements.
