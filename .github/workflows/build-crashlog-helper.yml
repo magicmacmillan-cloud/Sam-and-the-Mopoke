@@ -29,12 +29,24 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
 
-      - name: Compile CrashActivity and dex it
+      - name: Compile crash logger classes
         run: |
           set -euo pipefail
-          mkdir -p build/classes build/dex
-          javac -source 8 -target 8             -classpath "$ANDROID_HOME/platforms/android-36/android.jar"             -d build/classes diagnostic/CrashActivity.java
-          "$ANDROID_HOME/build-tools/36.0.0/d8"             --release             --lib "$ANDROID_HOME/platforms/android-36/android.jar"             --output build/dex             build/classes/com/msa/freedoom/CrashActivity.class
+          mkdir -p build/classes build/stubs/org/libsdl/app2012 build/dex
+
+          cat > build/stubs/org/libsdl/app2012/SDLActivity.java <<'JAVA'
+          package org.libsdl.app2012;
+          public class SDLActivity extends android.app.Activity {
+              protected String[] getLibraries() { return new String[0]; }
+          }
+          JAVA
+
+          javac -source 8 -target 8             -classpath "$ANDROID_HOME/platforms/android-36/android.jar"             -d build/stubclasses             build/stubs/org/libsdl/app2012/SDLActivity.java
+
+          javac -source 8 -target 8             -classpath "$ANDROID_HOME/platforms/android-36/android.jar:build/stubclasses"             -d build/classes             diagnostic/CrashActivity.java diagnostic/Glog.java
+
+          "$ANDROID_HOME/build-tools/36.0.0/d8"             --release             --lib "$ANDROID_HOME/platforms/android-36/android.jar"             --classpath build/stubclasses             --output build/dex             build/classes/com/msa/freedoom/CrashActivity.class             build/classes/com/msa/freedoom/Glog.class
+
           mv build/dex/classes.dex build/classes23.dex
           test -s build/classes23.dex
 
