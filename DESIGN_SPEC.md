@@ -13,7 +13,7 @@ Every ordinary wall must be solid and opaque. No accidental see-through walls, H
 ## Campaign pacing
 
 ### MAP01 — Arnold Street house — target ~10 minutes
-A believable suburban Australian house: bedrooms, hall, lounge, kitchen, bathroom, laundry, cupboards, backyard access, carport and connecting spaces. Adam wakes confused. Sam is seen early, recognises only an undead threat, and runs. The player searches the house, follows clues, discovers blocked routes and eventually works out how to leave. Re-enterable loops and shortcuts are preferred over a straight path. Keep combat light and use subtle supernatural events.
+A believable suburban Australian house: bedrooms, hall, lounge, kitchen, bathroom, laundry, cupboards, backyard access, carport and connecting spaces. Adam wakes confused. Sam is seen early, recognises only an undead threat, runs through the side driveway gate and padlocks it behind him. Lincoln has separately locked the rear house door. MAP01's opening route is intentionally constrained: backyard → garage spare rear-door key → sunroom → laundry → kitchen → Lincoln's room/phone → hallway and four rooms → 2330 puzzle-box front-door key → Arnold Street → padlocked playground gate → Sam's note → neighbour letterbox key → playground. Generic loop/shortcut guidance must never bypass this chain. Keep combat light and use subtle supernatural events.
 
 ### MAP02 — Playground — target ~6 minutes
 Must unmistakably read as a real playground: equipment, paths, benches, fences, trees and believable circulation around the play structures. Include a small environmental/navigation problem. Sam can be glimpsed, but not caught. Enemy ecology differs from the house.
