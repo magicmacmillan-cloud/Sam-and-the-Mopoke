@@ -333,9 +333,9 @@ jobs:
 
           p=Path("doom/src/main/res/values/strings.xml")
           s=p.read_text()
-          s=s.replace('<string name="app_name">Zombnomby</string>',
-                      '<string name="app_name">Sam and the Mopoke</string>')
-          s=s.replace('Zombnomby','Sam and the Mopoke')
+          s=s.replace('<string name="app_name">Freedoom</string>',
+                      '<string name="app_name">Zombnomby</string>')
+          s=s.replace('Welcome to Freedoom','Zombnomby')
           p.write_text(s)
 
           if '<string name="app_name">Zombnomby</string>' not in s:
