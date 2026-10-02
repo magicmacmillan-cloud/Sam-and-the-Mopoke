@@ -83,7 +83,17 @@ jobs:
               "TOMB","STATION","MALL","LIBRARY",
               "HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL",
               "STNFLR","MALLFLR","LIBFLR","HCEIL","TOMBCE","STNCEIL",
-              "MALLCEIL","LIBCEIL"
+              "MALLCEIL","LIBCEIL",
+              "H42WALL","H42PANL","H42KTCH","H42BATH","H42SIDN","H42BRIK",
+              "H42SHED","H42FENC","H42GATE","H42WIND","H42BLND","H42DOOR",
+              "H42WDR","H42CURB","H42PLAY","H42FRNT","H42FACA","H42REAR","H42RWIN","H42RDR",
+              "H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42ASPH",
+              "H42GRAS","H42PAVE","H42CEIL","H42ROOF","H42ATLAS",
+              "H42LWN","H42VERG","H42DRV","H42PATH","H42ROAD","H42BED","H42SAFE",
+              "BDKYA0","FDKYA0","PGKYA0","PHONA0","FDNTA0","PBOXA0","SGNTA0","LBOXA0",
+              "D0BTA0","D1BTA0","D2BTA0","D3BTA0","D4BTA0","D5BTA0","D6BTA0","D7BTA0","D8BTA0","D9BTA0",
+              "ESCOA0","XBOXA0","FRDGA0","PROJA0","PJCTA0","PJCTB0","PJCTC0","PJCTD0",
+              "DOGDA0","HILXA1","HILXA5","TREEA0","STLPA0","BINRA0","BINYA0"
           }
           required.update(f"MUSIC{i:02d}" for i in range(1,11))
           required.update({
@@ -115,13 +125,16 @@ jobs:
               sector_count=len(sec_blob)//26
               sector_counts[mapname]=sector_count
               assert sector_count>=12, (mapname,sector_count)
+              if mapname=="MAP01":
+                  assert sector_count>=80, ("MAP01 should be the detailed 42 Arnold reconstruction",sector_count)
               for off in range(0,len(sec_blob),26):
                   floor,ceil,ff,cf,light,special,tag=struct.unpack_from("<hh8s8shhh",sec_blob,off)
                   floors.add(ff.rstrip(b"\0").decode("ascii"))
                   ceilings.add(cf.rstrip(b"\0").decode("ascii"))
 
-          assert {"HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
-          assert {"HCEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
+          assert {"H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42LWN","H42VERG","H42DRV","H42PATH",
+                  "H42ROAD","H42SAFE","H42GRAS","H42PAVE","DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
+          assert {"H42CEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
 
           zscript=data["ZSCRIPT"][-1].decode("utf-8")
           for cls in (
@@ -131,14 +144,72 @@ jobs:
               "JarOfDadToenails","UnholyJandal","GoatFinger","CrowFinger","PossumFinger",
               "GoatFingerGate","CrowFingerGate","PossumFingerGate","SamRunner",
               "MopokeShambler","UndeadGoat","RotPossum","CursedCrow","StationHusk",
-              "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler"
+              "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler",
+              "HouseBackDoorKey","HouseFrontDoorKey","PlaygroundGateKey","LincolnPhone42","FrontDoorPuzzleNote","HousePuzzleBox",
+              "PuzzleDigit0","PuzzleDigit2","PuzzleDigit3","PuzzleDigit9","GarageEScooter42","LoungeXboxTV42","KitchenFridge42",
+              "MasterProjector42","SamGateNote42","NeighbourLetterbox42","DogDigEvidence","HouseHiluxWorkmate"
           ):
               assert f"class {cls}" in zscript, cls
           assert "SAML ABCDEF" in zscript
           assert "SAMF ABCDEF" in zscript
 
+          map_src=Path("game/doomtc/house42_map.py").read_text()
+          actor_src=Path("game/doomtc/zscript/actors.zs").read_text()
+          assert '"BACKDOOR"' in map_src and '"GATEDOOR"' in map_src
+          assert '15740' in map_src and '15741' in map_src and '15743' in map_src and '15744' in map_src and '15745' in map_src
+          assert map_src.count("15760") == 2, "MAP01 must contain exactly two e-scooter clues"
+          assert map_src.count("15761") == 3, "MAP01 must contain exactly three Xbox/TV clues"
+          assert "three eggs" in actor_src.lower()
+          assert "2 3 3 0" in actor_src
+          assert "neighbour's letterbox" in actor_src
+          assert "dog dug through here" in actor_src.lower()
+
           print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, sector counts={sector_counts}")
           PY
+
+      - name: Package 42 Arnold builder handoff
+        run: |
+          set -euo pipefail
+          HANDOFF=House42-Builder-Handoff
+          rm -rf "$HANDOFF"
+          mkdir -p "$HANDOFF/textures" "$HANDOFF/flats" "$HANDOFF/sprites" "$HANDOFF/graphics"
+          cp game/HOUSE42_HANDOFF.md "$HANDOFF/"
+          cp game/doomtc/house42_layout.json "$HANDOFF/"
+          cp game/doomtc/house42_map.py "$HANDOFF/"
+          cp game/doomtc/house42_assets.py "$HANDOFF/"
+          cp game/doomtc/build_map.py "$HANDOFF/"
+          cp game/doomtc/generate_assets.py "$HANDOFF/"
+          cp game/doomtc/sam-and-the-mopoke-map.wad "$HANDOFF/42-Arnold-MAP01-source.wad"
+          cp game/doomtc/build/sam-and-the-mopoke.wad "$HANDOFF/Sam-and-the-Mopoke-IWAD.wad"
+          cp game/doomtc/textures/H42*.png "$HANDOFF/textures/"
+          cp game/doomtc/flats/H42*.png "$HANDOFF/flats/"
+          cp game/doomtc/sprites/H4*.png "$HANDOFF/sprites/" || true
+          cp game/doomtc/graphics/H42ATLAS.png "$HANDOFF/graphics/"
+          printf '%s\n' \
+            '42 Arnold v3 handoff: source-driven house/street/playground MAP01.' \
+            'Load Sam-and-the-Mopoke-IWAD.wad in GZDoom or inspect the source map and JSON.' \
+            'Internal dimensions are reconstructed from video/aerial evidence, not a survey.' \
+            > "$HANDOFF/README.txt"
+          zip -qr House42-Builder-Handoff.zip "$HANDOFF"
+          cp game/doomtc/build/sam-and-the-mopoke.wad Sam-and-the-Mopoke-IWAD.wad
+          test -s House42-Builder-Handoff.zip
+          test -s Sam-and-the-Mopoke-IWAD.wad
+
+      - name: Upload standalone IWAD
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sam-and-the-Mopoke-IWAD
+          path: Sam-and-the-Mopoke-IWAD.wad
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload 42 Arnold builder handoff
+        uses: actions/upload-artifact@v4
+        with:
+          name: House42-Builder-Handoff
+          path: House42-Builder-Handoff.zip
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
