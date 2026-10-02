@@ -57,8 +57,10 @@ STYLE = {
     "PLAYEQ":  (36,224,"H42PAVE","F_SKY1",150,"H42PLAY"),
     # Zero-height sectors form solid neighbour-house massing while keeping
     # the site legible in automap/node builders.
-    "NBR1":    (128,128,"H42ROOF","H42ROOF",128,"H42NBR1"),
-    "NBR2":    (128,128,"H42ROOF","H42ROOF",128,"H42NBR2"),
+    "NBR1":    (104,104,"H42ROOF","H42ROOF",104,"H42NBR1"),
+    "NBR2":    (104,104,"H42ROOF","H42ROOF",104,"H42NBR2"),
+    "NBRR1":   (148,148,"H42ROOF","H42ROOF",92,"H42ROFW"),
+    "NBRR2":   (140,140,"H42ROOF","H42ROOF",88,"H42ROFW"),
 }
 
 def A(x0,y0,x1,y1,style):
@@ -102,14 +104,19 @@ AREAS = [
     A(-760,-580,-500,-300,"STLIT"),
     A(40,-580,300,-300,"STLIT"),
     A(940,-580,1200,-300,"STLIT"),
+    A(-1248,-760,-960,-500,"STLIT"),
+    A(-1780,-980,-1580,-760,"PLAYLIT"),
 
     # --- opposite lots/houses 39,37,35 ---
     A(-944,-1500,-48,-720,"LOT"),
     A(16,-1500,960,-720,"LOT"),
     A(1008,-1500,1980,-720,"LOT"),
     A(-816,-1330,-160,-900,"NBR2"),
+    A(-748,-1265,-228,-965,"NBRR2"),
     A(96,-1330,800,-900,"NBR1"),
+    A(170,-1265,728,-965,"NBRR1"),
     A(1104,-1330,1776,-900,"NBR2"),
+    A(1175,-1265,1705,-965,"NBRR2"),
 
     # Fill the thin frontage/lot gaps: these must be real outdoor space, never void walls.
     A(-944,-720,1980,-704,"FOOT"),
@@ -119,11 +126,17 @@ AREAS = [
     A(-944,16,-48,2944,"LOT"),
     A(1008,16,1980,2944,"LOT"),
     A(-816,320,-160,1110,"NBR1"),
+    A(-744,390,-232,1018,"NBRR1"),
     A(1104,320,1776,1088,"NBR2"),
+    A(1176,390,1704,1000,"NBRR2"),
     A(-720,1450,-256,2080,"NBR1"),
+    A(-660,1510,-316,2010,"NBRR1"),
     A(-880,2140,-520,2580,"NBR1"),
+    A(-830,2190,-570,2520,"NBRR2"),
     A(1260,1350,1740,2150,"NBR1"),
+    A(1320,1420,1680,2070,"NBRR1"),
     A(1120,2240,1600,2700,"NBR1"),
+    A(1180,2290,1540,2640,"NBRR2"),
     # neighbour driveways/paths
     A(-400,16,-160,320,"DRIVE"),
     A(-600,160,-520,320,"FOOT"),
@@ -151,6 +164,8 @@ AREAS = [
     # planted beds and dog-dig evidence
     A(64,176,304,304,"GARDEN"),
     A(472,224,672,304,"GARDEN"),
+    A(108,80,320,150,"GARDEN"),
+    A(500,92,690,158,"GARDEN"),
     A(32,1360,96,2200,"GARDEN"),
     A(896,1750,944,2500,"GARDEN"),
     A(160,2820,330,2944,"DIG"),
@@ -234,8 +249,8 @@ AREAS = [
 
 # Explicit windows/detail panels. These coordinates are also injected as grid cuts.
 LINE_TEX = {
-    norm_edge((512,384),(672,384)):"H42WIND",    # front lounge window
-    norm_edge((144,384),(288,384)):"H42WIND",    # front/left facade window treatment
+    norm_edge((512,384),(672,384)):"H42LWIN",    # warm front lounge window
+    norm_edge((144,384),(288,384)):"H42WIND",    # darker front/left window
     norm_edge((96,576),(96,672)):"H42WIND",      # bathroom side/frosted treatment
     norm_edge((96,776),(96,896)):"H42WIND",      # master side window
     norm_edge((704,776),(704,896)):"H42WIND",    # Sam room side window
@@ -244,8 +259,8 @@ LINE_TEX = {
     norm_edge((112,1312),(304,1312)):"H42RWIN",  # broad rear sunroom glazing
     norm_edge((368,1312),(608,1312)):"H42RWIN",
     norm_edge((704,432),(704,608)):"H42BRIK",    # chimney mass
-    norm_edge((-640,320),(-384,320)):"H42WIND",
-    norm_edge((1260,320),(1516,320)):"H42WIND",
+    norm_edge((-640,320),(-384,320)):"H42LWIN",
+    norm_edge((1260,320),(1516,320)):"H42LWIN",
 }
 
 HOUSE_STYLES={"ENTRY","HALL","LOUNGE","BED","BEDWOOD","BATH","KITCH","LAUNDRY","SUNROOM"}
@@ -262,10 +277,6 @@ def _is_house_exterior(p1,p2,st):
         if x==336 and 320 <= lo and hi <= 384: return True
         if x==352 and 368 <= lo and hi <= 384: return True
         if x==448 and 368 <= lo and hi <= 384: return True
-    if x1==x2:
-        x=x1; lo,hi=sorted((y1,y2))
-        if x in (16,960) and 16 <= lo and hi <= 2944:
-            return "H42FENC"
     if y1==y2:
         y=y1; lo,hi=sorted((x1,x2))
         if y==320 and 96 <= lo and hi <= 336: return True
