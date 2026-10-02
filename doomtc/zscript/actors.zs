@@ -227,6 +227,11 @@ class BackyardGatePadlock42 : Actor
     +USESPECIAL +NOBLOCKMAP +NOGRAVITY;
     Tag "Padlocked side gate";
   }
+  override void BeginPlay()
+  {
+    Super.BeginPlay();
+    Pos.Z += 42;
+  }
   override bool Used(Actor u)
   {
     if(!u || !u.player) return false;
