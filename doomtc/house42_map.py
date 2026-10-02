@@ -206,7 +206,7 @@ AREAS = [
 
     A(32,1360,96,2200,"GARDEN"),
     A(896,1750,944,2500,"GARDEN"),
-    A(160,2820,330,2944,"DIG"),
+    A(160,2820,288,2944,"DIG"),
 
     # Front porch/covered entry.
     A(320,256,704,368,"PORCH"),
@@ -355,6 +355,8 @@ def _boundary_texture(p1,p2,st):
             return "H42GATE"
     if y1==y2:
         y=y1; lo,hi=sorted((x1,x2))
+        if y==2944 and 160 <= lo and hi <= 288:
+            return "H42DHOL"
         if y==2944 and 16 <= lo and hi <= 960:
             return "H42FENC"
         # front boundary is intentionally open at the pedestrian path/driveway;
@@ -415,7 +417,7 @@ def build_house42_map():
     for p1,p2 in LINE_TEX:
         xs.add(p1[0]); xs.add(p2[0]); ys.add(p1[1]); ys.add(p2[1])
     # Extra cuts split the right-side chimney and front facade into useful line spans.
-    xs.update((96,128,144,288,320,336,352,384,400,416,432,448,464,512,544,560,576,608,656,672,704,736,928,1260,1516,-640,-384,-2240,-1880,-1700,-1652,-1620,-1540))
+    xs.update((96,128,144,160,288,320,336,352,384,400,416,432,448,464,512,544,560,576,608,656,672,704,736,928,1260,1516,-640,-384,-2240,-1880,-1700,-1652,-1620,-1540))
     ys.update((320,352,368,384,512,528,544,576,640,704,736,792,856,928,944,960,976,992,1024,1040,1088,1104,1136,1152,1168,1184,1296,1312,1344,1750,2350,-1030,-960,-832,-820,-760,-704,-700,-608,-580,-300,-256,-96,0))
     xs=sorted(xs); ys=sorted(ys)
 
@@ -595,7 +597,7 @@ def build_house42_map():
         (250,900,180,15763,7),
 
         # dog dug under rear fence
-        (245,2860,180,15733,7),
+        (224,2860,180,15733,7),
 
         # street lamps/poles
         (120,-150,0,15720,7),
