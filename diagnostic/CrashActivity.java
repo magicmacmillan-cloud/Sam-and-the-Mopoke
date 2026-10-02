@@ -84,18 +84,9 @@ public class CrashActivity extends Activity {
         setStage("Android launcher alive.");
         writeSnapshot("Stage: " + stage + "\n");
 
-        Thread sync = new Thread(() -> {
-            for (int i = 0; i < 2400; i++) {
-                try {
-                    writeSnapshot("Stage: " + stage + "\nDiagnostic sync active.\n");
-                    Thread.sleep(250);
-                } catch (Throwable ignored) {
-                    return;
-                }
-            }
-        }, "MopokeCrashSync");
-        sync.setDaemon(true);
-        sync.start();
+        // Do not poll MediaStore every 250 ms. Android 16 can kill a cached
+        // launcher process for excessive Binder traffic. Snapshots are written
+        // only at meaningful stage transitions and on uncaught exceptions.
 
         try {
             launchDoomDirectly();
