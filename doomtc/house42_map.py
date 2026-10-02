@@ -478,7 +478,8 @@ def build_house42_map():
     # Classic Doom thing records: x,y,angle,type,flags.
     things=[
         (540,1500,270,1,7),          # Dad starts in backyard facing the real rear/sunroom
-        (650,1260,270,15113,7),      # Sam is seen at rear door and escapes through house
+        (780,1500,270,15113,7),      # Sam starts in backyard, runs through side gate toward Arnold Street
+        (820,1320,270,15746,7),      # visible padlock appears on the side iron gate after Sam passes
         (444,356,270,15710,7),       # small front doorbell
         (842,2145,180,15740,7),      # spare back-door key tucked beside garage workbench/shelving
         (710,2060,180,15301,7),      # garage searchable cache nudges the player to search
