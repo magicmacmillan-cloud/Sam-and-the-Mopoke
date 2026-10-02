@@ -32,3 +32,5 @@ sam/hitflesh SSHFLESH
 sam/key SSKEY
 sam/samfar SSSAMFAR
 sam/heartbeat SSHEART
+
+sam/doorbell SSDOORB

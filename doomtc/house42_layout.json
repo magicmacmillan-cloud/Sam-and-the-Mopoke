@@ -1,0 +1,495 @@
+{
+  "title": "42 Arnold Street MAP01 source-driven reconstruction v3",
+  "purpose": "Builder handoff for Doom II/GZDoom IWAD. Use this geometry/material vocabulary rather than inventing a generic house.",
+  "coordinate_system": {
+    "north": "+Y/backyard",
+    "east": "+X/driveway toward no.40",
+    "scale": "64 Doom units ~= 1 metre"
+  },
+  "site": {
+    "lot_42_units": [
+      0,
+      0,
+      960,
+      2944
+    ],
+    "approximate_lot_m": [
+      15,
+      46
+    ],
+    "front": "Arnold Street",
+    "west": "No.44 then Collenso Street/reserve",
+    "east": "No.40",
+    "playground": "south-west across/along Collenso in reserve"
+  },
+  "house": {
+    "main_envelope_hint_units": [
+      96,
+      320,
+      704,
+      1312
+    ],
+    "facade": "cream horizontal weatherboard, dark tiled hip roof, brick chimney on right/east, covered porch, black metal front rails/gates",
+    "driveway": "east/right side, concrete, covered carport continuing toward rear",
+    "rear": "enclosed veranda/sunroom, patio, long grass yard, large shed"
+  },
+  "rooms": [
+    {
+      "name": "front-left bedroom",
+      "style": "BED",
+      "bounds": [
+        96,
+        320,
+        336,
+        624
+      ],
+      "floor": "H42CARP",
+      "wall": "H42WALL",
+      "video": "72-82s"
+    },
+    {
+      "name": "front entry",
+      "style": "ENTRY",
+      "bounds": [
+        352,
+        384,
+        448,
+        544
+      ],
+      "floor": "H42TILF",
+      "wall": "H42WALL",
+      "video": "56-60s"
+    },
+    {
+      "name": "hall",
+      "style": "HALL",
+      "bounds": [
+        352,
+        544,
+        448,
+        960
+      ],
+      "floor": "H42TILF",
+      "wall": "H42WALL",
+      "video": "68-72s / 82-88s / 114-122s"
+    },
+    {
+      "name": "lounge",
+      "style": "LOUNGE",
+      "bounds": [
+        464,
+        384,
+        704,
+        688
+      ],
+      "floor": "H42CARP",
+      "wall": "H42WALL",
+      "video": "62-70s / 102-112s"
+    },
+    {
+      "name": "middle-left bedroom",
+      "style": "BED",
+      "bounds": [
+        96,
+        640,
+        336,
+        800
+      ],
+      "floor": "H42CARP",
+      "wall": "H42WALL",
+      "video": "82-88s"
+    },
+    {
+      "name": "bathroom with toilet",
+      "style": "BATH",
+      "bounds": [
+        96,
+        816,
+        320,
+        960
+      ],
+      "floor": "H42TILF",
+      "wall": "H42BATH",
+      "video": "88-100s"
+    },
+    {
+      "name": "bedroom 3 with polished floorboards/robe",
+      "style": "BEDWOOD",
+      "bounds": [
+        464,
+        704,
+        704,
+        960
+      ],
+      "floor": "H42WOOD",
+      "wall": "H42WALL",
+      "video": "122-138s"
+    },
+    {
+      "name": "meals",
+      "style": "MEALS",
+      "bounds": [
+        96,
+        976,
+        336,
+        1152
+      ],
+      "floor": "H42VNYL",
+      "wall": "H42PANL",
+      "video": "138-166s"
+    },
+    {
+      "name": "kitchen",
+      "style": "KITCH",
+      "bounds": [
+        352,
+        976,
+        544,
+        1152
+      ],
+      "floor": "H42VNYL",
+      "wall": "H42KTCH",
+      "video": "140-166s"
+    },
+    {
+      "name": "laundry/utility",
+      "style": "LAUNDRY",
+      "bounds": [
+        560,
+        976,
+        704,
+        1152
+      ],
+      "floor": "H42WOOD",
+      "wall": "H42PANL",
+      "video": "166-176s"
+    },
+    {
+      "name": "enclosed rear veranda/sunroom",
+      "style": "SUNROOM",
+      "bounds": [
+        96,
+        1168,
+        704,
+        1312
+      ],
+      "floor": "H42CONC",
+      "wall": "H42WALL",
+      "video": "178-186s"
+    }
+  ],
+  "door_openings": [
+    {
+      "between": "porch-entry",
+      "bounds": [
+        384,
+        352,
+        416,
+        400
+      ]
+    },
+    {
+      "between": "entry-front-left-bedroom",
+      "bounds": [
+        320,
+        448,
+        368,
+        512
+      ]
+    },
+    {
+      "between": "entry-lounge",
+      "bounds": [
+        432,
+        448,
+        480,
+        512
+      ]
+    },
+    {
+      "between": "hall-bedroom2",
+      "bounds": [
+        320,
+        688,
+        368,
+        752
+      ]
+    },
+    {
+      "between": "hall-bathroom",
+      "bounds": [
+        304,
+        848,
+        368,
+        912
+      ]
+    },
+    {
+      "between": "hall-bedroom3",
+      "bounds": [
+        432,
+        752,
+        480,
+        816
+      ]
+    },
+    {
+      "between": "hall-rear",
+      "bounds": [
+        384,
+        944,
+        416,
+        992
+      ]
+    },
+    {
+      "between": "meals-kitchen",
+      "bounds": [
+        320,
+        1024,
+        368,
+        1088
+      ]
+    },
+    {
+      "between": "kitchen-laundry",
+      "bounds": [
+        528,
+        1040,
+        576,
+        1104
+      ]
+    },
+    {
+      "between": "kitchen-sunroom",
+      "bounds": [
+        416,
+        1136,
+        480,
+        1184
+      ]
+    },
+    {
+      "between": "laundry-sunroom",
+      "bounds": [
+        608,
+        1136,
+        656,
+        1184
+      ]
+    },
+    {
+      "between": "sunroom-backyard",
+      "bounds": [
+        320,
+        1296,
+        384,
+        1344
+      ]
+    },
+    {
+      "between": "sunroom-carport",
+      "bounds": [
+        688,
+        1216,
+        752,
+        1280
+      ]
+    }
+  ],
+  "window_segments": [
+    [
+      [
+        144,
+        320
+      ],
+      [
+        288,
+        320
+      ]
+    ],
+    [
+      [
+        512,
+        384
+      ],
+      [
+        672,
+        384
+      ]
+    ],
+    [
+      [
+        96,
+        688
+      ],
+      [
+        96,
+        768
+      ]
+    ],
+    [
+      [
+        96,
+        848
+      ],
+      [
+        96,
+        928
+      ]
+    ],
+    [
+      [
+        704,
+        768
+      ],
+      [
+        704,
+        896
+      ]
+    ],
+    [
+      [
+        96,
+        1024
+      ],
+      [
+        96,
+        1104
+      ]
+    ],
+    [
+      [
+        704,
+        1024
+      ],
+      [
+        704,
+        1104
+      ]
+    ],
+    [
+      [
+        128,
+        1312
+      ],
+      [
+        288,
+        1312
+      ]
+    ],
+    [
+      [
+        400,
+        1312
+      ],
+      [
+        560,
+        1312
+      ]
+    ]
+  ],
+  "materials": {
+    "textures": {
+      "H42WALL": "warm cream painted plaster with skirting",
+      "H42GREY": "cool pale-grey painted wall",
+      "H42PANL": "brown vertical timber wall panelling",
+      "H42KTCH": "timber kitchen cabinetry + brown marbled benchtop + cream backsplash",
+      "H42BATH": "period pink/cream bathroom tile",
+      "H42SIDN": "cream horizontal weatherboard siding",
+      "H42BRIK": "orange/brown brickwork for chimney",
+      "H42SHED": "grey corrugated shed/carport metal",
+      "H42FENC": "dark timber rear/side fence",
+      "H42GATE": "black metal front rail/gate midtexture",
+      "H42WIND": "dark glazed window with pale frame",
+      "H42BLND": "off-white vertical blinds",
+      "H42DOOR": "varnished timber domestic door",
+      "H42WDR": "white painted domestic door",
+      "H42CURB": "aged suburban concrete kerb",
+      "H42PLAY": "playground/fence material cue"
+    },
+    "flats": {
+      "H42CARP": "brown/tan mottled carpet",
+      "H42WOOD": "polished warm timber boards",
+      "H42VNYL": "tan patterned vinyl/lino",
+      "H42TILF": "cream domestic tile",
+      "H42CONC": "aged concrete",
+      "H42ASPH": "residential asphalt",
+      "H42GRAS": "suburban grass",
+      "H42PAVE": "rear/patio paving",
+      "H42CEIL": "off-white ceiling",
+      "H42ROOF": "dark grey tiled-roof massing"
+    }
+  },
+  "walkthrough": [
+    [
+      "0-24s",
+      "Arnold Street/front boundary/driveway approach"
+    ],
+    [
+      "24-56s",
+      "front garden, driveway and porch"
+    ],
+    [
+      "56-60s",
+      "front entry/tiled hall"
+    ],
+    [
+      "62-70s",
+      "lounge"
+    ],
+    [
+      "72-82s",
+      "front-left bedroom"
+    ],
+    [
+      "82-88s",
+      "second bedroom/hall"
+    ],
+    [
+      "88-100s",
+      "bathroom with toilet"
+    ],
+    [
+      "102-112s",
+      "lounge return"
+    ],
+    [
+      "114-122s",
+      "hall toward rear"
+    ],
+    [
+      "122-138s",
+      "third bedroom, polished floorboards/robe"
+    ],
+    [
+      "138-166s",
+      "meals/kitchen"
+    ],
+    [
+      "166-176s",
+      "laundry/utility"
+    ],
+    [
+      "178-186s",
+      "enclosed veranda/sunroom"
+    ],
+    [
+      "186-258s",
+      "rear exterior/backyard/shed"
+    ]
+  ],
+  "confidence": {
+    "exterior_site": "high relative geometry from supplied aerials/front photo",
+    "room_order": "high from walkthrough chronology",
+    "room_adjacency": "medium-high from repeated transitions",
+    "exact_internal_dimensions": "medium/approximate; not a survey"
+  },
+  "builder_rules": [
+    "Preserve domestic scale and the room/door sequence.",
+    "Do not replace the house with generic Doom tech/hell textures.",
+    "Use source-matched H42 textures for MAP01.",
+    "Keep the right-side driveway/carport, long backyard, large rear shed, no.44/no.40 massing, Arnold Street, Collenso Street, reserve and playground.",
+    "Refine only when the supplied walkthrough/aerial evidence supports a correction."
+  ]
+}

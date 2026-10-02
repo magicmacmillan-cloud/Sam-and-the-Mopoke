@@ -1,5 +1,6 @@
 from pathlib import Path
 import struct
+from house42_map import build_house42_map
 
 ROOT=Path(__file__).resolve().parent
 OUT=ROOT/"sam-and-the-mopoke-map.wad"
@@ -314,7 +315,10 @@ def build_map(md):
 L=[lump("SAMMPK",b"Sam and the Mopoke multi-map Doom II horror campaign")]
 stats={}
 for md in MAPS:
-    ml,st=build_map(md)
+    if md["name"] == "MAP01":
+        ml,st=build_house42_map()
+    else:
+        ml,st=build_map(md)
     L.extend(ml)
     stats[md["name"]]=st
 
