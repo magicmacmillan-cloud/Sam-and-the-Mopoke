@@ -93,7 +93,7 @@ jobs:
               "BDKYA0","FDKYA0","PGKYA0","GPDLA0","PHONA0","FDNTA0","PBOXA0","SGNTA0","LBOXA0",
               "D0BTA0","D1BTA0","D2BTA0","D3BTA0","D4BTA0","D5BTA0","D6BTA0","D7BTA0","D8BTA0","D9BTA0",
               "ESCOA0","XBOXA0","FRDGA0","PROJA0","PJCTA0","PJCTB0","PJCTC0","PJCTD0",
-              "DOGDA0","HILXA1","HILXA5","TREEA0","TRE2A0","STLPA0","BINRA0","BINYA0","PTOWA0","HEDGA0","BRPRA0","MBXSA0","PLITA0"
+              "DOGDA0","HILXA1","HILXA2","HILXA3","HILXA4","HILXA5","HILXA6","HILXA7","HILXA8","TREEA0","TRE2A0","STLPA0","BINRA0","BINYA0","PTOWA0","HEDGA0","BRPRA0","MBXSA0","PLITA0"
           }
           required.update(f"MUSIC{i:02d}" for i in range(1,11))
           required.update({
@@ -101,6 +101,9 @@ jobs:
               "SAMEA0","SAMED0","SAMCA0","SAMCD0","SAMWA0","SAMWF0",
               "SAMRA0","SAMRF0","SAMTA0","SAMTD0","SAMFA0","SAMFF0"
           })
+          assert "HILXA0" not in names, "Hilux billboard rotation A0 is forbidden"
+          for rot in range(1,9):
+              assert f"HILXA{rot}" in names, f"missing Hilux rotation {rot}"
           missing=sorted(required-set(names))
           assert not missing, missing
           for mus in [f"MUSIC{i:02d}" for i in range(1,11)]:
@@ -155,6 +158,12 @@ jobs:
 
           map_src=Path("game/doomtc/house42_map.py").read_text()
           actor_src=Path("game/doomtc/zscript/actors.zs").read_text()
+          world_src=Path("game/doomtc/zscript/world.zs").read_text()
+          clues_src=Path("game/doomtc/zscript/clues.zs").read_text()
+          assert world_src.count("Scale 0.24") >= 3, "generic message notes must stay small"
+          assert 'Scale 0.24; Inventory.PickupMessage "A note in Sam\'s writing."' in clues_src
+          assert "Scale 0.20" in clues_src, "false-trail clue must stay tiny"
+          assert actor_src.count("Scale 0.30") >= 2, "front/gate story notes must stay natural-sized"
           assert '"BACKDOOR"' in map_src and '"GATEDOOR"' in map_src
           assert '15740' in map_src and '15741' in map_src and '15743' in map_src and '15744' in map_src and '15745' in map_src
           assert map_src.count("15760") == 2, "MAP01 must contain exactly two e-scooter clues"
