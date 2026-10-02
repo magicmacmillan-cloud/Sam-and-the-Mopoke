@@ -127,7 +127,7 @@ jobs:
               "MALLCEIL","LIBCEIL",
               "H42WALL","H42PANL","H42KTCH","H42BATH","H42SIDN","H42BRIK",
               "H42SHED","H42FENC","H42GATE","H42WIND","H42BLND","H42DOOR",
-              "H42WDR","H42CURB","H42PLAY","H42FRNT","H42FACA","H42REAR","H42RWIN","H42RDR",
+              "H42WDR","H42CURB","H42PLAY","H42FRNT","H42FACA","H42REAR","H42RWIN","H42RDR","H42DHOL",
               "H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42ASPH",
               "H42GRAS","H42PAVE","H42CEIL","H42ROOF","H42ATLAS",
               "H42LWN","H42VERG","H42DRV","H42PATH","H42ROAD","H42BED","H42SAFE",
@@ -213,6 +213,27 @@ jobs:
           assert "2 3 3 0" in actor_src
           assert "neighbour's letterbox" in actor_src
           assert "dog dug through here" in actor_src.lower()
+          assert '"H42DHOL"' in map_src, "damaged rear-fence texture must be used at dog hole"
+          assert 'A(160,2820,288,2944,"DIG")' in map_src, "dog dirt depression must remain at rear fence"
+          assert '(224,2860,180,15733,7)' in map_src, "dog-hole evidence actor must remain aligned to gap"
+          assert 'if y==2944 and 160 <= lo and hi <= 288' in map_src
+
+          # V37 exact poster-source and dog-hole requirements.
+          poster_src=Path("game/doomtc/source_posters")
+          exact_sources=[
+              poster_src/"poster01.png",poster_src/"poster02.png",poster_src/"poster03.png",poster_src/"poster04.png",
+              poster_src/"poster05.png",poster_src/"poster06.png",poster_src/"poster07.png",poster_src/"poster08.jpg",
+          ]
+          assert all(p.is_file() and p.stat().st_size > 10000 for p in exact_sources), "exact uploaded poster sources missing"
+          assert (poster_src/"SHA256SUMS").is_file()
+          assets_src=Path("game/doomtc/house42_assets.py").read_text()
+          assert 'missing exact uploaded wanted-poster sources' in assets_src
+          assert 'ImageOps.contain' in assets_src
+          assert '_dog_hole_fence(root)' in assets_src
+          # Generated poster doors must be native small door textures, not freestanding billboard actors.
+          for i in range(1,9):
+              p=Path(f"game/doomtc/textures/WANT{i:02d}.png")
+              assert p.is_file() and p.stat().st_size > 1000, p
 
           # V36 optional No.44 secret armoury.
           for tex in ("WANT01","WANT02","WANT03","WANT04","WANT05","WANT06","WANT07","WANT08"):
