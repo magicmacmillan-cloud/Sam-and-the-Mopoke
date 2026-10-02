@@ -259,6 +259,29 @@ class ParkSlide42 : Actor
 class ParkClimber42 : Actor
 { Default { Radius 22; Height 54; +SOLID; } States { Spawn: CLMB A -1; Stop; } }
 
+class ParkTower42 : Actor
+{ Default { Radius 32; Height 96; +SOLID; } States { Spawn: PTOW A -1; Stop; } }
+
+class HouseHedge : Actor
+{ Default { Radius 22; Height 34; +SOLID; } States { Spawn: HEDG A -1; Stop; } }
+
+class BrickPier42 : Actor
+{ Default { Radius 8; Height 52; +SOLID; } States { Spawn: BRPR A -1; Stop; } }
+
+class StaticMailbox42 : Actor
+{ Default { Radius 8; Height 42; +SOLID; } States { Spawn: MBXS A -1; Stop; } }
+
+class PorchLight42 : Actor
+{
+  Default { Radius 2; Height 12; +NOBLOCKMAP +NOINTERACTION +NOGRAVITY; RenderStyle "Add"; Alpha 0.92; }
+  override void BeginPlay()
+  {
+    Super.BeginPlay();
+    Pos.Z += 74;
+  }
+  States { Spawn: PLIT A -1 Bright; Stop; }
+}
+
 class HouseWheelieBin : Actor
 { Default { Radius 8; Height 32; +SOLID; } States { Spawn: WBIN A -1; Stop; } }
 
