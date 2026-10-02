@@ -238,6 +238,9 @@ class HouseStreetLamp : Actor
 class HouseTree : Actor
 { Default { Radius 18; Height 96; +SOLID; } States { Spawn: TREE A -1; Stop; } }
 
+class HouseTree2 : Actor
+{ Default { Radius 17; Height 112; +SOLID; } States { Spawn: TRE2 A -1; Stop; } }
+
 class HouseCarLight : Actor
 { Default { Radius 34; Height 30; +SOLID; } States { Spawn: CARW A -1; Stop; } }
 
