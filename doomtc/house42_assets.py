@@ -944,6 +944,180 @@ def _puzzle_story_assets(root):
     _disc(p,w,h,36,45,2,2,(102,98,88))
     _png(root/"sprites"/"LBOXA0.png",w,h,p,24,68)
 
+
+_PIXEL3 = {
+"A":("010","101","111","101","101"),"B":("110","101","110","101","110"),
+"C":("011","100","100","100","011"),"D":("110","101","101","101","110"),
+"E":("111","100","110","100","111"),"F":("111","100","110","100","100"),
+"G":("011","100","101","101","011"),"H":("101","101","111","101","101"),
+"I":("111","010","010","010","111"),"J":("001","001","001","101","010"),
+"K":("101","101","110","101","101"),"L":("100","100","100","100","111"),
+"M":("101","111","111","101","101"),"N":("101","111","111","111","101"),
+"O":("010","101","101","101","010"),"P":("110","101","110","100","100"),
+"Q":("010","101","101","111","011"),"R":("110","101","110","101","101"),
+"S":("011","100","010","001","110"),"T":("111","010","010","010","010"),
+"U":("101","101","101","101","111"),"V":("101","101","101","101","010"),
+"W":("101","101","111","111","101"),"X":("101","101","010","101","101"),
+"Y":("101","101","010","010","010"),"Z":("111","001","010","100","111"),
+"0":("111","101","101","101","111"),"1":("010","110","010","010","111"),
+"2":("110","001","010","100","111"),"3":("110","001","010","001","110"),
+"4":("101","101","111","001","001"),"5":("111","100","110","001","110"),
+"6":("011","100","111","101","111"),"7":("111","001","010","010","010"),
+"8":("111","101","111","101","111"),"9":("111","101","111","001","110"),
+"$":("010","111","110","011","010"),"-":("000","000","111","000","000"),
+}
+
+def _tiny_text(p,w,h,x,y,text,col=(35,24,18),scale=1):
+    cx=x
+    for ch in text.upper():
+        if ch==" ":
+            cx += 2*scale
+            continue
+        rows=_PIXEL3.get(ch)
+        if rows is None:
+            cx += 4*scale
+            continue
+        for yy,row in enumerate(rows):
+            for xx,v in enumerate(row):
+                if v=="1":
+                    _rect(p,w,h,cx+xx*scale,y+yy*scale,
+                          cx+(xx+1)*scale,y+(yy+1)*scale,col)
+        cx += 4*scale
+
+def _wanted_door_base(seed=0):
+    w=64; h=128; p=_canvas(w,h)
+    # dark, ordinary neighbour-house timber door
+    for y in range(h):
+        for x in range(w):
+            c=_noise((74,55,43),x,y,5,310+seed)
+            if x in (5,6,57,58) or y in (5,6,121,122): c=_shade(c,-22)
+            _set(p,w,h,x,y,c)
+    # paper poster fixed to door
+    paper=(205,174,126)
+    _rect(p,w,h,7,10,57,116,paper)
+    _rect(p,w,h,8,11,56,115,(220,190,142))
+    # damaged corners / age
+    for cx,cy in ((9,13),(54,14),(10,111),(53,109)):
+        _disc(p,w,h,cx,cy,3,3,(116,76,48),130)
+    # top/bottom rule
+    _line(p,w,h,10,33,54,33,1,(70,42,28))
+    _line(p,w,h,10,98,54,98,1,(70,42,28))
+    return w,h,p
+
+def _poster_doors(root):
+    red=(126,22,18); ink=(43,28,20); black=(18,17,16)
+
+    # 1: CSM-101 cyborg assassin.
+    w,h,p=_wanted_door_base(1)
+    _tiny_text(p,w,h,9,15,"WANTED",red,2)
+    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
+    _rect(p,w,h,12,38,52,86,(126,35,28))
+    _disc(p,w,h,32,56,13,15,(189,119,66))
+    _rect(p,w,h,20,50,44,58,black)
+    _rect(p,w,h,22,52,31,56,(52,57,58)); _rect(p,w,h,34,52,42,56,(52,57,58))
+    _rect(p,w,h,16,62,20,86,(44,45,43))
+    _rect(p,w,h,12,76,19,80,(156,158,151))
+    _tiny_text(p,w,h,14,89,"CSM101",red,1)
+    _tiny_text(p,w,h,11,102,"$1M",red,2)
+    _png(root/"textures"/"WANT01.png",w,h,p)
+
+    # 2: Pennywise.
+    w,h,p=_wanted_door_base(2)
+    _tiny_text(p,w,h,9,15,"WANTED",red,2)
+    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
+    _rect(p,w,h,12,37,52,87,(105,13,16))
+    for cx,cy,rx,ry in [(22,52,10,13),(42,52,10,13),(18,64,8,12),(46,64,8,12)]:
+        _disc(p,w,h,cx,cy,rx,ry,(191,73,20))
+    _disc(p,w,h,32,59,13,17,(222,211,178))
+    _disc(p,w,h,27,57,2,2,(37,28,22)); _disc(p,w,h,37,57,2,2,(37,28,22))
+    _disc(p,w,h,32,64,3,3,(166,18,23))
+    _line(p,w,h,25,49,29,60,1,(156,18,23)); _line(p,w,h,39,49,35,60,1,(156,18,23))
+    _tiny_text(p,w,h,12,89,"PENNYWISE",ink,1)
+    _tiny_text(p,w,h,10,102,"$5M",red,2)
+    _png(root/"textures"/"WANT02.png",w,h,p)
+
+    # 3: hand-drawn WENTED / WEEWEE card.
+    w,h,p=_wanted_door_base(3)
+    _rect(p,w,h,8,11,56,115,(226,220,194))
+    _disc(p,w,h,31,30,14,10,(92,167,207))
+    _line(p,w,h,18,36,13,44,2,black)
+    _tiny_text(p,w,h,14,46,"WENTED",black,2)
+    _rect(p,w,h,16,64,48,94,(226,220,194))
+    _disc(p,w,h,29,74,8,7,(245,177,24)); _disc(p,w,h,38,81,9,8,(245,177,24))
+    _rect(p,w,h,19,76,24,80,black); _disc(p,w,h,31,73,1,1,black)
+    _tiny_text(p,w,h,14,99,"WEEWEE",black,2)
+    _png(root/"textures"/"WANT03.png",w,h,p)
+
+    # 4: small pale creature / caution reward.
+    w,h,p=_wanted_door_base(4)
+    _tiny_text(p,w,h,9,15,"WANTED",red,2)
+    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
+    _rect(p,w,h,12,38,52,86,(39,47,31))
+    _disc(p,w,h,32,58,15,14,(211,196,157))
+    _disc(p,w,h,20,59,6,4,(181,140,100)); _disc(p,w,h,44,59,6,4,(181,140,100))
+    _rect(p,w,h,27,70,37,86,(204,190,156))
+    _disc(p,w,h,27,56,2,2,black); _disc(p,w,h,37,56,2,2,black)
+    _tiny_text(p,w,h,9,89,"CAUTION",ink,1)
+    _tiny_text(p,w,h,8,102,"$10M",red,2)
+    _png(root/"textures"/"WANT04.png",w,h,p)
+
+    # 5: Rick + Morty interdimensional card.
+    w,h,p=_wanted_door_base(5)
+    _rect(p,w,h,9,15,55,28,(184,19,23))
+    _tiny_text(p,w,h,13,17,"WANTED",(235,229,215),2)
+    _tiny_text(p,w,h,9,31,"CRIMES AGAINST",ink,1)
+    _rect(p,w,h,12,42,31,82,black); _rect(p,w,h,33,42,52,82,black)
+    # left spiky scientist
+    for dx,dy in [(0,-10),(-7,-7),(7,-7),(-10,0),(10,0),(-7,7),(7,7)]:
+        _line(p,w,h,21,59,21+dx,59+dy,2,(224,224,212))
+    _disc(p,w,h,21,61,7,9,(213,210,185))
+    _disc(p,w,h,19,59,2,2,black); _disc(p,w,h,24,59,2,2,black)
+    # right round boy
+    _disc(p,w,h,42,61,8,9,(213,210,185))
+    _disc(p,w,h,39,59,2,2,black); _disc(p,w,h,45,59,2,2,black)
+    _tiny_text(p,w,h,13,85,"RICK MORTY",ink,1)
+    _png(root/"textures"/"WANT05.png",w,h,p)
+
+    # 6: Vegeta-style wanted poster.
+    w,h,p=_wanted_door_base(6)
+    _tiny_text(p,w,h,9,15,"WANTED",red,2)
+    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
+    _rect(p,w,h,12,38,52,86,black)
+    # angular orange hair
+    for x0 in range(16,49,6):
+        _line(p,w,h,32,60,x0,40-(x0%4),3,(211,92,19))
+        _line(p,w,h,32,60,x0,38-(x0%5),1,(242,155,38))
+    _disc(p,w,h,32,62,10,12,(219,176,118))
+    _line(p,w,h,25,58,30,56,2,black); _line(p,w,h,39,56,34,58,2,black)
+    _rect(p,w,h,21,72,43,86,(145,137,116))
+    _tiny_text(p,w,h,15,89,"VEGETA",ink,1)
+    _png(root/"textures"/"WANT06.png",w,h,p)
+
+    # 7: Cornholio-style wanted poster.
+    w,h,p=_wanted_door_base(7)
+    _tiny_text(p,w,h,9,15,"WANTED",red,2)
+    _rect(p,w,h,12,38,52,85,(119,143,133))
+    _rect(p,w,h,23,47,41,79,(32,67,103))
+    _disc(p,w,h,32,57,8,10,(221,164,98))
+    _line(p,w,h,20,62,13,51,3,(221,164,98)); _line(p,w,h,44,62,51,51,3,(221,164,98))
+    _disc(p,w,h,28,56,1,1,black); _disc(p,w,h,36,56,1,1,black)
+    _tiny_text(p,w,h,10,89,"CORNHOLIO",ink,1)
+    _tiny_text(p,w,h,8,102,"$666M",red,1)
+    _png(root/"textures"/"WANT07.png",w,h,p)
+
+    # 8: second creature card / unknown specimen.
+    w,h,p=_wanted_door_base(8)
+    _tiny_text(p,w,h,9,15,"WANTED",red,2)
+    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
+    _rect(p,w,h,12,38,52,86,(33,33,29))
+    _disc(p,w,h,32,60,14,13,(205,191,154))
+    _disc(p,w,h,27,58,2,2,black); _disc(p,w,h,37,58,2,2,black)
+    _line(p,w,h,32,47,32,40,3,(178,139,94))
+    _line(p,w,h,32,40,29,35,3,(178,139,94))
+    _tiny_text(p,w,h,9,89,"UNKNOWN",ink,1)
+    _tiny_text(p,w,h,10,102,"$10M",red,2)
+    _png(root/"textures"/"WANT08.png",w,h,p)
+
 def generate_house42_assets(root: Path):
     root=Path(root)
     _plaster(root,"H42WALL",(211,205,192))
@@ -971,6 +1145,7 @@ def generate_house42_assets(root: Path):
     _scene_polish_props(root)
     _extra_street_details(root)
     _puzzle_story_assets(root)
+    _poster_doors(root)
     _wav(root,"doorbell.wav",780,.18,.03)
     _curb(root)
     _neighbor(root,"H42NBR1",False)
