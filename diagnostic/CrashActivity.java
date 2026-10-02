@@ -35,7 +35,8 @@ public class CrashActivity extends Activity {
     private String baseHeader;
     private String previousExitReport = "";
     private final Object writeLock = new Object();
-    private volatile String stage = "Crash logger starting.";\n    private int crashSeq = 0;
+    private volatile String stage = "Crash logger starting.";
+    private int crashSeq = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -290,7 +291,9 @@ public class CrashActivity extends Activity {
         intent.putExtra("res_div", resDiv);
         intent.putExtra("game_path", base);
         intent.putExtra("game", "com.msa.freedoom");
-        intent.putExtra("args", "-iwad sam-and-the-mopoke.wad +map MAP01");\n        if (downloadUri != null) intent.putExtra("mopoke_crash_uri", downloadUri.toString());\n        intent.putExtra("mopoke_crash_seq", crashSeq);
+        intent.putExtra("args", "-iwad sam-and-the-mopoke.wad +map MAP01");
+        if (downloadUri != null) intent.putExtra("mopoke_crash_uri", downloadUri.toString());
+        intent.putExtra("mopoke_crash_seq", crashSeq);
         startActivity(intent);
 
         setStage("GZDoom activity launched.");
