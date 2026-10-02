@@ -285,6 +285,27 @@ Notes, phone, puzzle box, keys and padlocks must remain believable world objects
 
 If any required lock can be bypassed, any key is unnecessary, Lincoln's room is not off the kitchen, the opposite-room pairings are wrong, or MAP01 can end before the playground gate is unlocked, the build fails acceptance.
 
+## OPTIONAL SECRET — NO. 44 WANTED-POSTER ARMOURY
+
+This section adds to V35/V34.2. It must never replace or bypass the mandatory 42 Arnold progression.
+
+- Secret entrance is on the Arnold Street side of neighbour No. 44, accessible only after Dad has legitimately reached the street.
+- Entering the inner threshold counts as one Doom secret.
+- Inside is one compact hallway with eight small side rooms.
+- Every room has a different wanted-poster texture on its working Doom door.
+- Every room contains a different weapon, a useful ammo/charge pickup, and armour on the floor.
+- Weapon rooms are rewards, not required progression. The player can leave without clearing them.
+- The eight current weapon rewards are DoomEdNums 15001 through 15008.
+- The room ammo is ArmoryChargePack (15800). Seven rooms use standard green armour; the final room uses blue armour.
+- A concealed rear compartment contains a group of ambush zombies.
+- The hidden rear door is a real closed Doom door sector with tag 77.
+- Crossing the weapon pickup line in any room uses classic Doom W1 Door Open Stay (special 2, tag 77), opening the hidden compartment and releasing the zombies.
+- The ambush trigger must happen only inside the secret armoury and must not alter the rear/front/playground locks.
+- The secret house must not connect to 42 Arnold's backyard, side yard, driveway, garage, sunroom, or any route before the real front-door unlock.
+- Poster art must remain wall/door texture scale. Never make the posters giant freestanding billboards.
+
+Acceptance check: eight poster doors, eight distinct weapons, eight ammo packs, armour in all eight rooms, one counted secret, one tag-77 hidden door, and a hidden zombie group that is released when the player commits to a weapon room.
+
 ## Detail pass for the next IWAD builder
 
 Keep the supplied geometry and materials as the baseline, then add Doom-sector/midtexture detail where useful:
