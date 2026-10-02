@@ -93,7 +93,7 @@ jobs:
               "BDKYA0","FDKYA0","PGKYA0","PHONA0","FDNTA0","PBOXA0","SGNTA0","LBOXA0",
               "D0BTA0","D1BTA0","D2BTA0","D3BTA0","D4BTA0","D5BTA0","D6BTA0","D7BTA0","D8BTA0","D9BTA0",
               "ESCOA0","XBOXA0","FRDGA0","PROJA0","PJCTA0","PJCTB0","PJCTC0","PJCTD0",
-              "DOGDA0","HILXA1","HILXA5","TREEA0","TRE2A0","STLPA0","BINRA0","BINYA0"
+              "DOGDA0","HILXA1","HILXA5","TREEA0","TRE2A0","STLPA0","BINRA0","BINYA0","PTOWA0","HEDGA0","BRPRA0","MBXSA0","PLITA0"
           }
           required.update(f"MUSIC{i:02d}" for i in range(1,11))
           required.update({
@@ -147,7 +147,7 @@ jobs:
               "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler",
               "HouseBackDoorKey","HouseFrontDoorKey","PlaygroundGateKey","LincolnPhone42","FrontDoorPuzzleNote","HousePuzzleBox",
               "PuzzleDigit0","PuzzleDigit2","PuzzleDigit3","PuzzleDigit9","GarageEScooter42","LoungeXboxTV42","KitchenFridge42",
-              "MasterProjector42","SamGateNote42","NeighbourLetterbox42","DogDigEvidence","HouseHiluxWorkmate","HouseTree2"
+              "MasterProjector42","SamGateNote42","NeighbourLetterbox42","DogDigEvidence","HouseHiluxWorkmate","HouseTree2","ParkTower42","HouseHedge","BrickPier42","StaticMailbox42","PorchLight42"
           ):
               assert f"class {cls}" in zscript, cls
           assert "SAML ABCDEF" in zscript
@@ -176,6 +176,9 @@ jobs:
           assert '"NBRR1"' in map_src and '"NBRR2"' in map_src
           assert '"H42LWIN"' in map_src and '"H42ROFW"' in map_src
           assert '15734' in map_src
+          for ednum in ('15735','15736','15737','15738','15739'):
+              assert ednum in map_src
+          assert '"PLAYEQ"' not in map_src.split("AREAS = [",1)[1].split("]",1)[0]
 
           print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, sector counts={sector_counts}")
           PY
