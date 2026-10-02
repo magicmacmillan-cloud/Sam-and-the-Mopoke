@@ -92,16 +92,22 @@ def _bath(root):
 
 def _siding(root):
     w=h=128; p=_canvas(w,h)
-    cream=(214,211,194)
+    cream=(211,208,191)
     for y in range(h):
         band=y%18
         for x in range(w):
-            c=_noise(cream,x,y,4,9)
-            if band in (0,1): c=_shade(c,-28)
-            elif band in (2,3): c=_shade(c,8)
+            c=_noise(cream,x,y,5,9)
+            # weatherboard lap: dark underside, thin highlight on upper edge
+            if band in (0,1): c=_shade(c,-34)
+            elif band in (2,3): c=_shade(c,10)
+            # subtle age/grime toward the lower wall
+            if y>104 and ((x*7+y*11)%37)<8: c=_shade(c,-8)
             _set(p,w,h,x,y,c)
+    # sparse nail heads so large walls do not read as sterile stripes
+    for yy in range(9,128,18):
+        for xx in range(15,128,32):
+            _disc(p,w,h,xx,yy,1,1,(114,112,105))
     _png(root/"textures"/"H42SIDN.png",w,h,p)
-
 def _brick(root):
     w=h=128; p=_canvas(w,h)
     mortar=(166,153,137)
@@ -130,15 +136,28 @@ def _corrug(root):
 
 def _fence(root):
     w=h=128; p=_canvas(w,h)
-    base=(70,61,50)
+    # Uneven suburban timber paling fence with rails, knots and plank variation.
+    widths=(20,23,19,25,21,20)
+    edges=[0]; x=0; i=0
+    while x<128:
+        x += widths[i%len(widths)]
+        edges.append(min(127,x)); i+=1
     for y in range(h):
         for x in range(w):
-            c=_noise(base,x,y,7,13)
-            if x%24 in (0,1,2): c=_shade(c,-25)
-            if y in (36,37,96,97): c=_shade(c,-22)
+            plank=0
+            for j,e in enumerate(edges[1:]):
+                if x<e: plank=j; break
+            base=(72+((plank*7)%12)-6,61+((plank*5)%10)-5,49+((plank*3)%8)-4)
+            c=_noise(base,x,y,8,13+plank)
+            if any(abs(x-e)<=1 for e in edges): c=_shade(c,-28)
+            if y in (36,37,96,97): c=_shade(c,-24)
+            if y>112: c=_shade(c,-9)
             _set(p,w,h,x,y,c)
+    # knots and nail points
+    for cx,cy in ((15,27),(44,73),(70,19),(98,58),(119,88)):
+        _disc(p,w,h,cx,cy,3,2,(48,42,35))
+        _disc(p,w,h,cx,cy,1,1,(31,29,26))
     _png(root/"textures"/"H42FENC.png",w,h,p)
-
 def _gate(root):
     w=h=128; p=_canvas(w,h)
     # Transparent black metal railing/gate for GZDoom midtextures.
@@ -298,27 +317,41 @@ def _flat(root,name,base,kind):
                 if x%32 in (0,1): c=_shade(c,-8)
                 if ((x*13+y*5)%43)<2: c=_shade(c,10)
             elif kind=="vinyl":
-                # tan 70s/80s patterned lino
                 if x%16 in (0,1) or y%16 in (0,1): c=_shade(c,-9)
                 if (x//8+y//8)%2==0: c=_shade(c,4)
             elif kind=="tile":
                 if x%16 in (0,1) or y%16 in (0,1): c=(139,136,128)
             elif kind=="concrete":
-                if ((x*17+y*23)%67)<2: c=_shade(c,-22)
-                if x in (31,32) or y in (31,32): c=_shade(c,-12)
+                # slab joins, aggregate and faint worn/cracked patches
+                if x in (31,32) or y in (31,32): c=_shade(c,-16)
+                if ((x*17+y*23)%67)<3: c=_shade(c,-19)
+                if ((x-12)*(x-12)+(y-48)*(y-48))<8: c=_shade(c,-12)
+                if (x+y in (42,43,44) and 10<x<31): c=_shade(c,-18)
             elif kind=="asphalt":
-                if ((x*11+y*17)%23)<4: c=_shade(c,12)
+                # coarse road aggregate plus two tiny irregular crack traces
+                if ((x*11+y*17)%23)<5: c=_shade(c,10)
+                if ((x*19+y*7)%41)<2: c=_shade(c,-10)
+                if (x==22+(y//9)%3 and 9<y<45): c=_shade(c,-24)
+                if (y==49 and 35<x<54): c=_shade(c,-18)
             elif kind=="grass":
-                if ((x*3+y*5)%17)<5: c=_shade(c,-9)
-                if ((x*7+y*13)%41)<3: c=_shade(c,11)
+                # patchy mown suburban lawn, not a uniform green carpet
+                if ((x*3+y*5)%17)<5: c=_shade(c,-10)
+                if ((x*7+y*13)%41)<3: c=_shade(c,12)
+                if ((x//12)+(y//10))%5==0: c=_shade(c,5)
+                if y%16 in (0,1) and (x//8)%3==0: c=_shade(c,-5)
             elif kind=="pave":
-                if x%16 in (0,1) or y%12 in (0,1): c=_shade(c,-20)
+                # staggered small pavers / safety-surface breakup
+                row=y//12
+                if y%12 in (0,1): c=_shade(c,-22)
+                if (x+(8 if row%2 else 0))%16 in (0,1): c=_shade(c,-18)
             elif kind=="roof":
-                if y%10 in (0,1): c=_shade(c,-20)
-                if x%24 in (0,1): c=_shade(c,-8)
+                # staggered tiled roof rows
+                row=y//10
+                if y%10 in (0,1): c=_shade(c,-24)
+                if (x+(12 if row%2 else 0))%24 in (0,1): c=_shade(c,-10)
+                if y%10==2: c=_shade(c,6)
             _set(p,w,h,x,y,c)
     _png(root/"flats"/f"{name}.png",w,h,p)
-
 def _prop_bin(root):
     w=64;h=96;p=_canvas(w,h)
     _rect(p,w,h,15,28,50,84,(62,78,59))
