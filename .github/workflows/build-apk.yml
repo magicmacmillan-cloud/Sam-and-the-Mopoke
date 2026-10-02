@@ -90,7 +90,7 @@ jobs:
               "H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42ASPH",
               "H42GRAS","H42PAVE","H42CEIL","H42ROOF","H42ATLAS",
               "H42LWN","H42VERG","H42DRV","H42PATH","H42ROAD","H42BED","H42SAFE",
-              "BDKYA0","FDKYA0","PGKYA0","PHONA0","FDNTA0","PBOXA0","SGNTA0","LBOXA0",
+              "BDKYA0","FDKYA0","PGKYA0","GPDLA0","PHONA0","FDNTA0","PBOXA0","SGNTA0","LBOXA0",
               "D0BTA0","D1BTA0","D2BTA0","D3BTA0","D4BTA0","D5BTA0","D6BTA0","D7BTA0","D8BTA0","D9BTA0",
               "ESCOA0","XBOXA0","FRDGA0","PROJA0","PJCTA0","PJCTB0","PJCTC0","PJCTD0",
               "DOGDA0","HILXA1","HILXA5","TREEA0","TRE2A0","STLPA0","BINRA0","BINYA0","PTOWA0","HEDGA0","BRPRA0","MBXSA0","PLITA0"
@@ -145,7 +145,7 @@ jobs:
               "GoatFingerGate","CrowFingerGate","PossumFingerGate","SamRunner",
               "MopokeShambler","UndeadGoat","RotPossum","CursedCrow","StationHusk",
               "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler",
-              "HouseBackDoorKey","HouseFrontDoorKey","PlaygroundGateKey","LincolnPhone42","FrontDoorPuzzleNote","HousePuzzleBox",
+              "HouseBackDoorKey","HouseFrontDoorKey","PlaygroundGateKey","BackyardGatePadlock42","LincolnPhone42","FrontDoorPuzzleNote","HousePuzzleBox",
               "PuzzleDigit0","PuzzleDigit2","PuzzleDigit3","PuzzleDigit9","GarageEScooter42","LoungeXboxTV42","KitchenFridge42",
               "MasterProjector42","SamGateNote42","NeighbourLetterbox42","DogDigEvidence","HouseHiluxWorkmate","HouseTree2","ParkTower42","HouseHedge","BrickPier42","StaticMailbox42","PorchLight42"
           ):
@@ -163,6 +163,22 @@ jobs:
           assert "2 3 3 0" in actor_src
           assert "neighbour's letterbox" in actor_src
           assert "dog dug through here" in actor_src.lower()
+
+          # V35 opening-story and progression locks.
+          assert '15746' in map_src, "Side-gate padlock actor must be placed"
+          assert '(780,1500,270,15113,7)' in map_src, "Sam must start in backyard"
+          assert 'tx=820; ty=1370' in actor_src and 'tx=820; ty=1270' in actor_src
+          assert 'long sunroom' not in actor_src[actor_src.index("class SamEscapeRunner"):actor_src.index("class HouseDoorbell")]
+          assert 'Padlocked. Sam locked it behind him.' in actor_src
+          assert "Sam ran away to the park" in actor_src
+          assert "I've locked the doors behind us" in actor_src
+          assert "I've hidden the key in Sam's puzzle box" in actor_src
+          assert "e-scooters, Xbox, eggs, projector" in actor_src
+          assert "SAM: I left the key in the neighbour's letterbox." in actor_src
+          assert '"BACKDOOR"' in map_src and '"DOOR"' in map_src and '"GATEDOOR"' in map_src
+          assert 'special = 27 if door_style=="DOOR"' in map_src
+          assert '(26 if door_style=="BACKDOOR"' in map_src
+          assert '28 if door_style=="GATEDOOR"' in map_src
 
           # V33 visual/layout regressions that must never return.
           assert 'A(-48,16,16,3100,"LOT")' in map_src
