@@ -48,6 +48,8 @@ STYLE = {
     "DIG":     (-2,192,"H42DIRT","F_SKY1",78,"H42FENC"),
     "STLIT":   (0,192,"H42ROAD","F_SKY1",176,"H42CURB"),
     "PLAYLIT": (0,224,"H42SAFE","F_SKY1",160,"H42PLAY"),
+    "YARDLIT": (0,192,"H42LWN","F_SKY1",146,"H42FENC"),
+    "LOWBRIK": (34,34,"H42CONC","H42CONC",112,"H42BRIK"),
     "FURNWOOD":(40,128,"H42WOOD","H42CEIL",136,"H42PANL"),
     "FURNFAB": (36,128,"H42CARP","H42CEIL",132,"H42SOFA"),
     "FIXWHITE":(44,128,"H42TILF","H42CEIL",156,"H42WDR"),
@@ -156,6 +158,9 @@ AREAS = [
     A(16,1312,960,1600,"YARD"),
     A(16,1600,960,2944,"YARD"),
     A(384,16,448,320,"FOOT"),
+    # warmer spill from the porch/front lounge without flattening the whole yard
+    A(304,160,384,286,"YARDLIT"),
+    A(448,168,704,286,"YARDLIT"),
     A(736,16,928,1312,"DRIVE"),
     A(736,384,928,1312,"CARPORT"),
     A(704,1312,928,1750,"AWNING"),
@@ -166,6 +171,9 @@ AREAS = [
     A(472,224,672,304,"GARDEN"),
     A(108,80,320,150,"GARDEN"),
     A(500,92,690,158,"GARDEN"),
+    # low brick garden edging/walls, broken at the front path
+    A(96,150,320,166,"LOWBRIK"),
+    A(500,158,704,174,"LOWBRIK"),
     A(32,1360,96,2200,"GARDEN"),
     A(896,1750,944,2500,"GARDEN"),
     A(160,2820,330,2944,"DIG"),
@@ -329,7 +337,7 @@ def _boundary_texture(p1,p2,st):
         return "H42SIDN"
     return STYLE[st][5]
 
-OUTDOOR_STYLES={"PORCH","DRIVE","CARPORT","AWNING","YARD","PATIO","FOOT","VERGE","ROAD","STLIT","RESERVE","PLAY","PLAYLIT","LOT","GARDEN","DIG"}
+OUTDOOR_STYLES={"PORCH","DRIVE","CARPORT","AWNING","YARD","YARDLIT","PATIO","FOOT","VERGE","ROAD","STLIT","RESERVE","PLAY","PLAYLIT","LOT","GARDEN","DIG"}
 
 def _solid_boundary(p1,p2,st0,st1):
     pair={st0,st1}
@@ -526,19 +534,22 @@ def build_house42_map():
 
         # trees around frontages/reserve
         (-650,180,90,15721,7),
-        (270,-165,90,15721,7),
+        (270,-165,90,15734,7),
         (1460,180,90,15721,7),
-        (180,-760,90,15721,7),
+        (180,-760,90,15734,7),
         (-1200,360,90,15721,7),
-        (-1450,120,90,15721,7),
+        (-1450,120,90,15734,7),
         (-1750,360,90,15721,7),
-        (-2050,620,90,15721,7),
+        (-2050,620,90,15734,7),
         (-1850,-620,90,15721,7),
+        (-2140,-1120,90,15734,7),
+        (-1510,-1080,90,15721,7),
 
         # vehicles: fixed multi-angle sprites; Workmate in 42 driveway
         (832,620,90,15729,7),
         (1050,-430,90,15722,7),
         (-520,-430,90,15723,7),
+        (1660,190,90,15723,7),
 
         # kerbside bins for 42 + neighbours
         (780,-220,0,15730,7),
@@ -546,6 +557,8 @@ def build_house42_map():
         (860,-220,0,15728,7),
         (-340,40,0,15728,7),
         (1500,30,0,15728,7),
+        (-760,-190,0,15728,7),
+        (1710,-190,0,15731,7),
 
         # low planting
         (180,210,0,15732,7),
