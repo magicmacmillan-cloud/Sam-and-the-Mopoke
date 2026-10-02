@@ -192,31 +192,54 @@ class SamEscapeRunner : Actor
   {
     Super.Tick();
     if(level.levelnum != 1) { Vel.X=0; Vel.Y=0; return; }
+
+    // Sam begins in the backyard, runs through the side iron gate and heads
+    // toward Arnold Street / the park. He does NOT escape through the house.
     double tx; double ty;
     switch(waypoint)
     {
-      case 0: tx=620; ty=1210; break; // long sunroom
-      case 1: tx=620; ty=1090; break; // laundry
-      case 2: tx=520; ty=1060; break; // kitchen
-      case 3: tx=410; ty=960; break;  // hallway
-      case 4: tx=410; ty=820; break;
-      case 5: tx=410; ty=620; break;
-      case 6: tx=410; ty=500; break;  // entry
-      case 7: tx=410; ty=360; break;  // front door
-      case 8: tx=410; ty=120; break;  // front path
-      case 9: tx=410; ty=-430; break; // Arnold Street
-      case 10: tx=-420; ty=-430; break;
-      case 11: tx=-980; ty=-430; break;
-      case 12: tx=-1280; ty=-560; break;
-      case 13: tx=-1600; ty=-760; break;
-      case 14: tx=-1920; ty=-900; break;
+      case 0: tx=820; ty=1370; break; // approach backyard side of iron gate
+      case 1: tx=820; ty=1270; break; // scripted pass through gate
+      case 2: tx=830; ty=1040; break; // driveway beside Hilux
+      case 3: tx=830; ty=650;  break;
+      case 4: tx=830; ty=260;  break;
+      case 5: tx=820; ty=-120; break; // front boundary
+      case 6: tx=520; ty=-430; break; // Arnold Street
+      case 7: tx=0;   ty=-430; break;
+      case 8: tx=-620;ty=-430; break;
+      case 9: tx=-980;ty=-430; break; // toward Collenso / reserve
+      case 10:tx=-1280;ty=-560;break;
       default: Destroy(); return;
     }
+
     double dx=tx-Pos.X; double dy=ty-Pos.Y; double d=sqrt(dx*dx+dy*dy);
     if(d<24) { waypoint++; Vel.X=0; Vel.Y=0; return; }
     Vel.X=dx/d*Speed; Vel.Y=dy/d*Speed; Vel.Z=0;
   }
   States { Spawn: SAMR ABCDEF 3; Loop; }
+}
+
+class BackyardGatePadlock42 : Actor
+{
+  Default
+  {
+    Radius 4; Height 8; Scale 0.42;
+    +USESPECIAL +NOBLOCKMAP +NOGRAVITY;
+    Tag "Padlocked side gate";
+  }
+  override bool Used(Actor u)
+  {
+    if(!u || !u.player) return false;
+    A_Log("Padlocked. Sam locked it behind him.");
+    return true;
+  }
+  States
+  {
+  Spawn:
+    TNT1 A 45;
+    GPDL A -1;
+    Stop;
+  }
 }
 
 class HouseDoorbell : Actor
