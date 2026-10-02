@@ -55,7 +55,7 @@ STYLE = {
     "FIXWHITE":(44,128,"H42TILF","H42CEIL",156,"H42WDR"),
     "FIXPINK": (38,128,"H42TILF","H42CEIL",164,"H42BATH"),
     "APPLI":   (44,128,"H42TILF","H42CEIL",150,"H42APPL"),
-    "POST":    (128,128,"H42CONC","H42CONC",128,"H42SIDN"),
+    "POST":    (128,128,"H42CONC","H42CONC",128,"H42BRIK"),
     "PLAYEQ":  (36,224,"H42PAVE","F_SKY1",150,"H42PLAY"),
     # Zero-height sectors form solid neighbour-house massing while keeping
     # the site legible in automap/node builders.
@@ -84,12 +84,6 @@ AREAS = [
 
     # Padlocked playground entrance. The door sector itself is the iron gate.
     A(-1652,-930,-1620,-830,"GATEDOOR"),
-
-    # Playground equipment as sector silhouettes, supplemented by sprites.
-    A(-2130,-1020,-2020,-965,"PLAYEQ"),
-    A(-1990,-960,-1890,-865,"PLAYEQ"),
-    A(-1905,-870,-1815,-815,"PLAYEQ"),
-    A(-1775,-1015,-1640,-960,"PLAYEQ"),
 
     # --- Collenso Street ---
     A(-1312,-1500,-1248,1900,"FOOT"),
@@ -520,6 +514,9 @@ def build_house42_map():
         (-1160,-560,90,15720,7),
         (-880,760,90,15720,7),
         (-1850,-620,0,15720,7),
+        (-1650,-1020,0,15720,7),
+        (-2130,-1080,0,15720,7),
+        (-1460,-820,0,15720,7),
 
         # trees around frontages/reserve
         (-650,180,90,15721,7),
@@ -556,11 +553,23 @@ def build_house42_map():
         (-560,205,0,15732,7),
         (1410,210,0,15732,7),
 
-        # playground furniture/equipment
-        (-1710,-940,0,15724,7),
-        (-2050,-980,0,15725,7),
-        (-1920,-900,0,15726,7),
-        (-1820,-830,0,15727,7),
+        # playground furniture/equipment: native Doom sprites, no blocky sector props
+        (-1710,-940,0,15724,7),      # bench near path
+        (-2070,-990,0,15725,7),      # swing set
+        (-1885,-900,0,15735,7),      # main tower/slide assembly
+        (-1770,-840,0,15727,7),      # climbing frame
+        (-2010,-760,180,15724,7),    # second bench
+        (-1605,-895,0,15728,7),      # bin near playground entrance
+
+        # frontage polish around 42 Arnold and immediate neighbours
+        (120,120,0,15737,7),(315,120,0,15737,7),
+        (500,120,0,15737,7),(695,120,0,15737,7),
+        (215,160,0,15736,7),(590,170,0,15736,7),
+        (700,85,0,15738,7),
+        (-560,180,0,15736,7),(1390,185,0,15736,7),
+        (-620,72,0,15738,7),(1510,78,0,15738,7),
+        (360,330,0,15739,7),(680,330,0,15739,7),
+        (-520,330,0,15739,7),(1420,330,0,15739,7),
     ]
     bad=[t for t in things if covering(t[0],t[1]) is None]
     if bad:
