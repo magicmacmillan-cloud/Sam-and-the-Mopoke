@@ -580,6 +580,77 @@ def _environment_sprites(root):
     _line(p,w,h,14,25,34,25,1,(36,60,41)); _line(p,w,h,14,34,34,34,1,(36,60,41))
     _disc(p,w,h,15,56,5,5,(28,29,28)); _disc(p,w,h,33,56,5,5,(28,29,28))
     _png(root/"sprites"/"WBINA0.png",w,h,p,24,58)
+def _scene_polish_props(root):
+    # Large playground tower: one Doom sprite combining roof, platform, ladder and slide.
+    w,h=132,118; p=_canvas(w,h)
+    metal=(66,75,77); timber=(107,77,50); red=(151,61,45); roof=(77,68,52)
+    # supports/platform
+    for x in (28,54,80,104):
+        _rect(p,w,h,x,40,x+5,108,metal)
+    _rect(p,w,h,24,50,108,57,timber)
+    _rect(p,w,h,30,36,102,43,timber)
+    # pitched roof
+    _line(p,w,h,25,35,65,10,6,roof); _line(p,w,h,65,10,106,35,6,roof)
+    _line(p,w,h,31,35,99,35,5,roof)
+    # ladder and rails
+    _line(p,w,h,31,58,19,106,4,metal); _line(p,w,h,47,58,35,106,4,metal)
+    for yy in range(64,104,9): _line(p,w,h,23,yy,41,yy,2,metal)
+    # long red slide
+    _line(p,w,h,94,57,123,106,9,red)
+    _line(p,w,h,89,57,118,106,2,(92,54,43))
+    # guard rails
+    _line(p,w,h,54,43,54,26,3,metal); _line(p,w,h,80,43,80,26,3,metal)
+    _line(p,w,h,54,27,80,27,3,metal)
+    _png(root/"sprites"/"PTOWA0.png",w,h,p,66,110)
+
+    # Dense clipped hedge with irregular upper edge.
+    w,h=104,58; p=_canvas(w,h)
+    base=(47,76,43)
+    _rect(p,w,h,7,18,97,55,base)
+    for cx,cy,rx,ry,col in [
+        (15,24,13,15,(57,87,48)),(34,18,16,16,(51,81,45)),
+        (55,22,18,17,(62,92,51)),(77,17,15,17,(48,78,43)),
+        (92,25,12,14,(58,88,48))
+    ]: _disc(p,w,h,cx,cy,rx,ry,col)
+    for y in range(16,50,7):
+        for x in range(8,98,8):
+            if ((x*5+y*3)%4)==0: _disc(p,w,h,x,y,2,2,(72,101,57),170)
+    _png(root/"sprites"/"HEDGA0.png",w,h,p,52,55)
+
+    # Brick porch / fence pier.
+    w,h=34,70; p=_canvas(w,h)
+    mortar=(159,132,114); brick=(133,68,46)
+    for y in range(h):
+        row=y//8
+        for x in range(w):
+            xx=(x+(4 if row%2 else 0))%18
+            c=_noise(brick,x,y,4,251)
+            if y%8 in (0,1) or xx in (0,1): c=mortar
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,2,0,32,5,(116,105,95))
+    _png(root/"sprites"/"BRPRA0.png",w,h,p,17,68)
+
+    # Static suburban letterbox in a small masonry pillar.
+    w,h=46,68; p=_canvas(w,h)
+    stone=(135,128,116)
+    for y in range(h):
+        for x in range(w):
+            c=_noise(stone,x,y,4,257)
+            if y%13 in (0,1): c=_shade(c,-10)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,8,21,38,34,(58,58,56))
+    _rect(p,w,h,11,24,35,29,(24,25,24))
+    _disc(p,w,h,34,42,2,2,(96,93,85))
+    _png(root/"sprites"/"MBXSA0.png",w,h,p,23,66)
+
+    # Small warm porch light for domestic facades.
+    w,h=28,34; p=_canvas(w,h)
+    _rect(p,w,h,9,12,19,30,(80,78,70))
+    _rect(p,w,h,6,5,22,15,(139,125,93))
+    _rect(p,w,h,8,7,20,13,(236,206,132))
+    _disc(p,w,h,14,10,7,5,(245,215,143),175)
+    _png(root/"sprites"/"PLITA0.png",w,h,p,14,30)
+
 def _extra_street_details(root):
     # White Toyota Hilux Workmate-style single-cab tray ute. Eight directional
     # sprites give stable world orientation while the player walks around it.
@@ -817,11 +888,17 @@ def _puzzle_story_assets(root):
         _png(root/"sprites"/f"{name}.png",w,h,p,32,54)
     projected_digit("PJCTA0",3); projected_digit("PJCTB0",2); projected_digit("PJCTC0",1); projected_digit("PJCTD0",0)
 
-    # Neighbour letterbox.
-    w,h=42,62; p=_canvas(w,h)
-    _rect(p,w,h,17,26,23,60,(93,87,77)); _rect(p,w,h,6,9,36,31,(119,106,87))
-    _rect(p,w,h,9,13,33,18,(54,52,48)); _disc(p,w,h,30,23,2,2,(181,172,151))
-    _png(root/"sprites"/"LBOXA0.png",w,h,p,21,59)
+    # Neighbour letterbox: masonry pillar, normal suburban scale.
+    w,h=48,70; p=_canvas(w,h)
+    for y in range(h):
+        for x in range(w):
+            c=_noise((132,124,112),x,y,4,271)
+            if y%14 in (0,1): c=_shade(c,-11)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,8,20,40,35,(61,61,58))
+    _rect(p,w,h,11,23,37,28,(25,26,25))
+    _disc(p,w,h,36,45,2,2,(102,98,88))
+    _png(root/"sprites"/"LBOXA0.png",w,h,p,24,68)
 
 def generate_house42_assets(root: Path):
     root=Path(root)
@@ -847,6 +924,7 @@ def generate_house42_assets(root: Path):
     _doorbell_sprite(root)
     _cola_sprite(root)
     _environment_sprites(root)
+    _scene_polish_props(root)
     _extra_street_details(root)
     _puzzle_story_assets(root)
     _wav(root,"doorbell.wav",780,.18,.03)
