@@ -11,6 +11,15 @@ class SamCharge : Ammo
   States { Spawn: CHGR A -1; Stop; }
 }
 
+class ArmoryChargePack : SamCharge
+{
+  Default
+  {
+    Inventory.Amount 25;
+    Inventory.PickupMessage "A box of cursed charge.";
+  }
+}
+
 class SamCursedBolt : FastProjectile
 {
   Default
