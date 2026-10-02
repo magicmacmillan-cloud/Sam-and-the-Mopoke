@@ -44,6 +44,7 @@ class SamStoryHandler : EventHandler
 
     int n = level.levelnum;
     double x = players[0].mo.Pos.X;
+    double y = players[0].mo.Pos.Y;
 
     if(n != lastLevel)
     {
@@ -61,7 +62,7 @@ class SamStoryHandler : EventHandler
         beatA = true;
         Console.Printf("Wait... Sam? Sam! It's Dad...");
       }
-      if(!beatB && x > 1500)
+      if(!beatB && (y < 0 || x < -600))
       {
         beatB = true;
         Console.Printf("Why is he running? ...He only hears that noise. That noise is me.");
