@@ -835,6 +835,17 @@ def _extra_street_details(root):
     _flat(root,"H42SAFE",(174,112,65),"pave")
 
 def _puzzle_story_assets(root):
+    # Small black/steel padlock for the side iron gate Sam locks behind him.
+    w,h=28,30; p=_canvas(w,h)
+    metal=(116,118,113); dark=(46,47,45)
+    _line(p,w,h,8,13,8,7,4,metal); _line(p,w,h,20,13,20,7,4,metal)
+    _line(p,w,h,8,7,20,7,4,metal)
+    _rect(p,w,h,5,12,23,27,dark)
+    _rect(p,w,h,8,15,20,24,(74,75,72))
+    _disc(p,w,h,14,19,2,2,(24,25,24))
+    _line(p,w,h,14,20,14,23,1,(24,25,24))
+    _png(root/"sprites"/"GPDLA0.png",w,h,p,14,27)
+
     # Small coloured keys for the two house/gate locks.
     for name,col in [("FDKY",(204,177,57)),("PGKY",(158,49,45))]:
         w,h=32,24; p=_canvas(w,h)
