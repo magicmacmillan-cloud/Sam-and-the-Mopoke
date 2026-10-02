@@ -63,6 +63,22 @@ STYLE = {
     "NBR2":    (104,104,"H42ROOF","H42ROOF",104,"H42NBR2"),
     "NBRR1":   (148,148,"H42ROOF","H42ROOF",92,"H42ROFW"),
     "NBRR2":   (140,140,"H42ROOF","H42ROOF",88,"H42ROFW"),
+
+    # Optional No. 44 secret armoury. Still classic binary Doom geometry.
+    "SECROOM":  (0,128,"H42WOOD","H42CEIL",104,"H42WALL"),
+    "SECHALL":  (0,128,"H42TILF","H42CEIL",88,"H42PANL"),
+    "SECTRIG":  (0,128,"H42TILF","H42CEIL",92,"H42PANL"),
+    "SENTRY":   (0,0,"H42TILF","H42CEIL",96,"H42DOOR"),
+    "WDOOR1":   (0,0,"H42WOOD","H42CEIL",88,"WANT01"),
+    "WDOOR2":   (0,0,"H42WOOD","H42CEIL",88,"WANT02"),
+    "WDOOR3":   (0,0,"H42WOOD","H42CEIL",88,"WANT03"),
+    "WDOOR4":   (0,0,"H42WOOD","H42CEIL",88,"WANT04"),
+    "WDOOR5":   (0,0,"H42WOOD","H42CEIL",88,"WANT05"),
+    "WDOOR6":   (0,0,"H42WOOD","H42CEIL",88,"WANT06"),
+    "WDOOR7":   (0,0,"H42WOOD","H42CEIL",88,"WANT07"),
+    "WDOOR8":   (0,0,"H42WOOD","H42CEIL",88,"WANT08"),
+    "AMBUSH":   (0,128,"H42CONC","H42CEIL",48,"H42WALL"),
+    "AMBDOOR":  (0,0,"H42CONC","H42CEIL",48,"H42WALL"),
 }
 
 def A(x0,y0,x1,y1,style):
@@ -134,6 +150,37 @@ AREAS = [
     A(-600,160,-520,320,"FOOT"),
     A(1600,16,1820,320,"DRIVE"),
     A(1320,180,1380,320,"FOOT"),
+
+    # --- SECRET AREA: No. 44 neighbour-house wanted-poster armoury ---
+    # Street-side secret entrance, one central corridor, four rooms each side.
+    A(-520,320,-384,352,"SENTRY"),
+    A(-520,352,-384,384,"SECTRIG"),
+    A(-520,384,-384,1024,"SECHALL"),
+
+    # west rooms
+    A(-816,384,-544,512,"SECROOM"),
+    A(-816,544,-544,640,"SECROOM"),
+    A(-816,704,-544,792,"SECROOM"),
+    A(-816,856,-544,944,"SECROOM"),
+    # east rooms
+    A(-360,384,-160,512,"SECROOM"),
+    A(-360,544,-160,640,"SECROOM"),
+    A(-360,704,-160,792,"SECROOM"),
+    A(-360,856,-160,944,"SECROOM"),
+
+    # eight poster-covered Doom door sectors
+    A(-544,480,-520,512,"WDOOR1"),
+    A(-544,576,-520,608,"WDOOR2"),
+    A(-544,736,-520,768,"WDOOR3"),
+    A(-544,896,-520,928,"WDOOR4"),
+    A(-384,480,-360,512,"WDOOR5"),
+    A(-384,576,-360,608,"WDOOR6"),
+    A(-384,736,-360,768,"WDOOR7"),
+    A(-384,896,-360,928,"WDOOR8"),
+
+    # concealed rear zombie compartment. AMBDOOR has tag 77 and starts shut.
+    A(-816,1040,-160,1110,"AMBUSH"),
+    A(-520,1024,-384,1040,"AMBDOOR"),
 
     # Fill the two side-boundary gaps and behind the rear fence so fences are
     # two-sided midtextures with sky above, not 192-unit enclosing walls.
@@ -254,8 +301,19 @@ LINE_TEX = {
     norm_edge((1260,320),(1516,320)):"H42LWIN",
 }
 
+ARMORY_TRIGGER_EDGES={
+    norm_edge((-600,480),(-600,512)),
+    norm_edge((-600,576),(-600,608)),
+    norm_edge((-600,736),(-600,768)),
+    norm_edge((-600,896),(-600,928)),
+    norm_edge((-256,480),(-256,512)),
+    norm_edge((-256,576),(-256,608)),
+    norm_edge((-256,736),(-256,768)),
+    norm_edge((-256,896),(-256,928)),
+}
+
 HOUSE_STYLES={"ENTRY","HALL","LOUNGE","BED","BEDWOOD","BATH","KITCH","LAUNDRY","SUNROOM"}
-DETAIL_STYLES={"DOOR","BACKDOOR","IDOOR","GATEDOOR","FURNWOOD","FURNFAB","FIXWHITE","FIXPINK","APPLI","POST","PLAYEQ"}
+DETAIL_STYLES={"DOOR","BACKDOOR","IDOOR","GATEDOOR","SENTRY","WDOOR1","WDOOR2","WDOOR3","WDOOR4","WDOOR5","WDOOR6","WDOOR7","WDOOR8","AMBDOOR","FURNWOOD","FURNFAB","FIXWHITE","FIXPINK","APPLI","POST","PLAYEQ"}
 
 def _is_house_exterior(p1,p2,st):
     if st not in HOUSE_STYLES:
@@ -381,7 +439,11 @@ def build_house42_map():
             st=a[4]
             fz,cz,ff,cf,light,wall=STYLE[st]
             sec=len(sectors)
-            sectors.append((fz,cz,tex8(ff),tex8(cf),light,0,0))
+            # Count No.44 once as a real Doom secret. Only one grid cell receives special 9.
+            sector_special = 9 if (st=="SECTRIG" and x0==-520 and x1==-400 and y0==352 and y1==384) else 0
+            # All cells making up the concealed rear door share tag 77.
+            sector_tag = 77 if st=="AMBDOOR" else 0
+            sectors.append((fz,cz,tex8(ff),tex8(cf),light,sector_special,sector_tag))
             cells[(ix,iy)]=sec
             cell_style[(ix,iy)]=st
 
@@ -419,9 +481,19 @@ def build_house42_map():
                 linedefs.append((vid(*p1),vid(*p2),4,11,0,
                                  side(sec0,upper=STYLE[st0][5],lower=STYLE[st0][5]),
                                  side(sec1,upper=STYLE[st1][5],lower=STYLE[st1][5])))
-            elif st0 in ("DOOR","BACKDOOR","GATEDOOR","IDOOR") or st1 in ("DOOR","BACKDOOR","GATEDOOR","IDOOR"):
-                door_style = st1 if st1 in ("DOOR","BACKDOOR","GATEDOOR","IDOOR") else st0
-                dtex = "H42FRNT" if door_style=="DOOR" else ("H42RDR" if door_style=="BACKDOOR" else ("H42GATE" if door_style=="GATEDOOR" else "H42DOOR"))
+            elif key in ARMORY_TRIGGER_EDGES:
+                # Native Doom W1 Door Open Stay. Crossing at a weapon pickup opens tag 77.
+                linedefs.append((vid(*p1),vid(*p2),4,2,77,
+                                 side(sec0,upper=w0,lower=w0),
+                                 side(sec1,upper=w1,lower=w1)))
+            elif st0 in ("DOOR","BACKDOOR","GATEDOOR","IDOOR","SENTRY","WDOOR1","WDOOR2","WDOOR3","WDOOR4","WDOOR5","WDOOR6","WDOOR7","WDOOR8") or st1 in ("DOOR","BACKDOOR","GATEDOOR","IDOOR","SENTRY","WDOOR1","WDOOR2","WDOOR3","WDOOR4","WDOOR5","WDOOR6","WDOOR7","WDOOR8"):
+                door_styles=("DOOR","BACKDOOR","GATEDOOR","IDOOR","SENTRY","WDOOR1","WDOOR2","WDOOR3","WDOOR4","WDOOR5","WDOOR6","WDOOR7","WDOOR8")
+                door_style = st1 if st1 in door_styles else st0
+                poster_tex={
+                    "WDOOR1":"WANT01","WDOOR2":"WANT02","WDOOR3":"WANT03","WDOOR4":"WANT04",
+                    "WDOOR5":"WANT05","WDOOR6":"WANT06","WDOOR7":"WANT07","WDOOR8":"WANT08",
+                }
+                dtex = "H42FRNT" if door_style=="DOOR" else ("H42RDR" if door_style=="BACKDOOR" else ("H42GATE" if door_style=="GATEDOOR" else poster_tex.get(door_style,"H42DOOR")))
                 special = 27 if door_style=="DOOR" else (26 if door_style=="BACKDOOR" else (28 if door_style=="GATEDOOR" else 1))
                 if st1 == door_style:
                     linedefs.append((vid(*p1),vid(*p2),4,special,0,
@@ -483,6 +555,22 @@ def build_house42_map():
         (444,356,270,15710,7),       # small front doorbell
         (842,2145,180,15740,7),      # spare back-door key tucked beside garage workbench/shelving
         (710,2060,180,15301,7),      # garage searchable cache nudges the player to search
+
+        # optional No.44 secret armoury: eight different weapons, charge pack + armour in each room
+        (-660,496,180,15001,7),(-730,470,0,15800,7),(-760,500,0,2018,7),
+        (-660,592,180,15002,7),(-730,560,0,15800,7),(-760,620,0,2018,7),
+        (-660,752,180,15003,7),(-730,720,0,15800,7),(-760,780,0,2018,7),
+        (-660,912,180,15004,7),(-730,880,0,15800,7),(-760,930,0,2018,7),
+        (-220,496,0,15005,7),(-190,470,0,15800,7),(-330,500,0,2018,7),
+        (-220,592,0,15006,7),(-190,560,0,15800,7),(-330,620,0,2018,7),
+        (-220,752,0,15007,7),(-190,720,0,15800,7),(-330,780,0,2018,7),
+        (-220,912,0,15008,7),(-190,880,0,15800,7),(-330,930,0,2019,7),
+
+        # hidden rear closet: deaf/ambush zombies wake when the tag-77 door opens
+        (-740,1070,270,3004,15),(-660,1070,270,3004,15),
+        (-580,1070,270,9,15),(-500,1070,270,3004,15),
+        (-420,1070,270,3004,15),(-340,1070,270,9,15),
+        (-260,1070,270,3004,15),(-180,1070,270,3004,15),
 
         # house puzzle chain
         (220,1060,180,15741,7),      # Lincoln's phone in his bedroom
