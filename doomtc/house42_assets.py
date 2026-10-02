@@ -194,31 +194,97 @@ def _curb(root):
     _png(root/"textures"/"H42CURB.png",w,h,p)
 
 def _neighbor(root,name,brick=False):
+    w=h=128; p=_canvas(w,h)
     if brick:
-        _brick(root)
-        # copy brick appearance under a neighbour-specific name
-        src=(root/"textures"/"H42BRIK.png").read_bytes()
-        (root/"textures"/f"{name}.png").write_bytes(src)
+        mortar=(168,142,124); brickc=(142,73,48)
+        for y in range(h):
+            for x in range(w):
+                row=y//10
+                xx=(x + (5 if row%2 else 0))%24
+                c=_noise(brickc,x,y,5,201)
+                if y%10 in (0,1) or xx in (0,1): c=mortar
+                _set(p,w,h,x,y,c)
     else:
-        _siding(root)
-        src=(root/"textures"/"H42SIDN.png").read_bytes()
-        (root/"textures"/f"{name}.png").write_bytes(src)
+        base=(205,202,186)
+        for y in range(h):
+            band=y%15
+            for x in range(w):
+                c=_noise(base,x,y,4,203)
+                if band in (0,1): c=_shade(c,-23)
+                elif band in (2,3): c=_shade(c,8)
+                _set(p,w,h,x,y,c)
 
+    # Eave shadow makes the facade read as a house rather than a featureless wall.
+    _rect(p,w,h,0,0,w,10,(73,69,62))
+    # Two domestic windows with warm interior glow.
+    for x0,x1 in ((10,48),(76,116)):
+        _rect(p,w,h,x0,24,x1,69,(200,198,184))
+        _rect(p,w,h,x0+4,28,x1-4,65,(82,68,47))
+        for y in range(30,64):
+            for x in range(x0+6,x1-5):
+                c=_noise((119,89,48),x,y,4,211)
+                if ((x+y)%31)==0: c=_shade(c,14)
+                _set(p,w,h,x,y,c)
+        _rect(p,w,h,(x0+x1)//2-2,28,(x0+x1)//2+2,65,(184,181,168))
+    # Front door / porch recess.
+    _rect(p,w,h,52,50,72,116,(66,58,50))
+    _rect(p,w,h,55,54,69,113,(101,77,55))
+    _disc(p,w,h,66,84,2,2,(181,174,151))
+    # Concrete/brick base.
+    _rect(p,w,h,0,116,w,128,(120,112,102))
+    _png(root/"textures"/f"{name}.png",w,h,p)
+
+def _roofwall(root):
+    w=h=128; p=_canvas(w,h)
+    base=(77,70,65)
+    for y in range(h):
+        row=y//10
+        for x in range(w):
+            c=_noise(base,x,y,5,217)
+            if y%10 in (0,1): c=_shade(c,-24)
+            if (x + (12 if row%2 else 0))%24 in (0,1): c=_shade(c,-9)
+            _set(p,w,h,x,y,c)
+    # shadow under eave
+    _rect(p,w,h,0,112,w,128,(49,47,44))
+    _png(root/"textures"/"H42ROFW.png",w,h,p)
+
+def _litwindow(root):
+    w=h=128; p=_canvas(w,h)
+    frame=(205,202,188); glow=(151,104,53)
+    _rect(p,w,h,0,0,w,h,frame)
+    _rect(p,w,h,7,7,121,121,(69,55,42))
+    for y in range(10,118):
+        for x in range(10,118):
+            c=_noise(glow,x,y,5,223)
+            # warm curtains / irregular room light
+            if x<28 or x>100: c=_shade(c,-20)
+            if y>92: c=_shade(c,-14)
+            _set(p,w,h,x,y,c)
+    _rect(p,w,h,61,7,67,121,(190,187,173))
+    _rect(p,w,h,7,61,121,67,(190,187,173))
+    _png(root/"textures"/"H42LWIN.png",w,h,p)
 def _play(root):
     w=h=128; p=_canvas(w,h)
-    base=(116,103,83)
+    # Timber reserve boundary with vegetation at the base. Equipment is rendered
+    # as proper sprites/sectors, never painted onto a billboard wall.
+    wood=(91,72,55)
     for y in range(h):
         for x in range(w):
-            c=_noise(base,x,y,7,31)
+            c=_noise(wood,x,y,6,231)
+            if x%18 in (0,1,2): c=_shade(c,-23)
+            if y in (40,41,92,93): c=_shade(c,-16)
             _set(p,w,h,x,y,c)
-    # Simple safety-fence / play-equipment silhouettes.
-    _rect(p,w,h,0,92,w,97,(62,61,58))
-    for x in range(10,128,24): _rect(p,w,h,x,58,x+3,104,(62,61,58))
-    _line(p,w,h,24,80,44,36,3,(118,53,40))
-    _line(p,w,h,44,36,63,80,3,(118,53,40))
-    _line(p,w,h,34,56,55,56,3,(118,53,40))
+    # darker support posts
+    for x in range(8,128,36):
+        _rect(p,w,h,x,0,x+4,128,(60,52,44))
+    # irregular shrubs/grass along the bottom
+    for cx,cy,rx,ry,col in [
+        (14,111,14,17,(47,72,42)),(34,114,18,15,(55,82,46)),
+        (66,111,20,18,(44,69,40)),(96,115,20,15,(56,83,46)),
+        (121,110,14,18,(48,75,42))
+    ]:
+        _disc(p,w,h,cx,cy,rx,ry,col)
     _png(root/"textures"/"H42PLAY.png",w,h,p)
-
 def _flat(root,name,base,kind):
     w=h=64; p=_canvas(w,h)
     for y in range(h):
@@ -751,6 +817,7 @@ def generate_house42_assets(root: Path):
     _fence(root)
     _gate(root)
     _window(root)
+    _litwindow(root)
     _blinds(root)
     _door(root,"H42DOOR",True)
     _door(root,"H42WDR",False)
@@ -767,6 +834,7 @@ def generate_house42_assets(root: Path):
     _curb(root)
     _neighbor(root,"H42NBR1",False)
     _neighbor(root,"H42NBR2",True)
+    _roofwall(root)
     _play(root)
 
     for spec in [
