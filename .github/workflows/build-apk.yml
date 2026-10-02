@@ -188,6 +188,24 @@ jobs:
           lines=p.read_text().splitlines()
           lines=[line for line in lines if 'copyAsset' not in line or ('freedoom1.wad' not in line and 'freedoom2.wad' not in line)]
           p.write_text("\n".join(lines)+"\n")
+
+          # Keep Android component class names independent from the rebranded
+          # applicationId. This prevents ActivityNotFoundException at startup.
+          p=Path("doom/src/main/AndroidManifest.xml")
+          manifest=p.read_text()
+          manifest=manifest.replace(
+              'android:name=".EntryActivity"',
+              'android:name="com.msa.freedoom.EntryActivity"'
+          )
+          manifest=manifest.replace(
+              'android:name=".Game"',
+              'android:name="com.msa.freedoom.Game"'
+          )
+          if 'android:name="com.msa.freedoom.EntryActivity"' not in manifest:
+              raise SystemExit("EntryActivity is not declared in AndroidManifest.xml")
+          if 'android:name="com.msa.freedoom.Game"' not in manifest:
+              raise SystemExit("Game activity is not declared in AndroidManifest.xml")
+          p.write_text(manifest)
           PY
 
           cat > doom/src/main/java/com/msa/freedoom/EntryActivity.kt <<'KOT'
@@ -269,6 +287,21 @@ jobs:
                   assert f.read(4) == b"IWAD"
           print("APK contains the standalone Sam and the Mopoke IWAD and no external game-data mod stack")
           PY
+          # Verify the exact launch contract in the final packaged APK.
+          APKANALYZER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name apkanalyzer | head -n1)"
+          test -x "$APKANALYZER"
+          APP_ID="$("$APKANALYZER" manifest application-id "$APK")"
+          test "$APP_ID" = "com.samandthemopoke.game"
+          "$APKANALYZER" manifest print "$APK" > /tmp/mopoke-manifest.txt
+          grep -Fq 'com.msa.freedoom.EntryActivity' /tmp/mopoke-manifest.txt
+          grep -Fq 'com.msa.freedoom.Game' /tmp/mopoke-manifest.txt
+          grep -Fq 'android.intent.action.MAIN' /tmp/mopoke-manifest.txt
+          grep -Fq 'android.intent.category.LAUNCHER' /tmp/mopoke-manifest.txt
+
+          rm -rf /tmp/mopoke-dex && mkdir -p /tmp/mopoke-dex
+          unzip -q "$APK" 'classes*.dex' -d /tmp/mopoke-dex
+          strings /tmp/mopoke-dex/classes*.dex | grep -Fq 'Lcom/msa/freedoom/EntryActivity;'
+          echo "Launch contract verified: $APP_ID -> com.msa.freedoom.EntryActivity"
           cp "$APK" Sam-and-the-Mopoke-IWAD-debug.apk
 
       - name: Upload Sam and the Mopoke APK
