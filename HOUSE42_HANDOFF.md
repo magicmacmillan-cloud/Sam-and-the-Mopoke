@@ -88,6 +88,203 @@ The detailed machine-readable dimensions, door openings and window segments are 
 - `H42CEIL` — off-white ceiling
 - `H42ROOF` — dark tiled-roof massing
 
+## HOUSE PROGRESSION AND INTERNAL LAYOUT — NON-NEGOTIABLE
+
+This section overrides every earlier MAP01 shortcut, generic Doom-loop preference, route suggestion or blockout that conflicts with it. If another file disagrees with this section for the opening of MAP01, this section wins.
+
+### Opening story and route
+
+Dad starts in the backyard. Sam is seen running away from Dad toward the side driveway gate. Sam gets through the **see-through black iron gate**, padlocks it behind him and continues toward Arnold Street / the park. Dad can see the driveway and Hilux through the gate but cannot follow.
+
+Lincoln has separately locked the actual rear house door to keep the Mopoke out.
+
+The mandatory opening flow is:
+
+**Backyard → see Sam escape through side iron gate → gate is padlocked and blocks Dad → try locked rear door → garage → hidden spare back-door key → rear door → long sunroom → small laundry → kitchen → Lincoln's room → return to kitchen → main hallway → lounge/bathroom + Sam/master room pairs → Lincoln's front-door clue → Sam's puzzle box → front-door key → Arnold Street → playground entrance gate → Sam's gate note → neighbour's letterbox → playground gate key → unlock gate → enter playground → MAP02.**
+
+There is **NO usable backyard-to-front shortcut**.
+
+### Backyard and side gate
+
+The backyard must contain the real rear façade, long enclosed sunroom/veranda, accessible garage/shed, lawn/garden, side/rear fences, dog-dug-under-fence evidence, the driveway gate and the Hilux visible beyond it.
+
+The driveway gate must:
+
+- be a see-through black iron gate
+- visibly carry a small padlock
+- physically block Dad
+- have no gap around either side
+- not open during the opening sequence
+- not be climbable or bypassable
+- not allow a route between house/fence/vehicle
+- give restrained feedback when used: **Padlocked. Sam locked it behind him.**
+
+Sam is allowed to pass through it only as a scripted opening event. The player is not.
+
+If Dad can simply walk down the driveway to Arnold Street from the backyard, MAP01 is wrong.
+
+### Locked rear door and spare key
+
+Lincoln has locked the rear door to keep the Mopoke out.
+
+The rear door:
+
+- faces the backyard
+- is visually different from the Arnold Street front door
+- uses rear/sunroom materials
+- is a real working Doom door
+- stays locked until Dad has the spare rear-door key
+- uses sensible locked/opening feedback
+- permanently allows entry after unlocking
+
+A spare back-door house key is hidden inside the garage near believable storage/workbench clutter. It must require a small amount of searching and must not be a giant glowing arcade pickup.
+
+The first puzzle is:
+
+**See Sam escape → side gate blocks Dad → rear door is locked → search garage → find spare key → enter house.**
+
+### Rear interior route
+
+The unlocked rear door opens directly into the **long sunroom**.
+
+The route is then:
+
+**long sunroom → small laundry → kitchen**
+
+The sunroom must read as the actual elongated rear space from the walkthrough: broad glazing, rear-house finishes, domestic scale, storage/furniture and appropriate lighting. Do not convert it into a maze.
+
+The small laundry must remain compact and domestic with believable washer/trough/storage/floor treatment.
+
+The kitchen must match the walkthrough's cabinets, benchtops, splashback, appliances, floor transition and openings. Do not enlarge it into a generic Doom room.
+
+### Lincoln's room and phone
+
+**Lincoln's room comes directly off the kitchen and is not a through-route.**
+
+Dad enters Lincoln's room, investigates, reads Lincoln's phone, then returns to the kitchen.
+
+The phone message to Dad is:
+
+> Sam ran away to the park, I'm going after him. I've locked the doors behind us so it can't get us. If it's really still you Dad, help us stay safe.
+
+The phone must be normal domestic scale and exist naturally in Lincoln's bedroom.
+
+Reading it unlocks the narrative clue chain for the front door.
+
+### Main hallway and required room relationships
+
+From the kitchen Dad enters the main hallway.
+
+The hallway must preserve these exact opposite-room relationships:
+
+- **Lounge opposite Bathroom**
+- **Sam's bedroom opposite Master bedroom**
+
+The four principal rooms off the hallway are:
+
+1. Lounge
+2. Bathroom
+3. Sam's bedroom
+4. Master bedroom
+
+Minor Doom-grid dimension adjustments are allowed; these spatial relationships are not.
+
+The rooms must read as ordinary suburban rooms, not Doom arenas.
+
+The lounge contains **three Xbox consoles hooked to TVs**.
+
+The master bedroom contains a usable projector.
+
+### Front-door clue and 2330 puzzle
+
+The Arnold Street front door is locked and requires its own key.
+
+After Lincoln's phone has been read, Dad can read the natural-sized note taped to the **inside of the front door**:
+
+> I've hidden the key in Sam's puzzle box. Code is: e-scooters, Xbox, eggs, projector.
+
+Do not display 2330 on this note.
+
+The player deduces the code from physical evidence:
+
+- **2** e-scooters in the garage
+- **3** Xbox consoles hooked to TVs in the lounge
+- **3** eggs in the kitchen fridge
+- the master-bedroom projector counts **3 → 2 → 1 → 0** when switched on and then remains displaying **0** on the wall
+
+Therefore the puzzle-box code is **2330**.
+
+Sam's puzzle box is in Sam's bedroom. It uses an in-world four-digit keypad. Entering 2330 opens it and gives Dad the front-door key.
+
+Wrong entries may reset the keypad but must not softlock progression.
+
+The front door remains locked until this key is obtained.
+
+### Street to playground and MAP01 ending
+
+After leaving the real Arnold Street front door, Dad follows the street toward the reserve/playground shown in the aerial references.
+
+The entrance gate to the playground is padlocked.
+
+A normal-sized handwritten note taped to the gate in Sam's handwriting says:
+
+> I left the key in the neighbour's letterbox.
+
+Reading this note enables the next clue.
+
+Dad must search the neighbour's letterbox, retrieve the playground-gate key, return to the gate and unlock it.
+
+The gate itself is the final progression lock. There is no giant EXIT billboard.
+
+**MAP01 ends only after Dad unlocks the playground gate and crosses into the start of the playground. MAP02 begins on the playground side.**
+
+### Door and clue rules
+
+All relevant doors must be real, working Doom doors with correct collision, proportions, textures and sound.
+
+Never use:
+
+- fake painted-on doors
+- visible doors that do nothing
+- invisible blockers across open doorways
+- random door orientation
+- oversized note/billboard clues
+- giant objective text replacing environmental storytelling
+
+Notes, phone, puzzle box, keys and padlocks must remain believable world objects at domestic scale.
+
+### Mandatory clean-start acceptance test
+
+1. Dad spawns in backyard.
+2. Sam runs toward/through the side iron driveway gate and disappears toward Arnold Street.
+3. The gate is visibly padlocked; Dad cannot follow or bypass it.
+4. Dad can see the driveway/Hilux beyond the gate.
+5. Rear house door is locked because Lincoln locked the house.
+6. Dad searches the garage.
+7. Dad finds the hidden spare rear-door key.
+8. Dad returns and unlocks the real rear door.
+9. Dad enters the long sunroom.
+10. Dad proceeds to the small laundry.
+11. Dad enters the kitchen.
+12. Dad investigates Lincoln's room directly off the kitchen.
+13. Dad reads Lincoln's phone message.
+14. Dad returns to the kitchen.
+15. Dad enters the main hallway.
+16. Lounge is opposite bathroom.
+17. Sam's bedroom is opposite master bedroom.
+18. Dad can inspect two garage e-scooters, three lounge Xbox/TV setups, three eggs in the fridge and the master-bedroom projector.
+19. Dad reads the note on the inside of the locked front door.
+20. Dad deduces and enters 2330 into Sam's puzzle box.
+21. The puzzle box gives the front-door key.
+22. Dad unlocks the front door and reaches Arnold Street.
+23. Dad reaches the padlocked playground entrance gate.
+24. Dad reads Sam's gate note.
+25. Dad retrieves the playground-gate key from the neighbour's letterbox.
+26. Dad unlocks the playground gate.
+27. Dad crosses into the playground and MAP01 ends / MAP02 begins.
+
+If any required lock can be bypassed, any key is unnecessary, Lincoln's room is not off the kitchen, the opposite-room pairings are wrong, or MAP01 can end before the playground gate is unlocked, the build fails acceptance.
+
 ## Detail pass for the next IWAD builder
 
 Keep the supplied geometry and materials as the baseline, then add Doom-sector/midtexture detail where useful:
