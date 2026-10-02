@@ -530,6 +530,25 @@ def _environment_sprites(root):
                 _disc(p,w,h,x,y,2,2,(68,99,53),180)
     _png(root/"sprites"/"TREEA0.png",w,h,p,56,139)
 
+    # Second suburban/gum-tree silhouette: taller, lighter canopy and a bent trunk.
+    w,h=104,152; p=_canvas(w,h)
+    trunk=(83,67,50); branch=(91,73,54)
+    _line(p,w,h,50,146,53,82,8,trunk)
+    _line(p,w,h,52,102,34,63,5,branch)
+    _line(p,w,h,54,96,74,58,5,branch)
+    _line(p,w,h,51,86,49,45,4,branch)
+    for cx,cy,rx,ry,col in [
+        (48,41,24,20,(62,91,56)),(29,55,21,19,(67,97,59)),
+        (72,55,22,20,(55,85,51)),(80,32,15,14,(70,100,61)),
+        (19,35,14,13,(73,102,63)),(52,65,25,17,(57,87,52))
+    ]:
+        _disc(p,w,h,cx,cy,rx,ry,col)
+    for y in range(20,76,9):
+        for x in range(12,94,10):
+            if ((x*7+y*11)%4)==0:
+                _disc(p,w,h,x,y,2,2,(84,112,67),170)
+    _png(root/"sprites"/"TRE2A0.png",w,h,p,52,146)
+
     # Park bench.
     w,h=80,64; p=_canvas(w,h)
     _rect(p,w,h,8,24,72,30,(104,71,44)); _rect(p,w,h,8,35,72,41,(104,71,44))
