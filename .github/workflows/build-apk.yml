@@ -44,6 +44,8 @@ jobs:
         run: |
           set -euo pipefail
           test -s engine/doom/src/main/assets/freedoom2.wad
+          python3 -m pip install --disable-pip-version-check --quiet Pillow
+          (cd game/doomtc/source_posters && sha256sum -c SHA256SUMS)
           python3 game/doomtc/generate_assets.py
           python3 game/doomtc/build_map.py
           python3 game/doomtc/build_iwad.py engine/doom/src/main/assets/freedoom2.wad
@@ -83,7 +85,17 @@ jobs:
               "TOMB","STATION","MALL","LIBRARY",
               "HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL",
               "STNFLR","MALLFLR","LIBFLR","HCEIL","TOMBCE","STNCEIL",
-              "MALLCEIL","LIBCEIL"
+              "MALLCEIL","LIBCEIL",
+              "H42WALL","H42PANL","H42KTCH","H42BATH","H42SIDN","H42BRIK",
+              "H42SHED","H42FENC","H42GATE","H42WIND","H42BLND","H42DOOR",
+              "H42WDR","H42CURB","H42PLAY","H42FRNT","H42FACA","H42REAR","H42RWIN","H42RDR","H42DHOL",
+              "H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42ASPH",
+              "H42GRAS","H42PAVE","H42CEIL","H42ROOF","H42ATLAS",
+              "H42LWN","H42VERG","H42DRV","H42PATH","H42ROAD","H42BED","H42SAFE",
+              "BDKYA0","FDKYA0","PGKYA0","GPDLA0","PHONA0","FDNTA0","PBOXA0","SGNTA0","LBOXA0",
+              "D0BTA0","D1BTA0","D2BTA0","D3BTA0","D4BTA0","D5BTA0","D6BTA0","D7BTA0","D8BTA0","D9BTA0",
+              "ESCOA0","XBOXA0","FRDGA0","PROJA0","PJCTA0","PJCTB0","PJCTC0","PJCTD0",
+              "DOGDA0","HILXA1","HILXA2","HILXA3","HILXA4","HILXA5","HILXA6","HILXA7","HILXA8","TREEA0","TRE2A0","STLPA0","BINRA0","BINYA0","PTOWA0","HEDGA0","BRPRA0","MBXSA0","PLITA0"
           }
           required.update(f"MUSIC{i:02d}" for i in range(1,11))
           required.update({
@@ -91,6 +103,9 @@ jobs:
               "SAMEA0","SAMED0","SAMCA0","SAMCD0","SAMWA0","SAMWF0",
               "SAMRA0","SAMRF0","SAMTA0","SAMTD0","SAMFA0","SAMFF0"
           })
+          assert "HILXA0" not in names, "Hilux billboard rotation A0 is forbidden"
+          for rot in range(1,9):
+              assert f"HILXA{rot}" in names, f"missing Hilux rotation {rot}"
           missing=sorted(required-set(names))
           assert not missing, missing
           for mus in [f"MUSIC{i:02d}" for i in range(1,11)]:
@@ -115,13 +130,16 @@ jobs:
               sector_count=len(sec_blob)//26
               sector_counts[mapname]=sector_count
               assert sector_count>=12, (mapname,sector_count)
+              if mapname=="MAP01":
+                  assert sector_count>=80, ("MAP01 should be the detailed 42 Arnold reconstruction",sector_count)
               for off in range(0,len(sec_blob),26):
                   floor,ceil,ff,cf,light,special,tag=struct.unpack_from("<hh8s8shhh",sec_blob,off)
                   floors.add(ff.rstrip(b"\0").decode("ascii"))
                   ceilings.add(cf.rstrip(b"\0").decode("ascii"))
 
-          assert {"HCARPET","KTILE","PBATH","GRASS","DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
-          assert {"HCEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
+          assert {"H42CARP","H42WOOD","H42VNYL","H42TILF","H42CONC","H42LWN","H42VERG","H42DRV","H42PATH",
+                  "H42ROAD","H42SAFE","H42GRAS","H42PAVE","DIRT","GRAVEFL","TOMBFL","STNFLR","MALLFLR","LIBFLR"} <= floors
+          assert {"H42CEIL","TOMBCE","STNCEIL","MALLCEIL","LIBCEIL","F_SKY1"} <= ceilings
 
           zscript=data["ZSCRIPT"][-1].decode("utf-8")
           for cls in (
@@ -131,14 +149,157 @@ jobs:
               "JarOfDadToenails","UnholyJandal","GoatFinger","CrowFinger","PossumFinger",
               "GoatFingerGate","CrowFingerGate","PossumFingerGate","SamRunner",
               "MopokeShambler","UndeadGoat","RotPossum","CursedCrow","StationHusk",
-              "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler"
+              "MallBrute","LibraryShade","CemeteryGhoul","TombWisp","MopokeGlimpse","SamHiding","SamCompanion","TheMopoke","SamStoryHandler",
+              "HouseBackDoorKey","HouseFrontDoorKey","PlaygroundGateKey","BackyardGatePadlock42","LincolnPhone42","FrontDoorPuzzleNote","HousePuzzleBox",
+              "PuzzleDigit0","PuzzleDigit2","PuzzleDigit3","PuzzleDigit9","GarageEScooter42","LoungeXboxTV42","KitchenFridge42",
+              "MasterProjector42","ArmoryChargePack","SamGateNote42","NeighbourLetterbox42","DogDigEvidence","HouseHiluxWorkmate","HouseTree2","ParkTower42","HouseHedge","BrickPier42","StaticMailbox42","PorchLight42"
           ):
               assert f"class {cls}" in zscript, cls
           assert "SAML ABCDEF" in zscript
           assert "SAMF ABCDEF" in zscript
 
+          map_src=Path("game/doomtc/house42_map.py").read_text()
+          actor_src=Path("game/doomtc/zscript/actors.zs").read_text()
+          world_src=Path("game/doomtc/zscript/world.zs").read_text()
+          clues_src=Path("game/doomtc/zscript/clues.zs").read_text()
+          assert world_src.count("Scale 0.24") >= 3, "generic message notes must stay small"
+          assert 'Scale 0.24; Inventory.PickupMessage "A note in Sam\'s writing."' in clues_src
+          assert "Scale 0.20" in clues_src, "false-trail clue must stay tiny"
+          assert actor_src.count("Scale 0.30") >= 2, "front/gate story notes must stay natural-sized"
+          assert '"BACKDOOR"' in map_src and '"GATEDOOR"' in map_src
+          assert '15740' in map_src and '15741' in map_src and '15743' in map_src and '15744' in map_src and '15745' in map_src
+          assert map_src.count("15760") == 2, "MAP01 must contain exactly two e-scooter clues"
+          assert map_src.count("15761") == 3, "MAP01 must contain exactly three Xbox/TV clues"
+          assert "three eggs" in actor_src.lower()
+          assert "2 3 3 0" in actor_src
+          assert "neighbour's letterbox" in actor_src
+          assert "dog dug through here" in actor_src.lower()
+          assert '"H42DHOL"' in map_src, "damaged rear-fence texture must be used at dog hole"
+          assert 'A(160,2880,288,2944,"DIG")' in map_src, "dog dirt depression must remain at rear fence"
+          assert '(224,2916,180,15733,7)' in map_src, "dog-hole evidence actor must remain aligned to gap"
+          assert 'if y==2944 and 160 <= lo and hi <= 288' in map_src
+
+          # V37 exact poster-source and dog-hole requirements.
+          poster_src=Path("game/doomtc/source_posters")
+          exact_sources=[
+              poster_src/"poster01.png",poster_src/"poster02.png",poster_src/"poster03.png",poster_src/"poster04.png",
+              poster_src/"poster05.png",poster_src/"poster06.png",poster_src/"poster07.png",poster_src/"poster08.jpg",
+          ]
+          assert all(p.is_file() and p.stat().st_size > 10000 for p in exact_sources), "exact uploaded poster sources missing"
+          assert (poster_src/"SHA256SUMS").is_file()
+          assets_src=Path("game/doomtc/house42_assets.py").read_text()
+          assert 'missing exact uploaded wanted-poster sources' in assets_src
+          assert 'ImageOps.contain' in assets_src
+          assert '_dog_hole_fence(root)' in assets_src
+          # Generated poster doors must be native small door textures, not freestanding billboard actors.
+          for i in range(1,9):
+              p=Path(f"game/doomtc/textures/WANT{i:02d}.png")
+              assert p.is_file() and p.stat().st_size > 1000, p
+
+          # V36 optional No.44 secret armoury.
+          for tex in ("WANT01","WANT02","WANT03","WANT04","WANT05","WANT06","WANT07","WANT08"):
+              assert tex in names, tex
+          assert "class ArmoryChargePack" in zscript
+          assert '"SENTRY"' in map_src and '"SECTRIG"' in map_src and '"AMBDOOR"' in map_src
+          for d in ("WDOOR1","WDOOR2","WDOOR3","WDOOR4","WDOOR5","WDOOR6","WDOOR7","WDOOR8"):
+              assert f'"{d}"' in map_src
+          for t in ("WANT01","WANT02","WANT03","WANT04","WANT05","WANT06","WANT07","WANT08"):
+              assert t in map_src
+          for weapon in range(15001,15009):
+              assert str(weapon) in map_src, weapon
+          assert map_src.count("15800") == 8, "Each secret weapon room needs one charge pack"
+          assert map_src.count("2018") >= 7 and "2019" in map_src
+          assert "sector_special = 9" in map_src, "No.44 must count as a Doom secret"
+          assert "sector_tag = 77 if st==\"AMBDOOR\"" in map_src
+          assert "key in ARMORY_TRIGGER_EDGES" in map_src
+          assert "linedefs.append((vid(*p1),vid(*p2),4,2,77" in map_src
+          assert map_src.count("3004,15") >= 6 and map_src.count("9,15") >= 2
+          # Secret house must be west of 42 and cannot alter the locked 42-side boundaries.
+          assert 'A(-520,320,-384,352,"SENTRY")' in map_src
+          assert 'A(-816,1040,-160,1110,"AMBUSH")' in map_src
+          assert 'A(-48,16,16,3100,"LOT")' in map_src and 'A(960,16,1008,3100,"LOT")' in map_src
+
+          # V35 opening-story and progression locks.
+          assert '15746' in map_src, "Side-gate padlock actor must be placed"
+          assert '(780,1500,270,15113,7)' in map_src, "Sam must start in backyard"
+          assert 'tx=820; ty=1370' in actor_src and 'tx=820; ty=1270' in actor_src
+          assert 'long sunroom' not in actor_src[actor_src.index("class SamEscapeRunner"):actor_src.index("class HouseDoorbell")]
+          assert 'Padlocked. Sam locked it behind him.' in actor_src
+          assert "Sam ran away to the park" in actor_src
+          assert "I've locked the doors behind us" in actor_src
+          assert "I've hidden the key in Sam's puzzle box" in actor_src
+          assert "e-scooters, Xbox, eggs, projector" in actor_src
+          assert "SAM: I left the key in the neighbour's letterbox." in actor_src
+          assert '"BACKDOOR"' in map_src and '"DOOR"' in map_src and '"GATEDOOR"' in map_src
+          assert 'special = 27 if door_style=="DOOR"' in map_src
+          assert '(26 if door_style=="BACKDOOR"' in map_src
+          assert '28 if door_style=="GATEDOOR"' in map_src
+
+          # V33 visual/layout regressions that must never return.
+          assert 'A(-48,16,16,3100,"LOT")' in map_src
+          assert 'A(960,16,1008,3100,"LOT")' in map_src
+          assert 'A(16,2944,960,3100,"LOT")' in map_src
+          assert 'A(-1652,-930,-1620,-830,"GATEDOOR")' in map_src
+          assert 'A(-2240,-960,-2208,-832,"GATEDOOR")' not in map_src
+          assert '"IDOOR"' in map_src
+          assert 'A(624,1296,688,1312,"BACKDOOR")' in map_src
+          assert 'H42RWIN' in map_src and 'H42RDR' in map_src
+          assert '"NBRR1"' in map_src and '"NBRR2"' in map_src
+          assert '"H42LWIN"' in map_src and '"H42ROFW"' in map_src
+          assert '15734' in map_src
+          for ednum in ('15735','15736','15737','15738','15739'):
+              assert ednum in map_src
+          assert '"PLAYEQ"' not in map_src.split("AREAS = [",1)[1].split("]",1)[0]
+
           print(f"Standalone IWAD validation passed: {wad.stat().st_size} bytes, {count} lumps, sector counts={sector_counts}")
           PY
+
+      - name: Package 42 Arnold builder handoff
+        run: |
+          set -euo pipefail
+          HANDOFF=House42-Builder-Handoff
+          rm -rf "$HANDOFF"
+          mkdir -p "$HANDOFF/textures" "$HANDOFF/flats" "$HANDOFF/sprites" "$HANDOFF/graphics" "$HANDOFF/source_posters"
+          cp game/HOUSE42_HANDOFF.md "$HANDOFF/"
+          cp game/doomtc/house42_layout.json "$HANDOFF/"
+          cp game/doomtc/house42_map.py "$HANDOFF/"
+          cp game/doomtc/house42_assets.py "$HANDOFF/"
+          cp game/doomtc/build_map.py "$HANDOFF/"
+          cp game/doomtc/generate_assets.py "$HANDOFF/"
+          cp game/doomtc/sam-and-the-mopoke-map.wad "$HANDOFF/42-Arnold-MAP01-source.wad"
+          cp game/doomtc/build/sam-and-the-mopoke.wad "$HANDOFF/Sam-and-the-Mopoke-IWAD.wad"
+          cp game/doomtc/textures/H42*.png "$HANDOFF/textures/"
+          cp game/doomtc/flats/H42*.png "$HANDOFF/flats/"
+          cp game/doomtc/sprites/H4*.png "$HANDOFF/sprites/" || true
+          cp game/doomtc/graphics/H42ATLAS.png "$HANDOFF/graphics/"
+          cp game/doomtc/source_posters/poster* "$HANDOFF/source_posters/"
+          cp game/doomtc/source_posters/SHA256SUMS "$HANDOFF/source_posters/"
+          cp game/doomtc/textures/WANT*.png "$HANDOFF/textures/"
+          printf '%s\n' \
+            '42 Arnold v3 handoff: source-driven house/street/playground MAP01.' \
+            'Load Sam-and-the-Mopoke-IWAD.wad in GZDoom or inspect the source map and JSON.' \
+            'Internal dimensions are reconstructed from video/aerial evidence, not a survey.' \
+            > "$HANDOFF/README.txt"
+          zip -qr House42-Builder-Handoff.zip "$HANDOFF"
+          cp game/doomtc/build/sam-and-the-mopoke.wad Sam-and-the-Mopoke-IWAD.wad
+          test -s House42-Builder-Handoff.zip
+          test -s Sam-and-the-Mopoke-IWAD.wad
+
+      - name: Upload standalone IWAD
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sam-and-the-Mopoke-IWAD
+          path: Sam-and-the-Mopoke-IWAD.wad
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload 42 Arnold builder handoff
+        uses: actions/upload-artifact@v4
+        with:
+          name: House42-Builder-Handoff
+          path: House42-Builder-Handoff.zip
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Set up Java 17
         uses: actions/setup-java@v4

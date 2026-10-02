@@ -155,19 +155,19 @@ class AbandonedCarCache : SearchableCache { Default { Tag "Abandoned Car"; } }
 class VendingCache : SearchableCache { Default { Tag "Vending Machine"; } }
 
 class SamMessage : Actor {
- Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; }
+ Default { Radius 3; Height 6; Scale 0.24; +USESPECIAL +NOBLOCKMAP; }
  States { Spawn: SMSG A -1; Stop; }
  override bool Used(Actor u){A_Log("SAM: DAD? DON'T COME THIS WAY.");return true;}
 }
 
 class FalseMessage : Actor {
- Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; }
+ Default { Radius 3; Height 6; Scale 0.24; +USESPECIAL +NOBLOCKMAP; }
  States { Spawn: FMSG A -1; Stop; }
  override bool Used(Actor u){A_Log("IT KNOWS YOU ARE FOLLOWING.");return true;}
 }
 
 class LincolnMessage : Actor {
- Default { Radius 10; Height 24; +USESPECIAL +NOBLOCKMAP; }
+ Default { Radius 3; Height 6; Scale 0.24; +USESPECIAL +NOBLOCKMAP; }
  States { Spawn: LNTE A -1; Stop; }
  override bool Used(Actor u){
   if(!u||!u.player)return false;

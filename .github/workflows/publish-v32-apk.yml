@@ -1,0 +1,48 @@
+name: Publish V32 APK direct download
+
+on:
+  push:
+    branches: [v32-map01-rebuild]
+    paths:
+      - '.github/workflows/publish-v32-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download verified V32 APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Sam-and-the-Mopoke-IWAD-APK
+          run-id: 36923947058
+          github-token: ${{ github.token }}
+          path: downloaded-apk
+
+      - name: Publish direct APK release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          APK="$(find downloaded-apk -type f -name '*.apk' | head -n1)"
+          test -s "$APK"
+          cp "$APK" Sam-and-the-Mopoke-V32.apk
+          sha256sum Sam-and-the-Mopoke-V32.apk > SHA256SUMS.txt
+
+          TAG="v32-map01-test"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" Sam-and-the-Mopoke-V32.apk SHA256SUMS.txt --clobber
+          else
+            gh release create "$TAG" \
+              --target v32-map01-rebuild \
+              --title "Sam and the Mopoke V32 Test Build" \
+              --notes "Verified Android test build for the V32 MAP01 house/street/puzzle rebuild. Built and packaging-validated by GitHub Actions." \
+              Sam-and-the-Mopoke-V32.apk SHA256SUMS.txt
+          fi

@@ -66,6 +66,15 @@ def _prop(root,name,kind):
         _rect(p,w,h,15,15,49,49,(91,76,60));_disc(p,w,h,32,32,7,7,(180,140,48))
     _png(root/"sprites"/f"{name}A0.png",w,h,p,32,58)
 
+def _small_world_note(root,name,tint=(202,190,154)):
+    # Natural-size paper/paint clue, intentionally tiny in world space.
+    w,h=28,22; p=_canvas(w,h)
+    _rect(p,w,h,4,3,24,19,tint)
+    _line(p,w,h,7,8,21,8,1,(78,61,53))
+    _line(p,w,h,7,12,19,12,1,(78,61,53))
+    _line(p,w,h,7,16,22,16,1,(78,61,53))
+    _png(root/"sprites"/f"{name}A0.png",w,h,p,14,20)
+
 def _creature(root,prefix,kind):
     w=h=96
     for i,fr in enumerate("ABCDEFGH"):
@@ -120,6 +129,11 @@ def generate_world_assets(root: Path):
     # Required extra print animation frames.
     for fr in "BCD": 
         src=(root/"sprites"/"SMFPA0.png").read_bytes();(root/"sprites"/f"SMFP{fr}0.png").write_bytes(src)
+    # Overwrite the generic 64x64 note props with believable small clues.
+    _small_world_note(root,"SMSG",(190,177,140))
+    _small_world_note(root,"FMSG",(154,139,113))
+    _small_world_note(root,"LNTE",(207,197,163))
+    _small_world_note(root,"SMNT",(205,194,158))
     _creature(root,"MZOM","zombie");_creature(root,"GOAT","goat")
     # Original title/intermission and night sky.
     w,h=320,200;p=[]

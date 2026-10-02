@@ -5,6 +5,7 @@ from sam_weapon_assets import generate_sam_assets
 from world_assets import generate_world_assets
 from polish_assets import generate_polish_assets
 from visual_stability import apply_visual_stability
+from house42_assets import generate_house42_assets
 
 ROOT = Path(__file__).resolve().parent
 
@@ -50,9 +51,13 @@ with zipfile.ZipFile(sam_zip, "r") as z:
 # canonical Mopoke, location props and richer textures.
 generate_polish_assets(ROOT)
 
+# Reinstall the source-matched 42 Arnold domestic texture/detail pack after the generic
+# polish pass so MAP01 keeps the walkthrough-specific materials.
+generate_house42_assets(ROOT)
+
 # Final cleanup prevents the two bugs seen in the older APKs: first-person sprites
 # hovering in the top-left and mixed A0/A1..A8 monster frames flickering between art sets.
 apply_visual_stability(ROOT)
 
 print(f"Installed {len(expected)} definitive Sam sprite frames from uploaded sheet")
-print("Sam and the Mopoke polished Doom II assets generated")
+print("Sam and the Mopoke polished Doom II assets generated, including 42 Arnold source-matched MAP01 materials")
