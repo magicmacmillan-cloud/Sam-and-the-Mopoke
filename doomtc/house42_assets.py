@@ -1,5 +1,6 @@
 from pathlib import Path
 import math, random
+from PIL import Image, ImageOps
 
 from world_assets import _png, _canvas, _rect, _line, _disc, _wav
 
@@ -158,6 +159,44 @@ def _fence(root):
         _disc(p,w,h,cx,cy,3,2,(48,42,35))
         _disc(p,w,h,cx,cy,1,1,(31,29,26))
     _png(root/"textures"/"H42FENC.png",w,h,p)
+def _dog_hole_fence(root):
+    """Rear-fence section visibly damaged where the dog dug underneath.
+
+    This is still a blocking Doom midtexture: the gap is visual/environmental
+    evidence, not a player shortcut.
+    """
+    w=h=128; p=_canvas(w,h)
+    wood=(78,65,51)
+    gap_l,gap_r=39,89
+    gap_top=94
+
+    # Paling fence, deliberately leave the dog-sized bottom opening transparent.
+    for x in range(w):
+        plank=(x//20)
+        base=(wood[0]+((plank*5)%9)-4, wood[1]+((plank*3)%7)-3, wood[2]+((plank*7)%9)-4)
+        for y in range(h):
+            if gap_l <= x <= gap_r and y >= gap_top:
+                continue
+            c=_noise(base,x,y,7,319+plank)
+            if x%20 in (0,1): c=_shade(c,-25)
+            if y in (35,36,94,95): c=_shade(c,-18)
+            _set(p,w,h,x,y,c)
+
+    # Broken/raised board edges and scratch marks around the opening.
+    _line(p,w,h,gap_l-4,60,gap_l+3,111,5,(93,69,47))
+    _line(p,w,h,gap_r+4,61,gap_r-2,112,5,(90,66,45))
+    _line(p,w,h,gap_l-1,88,gap_l+9,101,2,(47,39,32))
+    _line(p,w,h,gap_r+1,87,gap_r-10,102,2,(47,39,32))
+    for x0 in (50,60,72,81):
+        _line(p,w,h,x0,83,x0-5,95,1,(42,35,29))
+
+    # Dark soil lip visible at the base, with the centre left transparent so
+    # the actual yard beyond is visible through the dog-sized gap.
+    _line(p,w,h,28,116,100,116,4,(71,50,35))
+    _line(p,w,h,33,121,95,121,3,(54,41,31))
+    _png(root/"textures"/"H42DHOL.png",w,h,p)
+
+
 def _gate(root):
     w=h=128; p=_canvas(w,h)
     # Transparent black metal railing/gate for GZDoom midtextures.
@@ -1005,118 +1044,45 @@ def _wanted_door_base(seed=0):
     return w,h,p
 
 def _poster_doors(root):
-    red=(126,22,18); ink=(43,28,20); black=(18,17,16)
+    """Install the user's eight uploaded wanted posters as natural door posters.
 
-    # 1: CSM-101 cyborg assassin.
-    w,h,p=_wanted_door_base(1)
-    _tiny_text(p,w,h,9,15,"WANTED",red,2)
-    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
-    _rect(p,w,h,12,38,52,86,(126,35,28))
-    _disc(p,w,h,32,56,13,15,(189,119,66))
-    _rect(p,w,h,20,50,44,58,black)
-    _rect(p,w,h,22,52,31,56,(52,57,58)); _rect(p,w,h,34,52,42,56,(52,57,58))
-    _rect(p,w,h,16,62,20,86,(44,45,43))
-    _rect(p,w,h,12,76,19,80,(156,158,151))
-    _tiny_text(p,w,h,14,89,"CSM101",red,1)
-    _tiny_text(p,w,h,11,102,"$1M",red,2)
-    _png(root/"textures"/"WANT01.png",w,h,p)
+    The originals live under doomtc/source_posters and are treated as source of
+    truth. They are not redrawn. Each image is aspect-preserved and reduced into
+    a small paper poster mounted on the generated domestic door texture.
+    """
+    srcdir=root/"source_posters"
+    source_names=[
+        "poster01.png","poster02.png","poster03.png","poster04.png",
+        "poster05.png","poster06.png","poster07.png","poster08.jpg",
+    ]
+    missing=[name for name in source_names if not (srcdir/name).is_file()]
+    if missing:
+        raise RuntimeError(f"missing exact uploaded wanted-poster sources: {missing}")
 
-    # 2: Pennywise.
-    w,h,p=_wanted_door_base(2)
-    _tiny_text(p,w,h,9,15,"WANTED",red,2)
-    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
-    _rect(p,w,h,12,37,52,87,(105,13,16))
-    for cx,cy,rx,ry in [(22,52,10,13),(42,52,10,13),(18,64,8,12),(46,64,8,12)]:
-        _disc(p,w,h,cx,cy,rx,ry,(191,73,20))
-    _disc(p,w,h,32,59,13,17,(222,211,178))
-    _disc(p,w,h,27,57,2,2,(37,28,22)); _disc(p,w,h,37,57,2,2,(37,28,22))
-    _disc(p,w,h,32,64,3,3,(166,18,23))
-    _line(p,w,h,25,49,29,60,1,(156,18,23)); _line(p,w,h,39,49,35,60,1,(156,18,23))
-    _tiny_text(p,w,h,12,89,"PENNYWISE",ink,1)
-    _tiny_text(p,w,h,10,102,"$5M",red,2)
-    _png(root/"textures"/"WANT02.png",w,h,p)
+    door_path=root/"textures"/"H42DOOR.png"
+    if not door_path.is_file():
+        raise RuntimeError("H42DOOR.png must exist before wanted-poster installation")
 
-    # 3: hand-drawn WENTED / WEEWEE card.
-    w,h,p=_wanted_door_base(3)
-    _rect(p,w,h,8,11,56,115,(226,220,194))
-    _disc(p,w,h,31,30,14,10,(92,167,207))
-    _line(p,w,h,18,36,13,44,2,black)
-    _tiny_text(p,w,h,14,46,"WENTED",black,2)
-    _rect(p,w,h,16,64,48,94,(226,220,194))
-    _disc(p,w,h,29,74,8,7,(245,177,24)); _disc(p,w,h,38,81,9,8,(245,177,24))
-    _rect(p,w,h,19,76,24,80,black); _disc(p,w,h,31,73,1,1,black)
-    _tiny_text(p,w,h,14,99,"WEEWEE",black,2)
-    _png(root/"textures"/"WANT03.png",w,h,p)
+    # Door-facing linedefs in No.44 are 32 map units wide. 32x128 prevents
+    # horizontal cropping while leaving the poster at believable paper scale.
+    door=Image.open(door_path).convert("RGBA").resize((32,128),Image.Resampling.LANCZOS)
 
-    # 4: small pale creature / caution reward.
-    w,h,p=_wanted_door_base(4)
-    _tiny_text(p,w,h,9,15,"WANTED",red,2)
-    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
-    _rect(p,w,h,12,38,52,86,(39,47,31))
-    _disc(p,w,h,32,58,15,14,(211,196,157))
-    _disc(p,w,h,20,59,6,4,(181,140,100)); _disc(p,w,h,44,59,6,4,(181,140,100))
-    _rect(p,w,h,27,70,37,86,(204,190,156))
-    _disc(p,w,h,27,56,2,2,black); _disc(p,w,h,37,56,2,2,black)
-    _tiny_text(p,w,h,9,89,"CAUTION",ink,1)
-    _tiny_text(p,w,h,8,102,"$10M",red,2)
-    _png(root/"textures"/"WANT04.png",w,h,p)
+    for idx,name in enumerate(source_names,1):
+        poster=Image.open(srcdir/name).convert("RGBA")
+        # Preserve the complete uploaded image. No crop, reinterpretation, or redraw.
+        thumb=ImageOps.contain(poster,(28,58),Image.Resampling.LANCZOS)
 
-    # 5: Rick + Morty interdimensional card.
-    w,h,p=_wanted_door_base(5)
-    _rect(p,w,h,9,15,55,28,(184,19,23))
-    _tiny_text(p,w,h,13,17,"WANTED",(235,229,215),2)
-    _tiny_text(p,w,h,9,31,"CRIMES AGAINST",ink,1)
-    _rect(p,w,h,12,42,31,82,black); _rect(p,w,h,33,42,52,82,black)
-    # left spiky scientist
-    for dx,dy in [(0,-10),(-7,-7),(7,-7),(-10,0),(10,0),(-7,7),(7,7)]:
-        _line(p,w,h,21,59,21+dx,59+dy,2,(224,224,212))
-    _disc(p,w,h,21,61,7,9,(213,210,185))
-    _disc(p,w,h,19,59,2,2,black); _disc(p,w,h,24,59,2,2,black)
-    # right round boy
-    _disc(p,w,h,42,61,8,9,(213,210,185))
-    _disc(p,w,h,39,59,2,2,black); _disc(p,w,h,45,59,2,2,black)
-    _tiny_text(p,w,h,13,85,"RICK MORTY",ink,1)
-    _png(root/"textures"/"WANT05.png",w,h,p)
+        out=door.copy()
+        x=(32-thumb.width)//2
+        y=34+(58-thumb.height)//2
 
-    # 6: Vegeta-style wanted poster.
-    w,h,p=_wanted_door_base(6)
-    _tiny_text(p,w,h,9,15,"WANTED",red,2)
-    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
-    _rect(p,w,h,12,38,52,86,black)
-    # angular orange hair
-    for x0 in range(16,49,6):
-        _line(p,w,h,32,60,x0,40-(x0%4),3,(211,92,19))
-        _line(p,w,h,32,60,x0,38-(x0%5),1,(242,155,38))
-    _disc(p,w,h,32,62,10,12,(219,176,118))
-    _line(p,w,h,25,58,30,56,2,black); _line(p,w,h,39,56,34,58,2,black)
-    _rect(p,w,h,21,72,43,86,(145,137,116))
-    _tiny_text(p,w,h,15,89,"VEGETA",ink,1)
-    _png(root/"textures"/"WANT06.png",w,h,p)
+        # Thin dark backing/shadow makes the physical paper readable on the door.
+        shadow=Image.new("RGBA",(thumb.width+2,thumb.height+2),(25,20,17,210))
+        out.alpha_composite(shadow,(max(0,x-1),max(0,y-1)))
+        out.alpha_composite(thumb,(x,y))
 
-    # 7: Cornholio-style wanted poster.
-    w,h,p=_wanted_door_base(7)
-    _tiny_text(p,w,h,9,15,"WANTED",red,2)
-    _rect(p,w,h,12,38,52,85,(119,143,133))
-    _rect(p,w,h,23,47,41,79,(32,67,103))
-    _disc(p,w,h,32,57,8,10,(221,164,98))
-    _line(p,w,h,20,62,13,51,3,(221,164,98)); _line(p,w,h,44,62,51,51,3,(221,164,98))
-    _disc(p,w,h,28,56,1,1,black); _disc(p,w,h,36,56,1,1,black)
-    _tiny_text(p,w,h,10,89,"CORNHOLIO",ink,1)
-    _tiny_text(p,w,h,8,102,"$666M",red,1)
-    _png(root/"textures"/"WANT07.png",w,h,p)
-
-    # 8: second creature card / unknown specimen.
-    w,h,p=_wanted_door_base(8)
-    _tiny_text(p,w,h,9,15,"WANTED",red,2)
-    _tiny_text(p,w,h,12,26,"DEAD OR ALIVE",ink,1)
-    _rect(p,w,h,12,38,52,86,(33,33,29))
-    _disc(p,w,h,32,60,14,13,(205,191,154))
-    _disc(p,w,h,27,58,2,2,black); _disc(p,w,h,37,58,2,2,black)
-    _line(p,w,h,32,47,32,40,3,(178,139,94))
-    _line(p,w,h,32,40,29,35,3,(178,139,94))
-    _tiny_text(p,w,h,9,89,"UNKNOWN",ink,1)
-    _tiny_text(p,w,h,10,102,"$10M",red,2)
-    _png(root/"textures"/"WANT08.png",w,h,p)
+        # Save as ordinary PNG texture inside TX_START/TX_END.
+        out.save(root/"textures"/f"WANT{idx:02d}.png","PNG")
 
 def generate_house42_assets(root: Path):
     root=Path(root)
@@ -1129,6 +1095,7 @@ def generate_house42_assets(root: Path):
     _brick(root)
     _corrug(root)
     _fence(root)
+    _dog_hole_fence(root)
     _gate(root)
     _window(root)
     _litwindow(root)
