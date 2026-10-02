@@ -1,3 +1,7 @@
 [enu default]
 SAMMOPOKE_TITLE = "SAM AND THE MOPOKE";
 SAMMOPOKE_NEWGAME = "NEW GAME";
+
+PD_BLUEK = "The back door is locked. I need the spare house key.";
+PD_YELLOWK = "The front door is locked. Lincoln said the key is in Sam\'s puzzle box.";
+PD_REDK = "The playground gate is padlocked. Sam said the key is in the neighbour\'s letterbox.";
