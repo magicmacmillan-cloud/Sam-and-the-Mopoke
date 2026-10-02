@@ -285,6 +285,21 @@ Notes, phone, puzzle box, keys and padlocks must remain believable world objects
 
 If any required lock can be bypassed, any key is unnecessary, Lincoln's room is not off the kitchen, the opposite-room pairings are wrong, or MAP01 can end before the playground gate is unlocked, the build fails acceptance.
 
+## REAR FENCE DOG HOLE — REQUIRED ENVIRONMENTAL EVIDENCE
+
+The rear-fence dog evidence must be physically visible in MAP01, not represented only by interaction text.
+
+Required implementation:
+
+- a dirt/worn-grass depression directly against the rear fence
+- a dark dog-sized opening beneath the fence
+- visibly damaged/loose lower palings and scratch marks
+- the DogDigEvidence world prop aligned with that opening
+- no sign, arrow, floating objective marker or billboard
+- the opening remains too small for Dad and the rear-fence linedef stays blocking
+
+The dedicated rear-fence bay uses H42DHOL; the dirt patch uses the DIG sector. Removing either fails MAP01 acceptance.
+
 ## OPTIONAL SECRET — NO. 44 WANTED-POSTER ARMOURY
 
 This section adds to V35/V34.2. It must never replace or bypass the mandatory 42 Arnold progression.
@@ -292,7 +307,7 @@ This section adds to V35/V34.2. It must never replace or bypass the mandatory 42
 - Secret entrance is on the Arnold Street side of neighbour No. 44, accessible only after Dad has legitimately reached the street.
 - Entering the inner threshold counts as one Doom secret.
 - Inside is one compact hallway with eight small side rooms.
-- Every room has a different wanted-poster texture on its working Doom door.
+- Every room has a different wanted-poster texture on its working Doom door. WANT01–WANT08 must be generated from the eight exact uploaded poster image files stored under doomtc/source_posters; procedural redraws or lookalikes are not acceptable.
 - Every room contains a different weapon, a useful ammo/charge pickup, and armour on the floor.
 - Weapon rooms are rewards, not required progression. The player can leave without clearing them.
 - The eight current weapon rewards are DoomEdNums 15001 through 15008.
