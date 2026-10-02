@@ -42,7 +42,7 @@ public class CrashActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         File ext = getExternalFilesDir(null);
-        engineLog = new File(ext, "Freedoom/config/z");
+        engineLog = new File(ext, "Freedoom/config/user_files/gzdoom_log.txt");
 
         SharedPreferences prefs = getSharedPreferences("MOPOKE_CRASH", MODE_PRIVATE);
         int seq = prefs.getInt("seq", 0) + 1;
@@ -128,41 +128,44 @@ public class CrashActivity extends Activity {
                 return sb.toString();
             }
 
-            ApplicationExitInfo e = exits.get(0);
-            sb.append("Process: ").append(e.getProcessName()).append("\n");
-            sb.append("Reason: ").append(reasonName(e.getReason()))
-              .append(" (").append(e.getReason()).append(")\n");
-            sb.append("Status: ").append(e.getStatus()).append("\n");
-            sb.append("Importance: ").append(e.getImportance()).append("\n");
-            sb.append("Timestamp: ")
-              .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
-              .format(new Date(e.getTimestamp()))).append("\n");
-            sb.append("Description: ").append(String.valueOf(e.getDescription())).append("\n");
-            sb.append("PSS KB: ").append(e.getPss()).append("\n");
-            sb.append("RSS KB: ").append(e.getRss()).append("\n");
+            int index = 0;
+            for (ApplicationExitInfo e : exits) {
+                sb.append("\nExit record #").append(++index).append("\n");
+                sb.append("Process: ").append(e.getProcessName()).append("\n");
+                sb.append("Reason: ").append(reasonName(e.getReason()))
+                  .append(" (").append(e.getReason()).append(")\n");
+                sb.append("Status: ").append(e.getStatus()).append("\n");
+                sb.append("Importance: ").append(e.getImportance()).append("\n");
+                sb.append("Timestamp: ")
+                  .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
+                  .format(new Date(e.getTimestamp()))).append("\n");
+                sb.append("Description: ").append(String.valueOf(e.getDescription())).append("\n");
+                sb.append("PSS KB: ").append(e.getPss()).append("\n");
+                sb.append("RSS KB: ").append(e.getRss()).append("\n");
 
-            byte[] summary = e.getProcessStateSummary();
-            if (summary != null && summary.length > 0) {
-                sb.append("Last saved app stage: ")
-                  .append(new String(summary, StandardCharsets.UTF_8)).append("\n");
-            }
-
-            try {
-                InputStream trace = e.getTraceInputStream();
-                if (trace != null) {
-                    byte[] traceBytes = readLimited(trace, 1024 * 1024);
-                    trace.close();
-                    sb.append("\n--- Android exit trace / tombstone ---\n");
-                    sb.append(new String(traceBytes, StandardCharsets.UTF_8));
-                    if (traceBytes.length > 0 && traceBytes[traceBytes.length - 1] != '\n') {
-                        sb.append("\n");
-                    }
-                } else {
-                    sb.append("Android exit trace: unavailable.\n");
+                byte[] summary = e.getProcessStateSummary();
+                if (summary != null && summary.length > 0) {
+                    sb.append("Last saved app stage: ")
+                      .append(new String(summary, StandardCharsets.UTF_8)).append("\n");
                 }
-            } catch (Throwable traceError) {
-                sb.append("Android exit trace read failed: ")
-                  .append(traceError.toString()).append("\n");
+
+                try {
+                    InputStream trace = e.getTraceInputStream();
+                    if (trace != null) {
+                        byte[] traceBytes = readLimited(trace, 1024 * 1024);
+                        trace.close();
+                        sb.append("--- Android exit trace / tombstone ---\n");
+                        sb.append(new String(traceBytes, StandardCharsets.UTF_8));
+                        if (traceBytes.length > 0 && traceBytes[traceBytes.length - 1] != '\n') {
+                            sb.append("\n");
+                        }
+                    } else {
+                        sb.append("Android exit trace: unavailable.\n");
+                    }
+                } catch (Throwable traceError) {
+                    sb.append("Android exit trace read failed: ")
+                      .append(traceError.toString()).append("\n");
+                }
             }
         } catch (Throwable t) {
             sb.append("Previous exit query failed: ").append(t.toString()).append("\n");
@@ -234,7 +237,7 @@ public class CrashActivity extends Activity {
         createDirectories.invoke(null, app);
         String base = (String) getQuakeFullDir.invoke(null);
 
-        engineLog = new File(base, "z");
+        engineLog = new File(base, "user_files/gzdoom_log.txt");
         try {
             if (engineLog.exists()) engineLog.delete();
         } catch (Throwable ignored) {}
@@ -286,8 +289,8 @@ public class CrashActivity extends Activity {
         intent.setAction(Intent.ACTION_MAIN);
         intent.putExtra("res_div", resDiv);
         intent.putExtra("game_path", base);
-        intent.putExtra("game", "com.samandthemopoke.game");
-        intent.putExtra("args", "-iwad sam-and-the-mopoke.wad -logfile z +map MAP01");
+        intent.putExtra("game", "com.msa.freedoom");
+        intent.putExtra("args", "-iwad sam-and-the-mopoke.wad +map MAP01");
         startActivity(intent);
 
         setStage("GZDoom activity launched.");
