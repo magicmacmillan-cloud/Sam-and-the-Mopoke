@@ -240,12 +240,14 @@ required = {
     "H42LWN","H42VERG","H42DRV","H42PATH","H42ROAD","H42BED","H42SAFE",
     "DBELA0","BDKYA0","DOGDA0","STLPA0","TREEA0","TRE2A0","BNCHA0","SWNGA0","SLIDA0","CLMBA0","WBINA0",
     "PTOWA0","HEDGA0","BRPRA0","MBXSA0","PLITA0",
-    "BINRA0","BINYA0","SHRBA0","HILXA1","HILXA5","CARWA1","CARDA1",
+    "BINRA0","BINYA0","SHRBA0","HILXA1","HILXA2","HILXA3","HILXA4","HILXA5","HILXA6","HILXA7","HILXA8","CARWA1","CARDA1",
     "FDKYA0","PGKYA0","GPDLA0","PHONA0","FDNTA0","PBOXA0","SGNTA0","LBOXA0",
     "D0BTA0","D1BTA0","D2BTA0","D3BTA0","D4BTA0","D5BTA0","D6BTA0","D7BTA0","D8BTA0","D9BTA0",
     "ESCOA0","XBOXA0","FRDGA0","PROJA0","PJCTA0","PJCTB0","PJCTC0","PJCTD0"
 }
 required.update(MUSIC_NAMES)
+if "HILXA0" in names:
+    raise ValueError("Hilux billboard sprite HILXA0 is forbidden; use rotations 1-8")
 missing = sorted(required - set(names))
 if ident != b"IWAD" or missing:
     raise ValueError(f"IWAD validation failed: header={ident!r} missing={missing}")
