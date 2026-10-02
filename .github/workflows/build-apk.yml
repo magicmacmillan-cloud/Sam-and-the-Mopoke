@@ -1,4 +1,4 @@
-name: Build Sam and the Mopoke IWAD APK
+name: Build Zombnomby V37 IWAD APK
 
 on:
   workflow_dispatch:
@@ -21,7 +21,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: sam-and-the-mopoke-${{ github.ref }}
+  group: zombnomby-v37-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -319,10 +319,10 @@ jobs:
           set -euo pipefail
           ASSETS=engine/doom/src/main/assets
           mkdir -p "$ASSETS"
-          cp game/doomtc/build/sam-and-the-mopoke.wad "$ASSETS/"
+          cp game/doomtc/build/sam-and-the-mopoke.wad "$ASSETS/zombnomby.wad"
           rm -f "$ASSETS/freedoom1.wad" "$ASSETS/freedoom2.wad" "$ASSETS/freedoom-manual.pdf"
           rm -f "$ASSETS/sam-and-the-mopoke.pk3" "$ASSETS/sam-and-the-mopoke-map.wad"
-          test -s "$ASSETS/sam-and-the-mopoke.wad"
+          test -s "$ASSETS/zombnomby.wad"
 
       - name: Brand launcher and boot the IWAD directly
         working-directory: engine
@@ -333,15 +333,18 @@ jobs:
 
           p=Path("doom/src/main/res/values/strings.xml")
           s=p.read_text()
-          s=s.replace('<string name="app_name">Freedoom</string>',
+          s=s.replace('<string name="app_name">Zombnomby</string>',
                       '<string name="app_name">Sam and the Mopoke</string>')
-          s=s.replace('Welcome to Freedoom','Sam and the Mopoke')
+          s=s.replace('Zombnomby','Sam and the Mopoke')
           p.write_text(s)
+
+          if '<string name="app_name">Zombnomby</string>' not in s:
+              raise SystemExit("app_name must be Zombnomby")
 
           p=Path("doom/build.gradle.kts")
           s=p.read_text().replace(
               'applicationId = "com.msa.freedoom"',
-              'applicationId = "com.samandthemopoke.game"'
+              'applicationId = "com.zombnomby.game"'
           )
           p.write_text(s)
 
@@ -398,7 +401,7 @@ jobs:
                       val base = AppSettings.getQuakeFullDir()
                       withContext(Dispatchers.IO) {
                           AppSettings.createDirectories(application)
-                          Utils.copyAsset(this@EntryActivity, "sam-and-the-mopoke.wad", base)
+                          Utils.copyAsset(this@EntryActivity, "zombnomby.wad", base)
                           Utils.copyAsset(this@EntryActivity, "uzdoom.pk3", "$base/res")
                           Utils.copyAsset(this@EntryActivity, "uzdoom_game_support.pk3", "$base/res")
                           Utils.copyAsset(this@EntryActivity, "game_widescreen_gfx.pk3", base)
@@ -412,8 +415,8 @@ jobs:
                           action = Intent.ACTION_MAIN
                           putExtra("res_div", AppSettings.getIntOption(this@EntryActivity, "gzdoom_res_div", 1))
                           putExtra("game_path", base)
-                          putExtra("game", "com.samandthemopoke.game")
-                          putExtra("args", "-iwad sam-and-the-mopoke.wad +map MAP01")
+                          putExtra("game", "com.zombnomby.game")
+                          putExtra("args", "-iwad zombnomby.wad +map MAP01")
                       })
                       finish()
                   }
@@ -440,9 +443,10 @@ jobs:
           apk=sys.argv[1]
           with zipfile.ZipFile(apk) as z:
               names=set(z.namelist())
-              target="assets/sam-and-the-mopoke.wad"
+              target="assets/zombnomby.wad"
               assert target in names
               assert "assets/freedoom2.wad" not in names
+              assert "assets/sam-and-the-mopoke.wad" not in names
               assert "assets/sam-and-the-mopoke.pk3" not in names
               assert "assets/sam-and-the-mopoke-map.wad" not in names
               with z.open(target) as f:
@@ -453,7 +457,7 @@ jobs:
           APKANALYZER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name apkanalyzer | head -n1)"
           test -x "$APKANALYZER"
           APP_ID="$("$APKANALYZER" manifest application-id "$APK")"
-          test "$APP_ID" = "com.samandthemopoke.game"
+          test "$APP_ID" = "com.zombnomby.game"
           "$APKANALYZER" manifest print "$APK" > /tmp/mopoke-manifest.txt
           grep -Fq 'com.msa.freedoom.EntryActivity' /tmp/mopoke-manifest.txt
           grep -Fq 'com.msa.freedoom.Game' /tmp/mopoke-manifest.txt
@@ -462,13 +466,13 @@ jobs:
           rm -rf /tmp/mopoke-dex && mkdir -p /tmp/mopoke-dex
           unzip -q "$APK" 'classes*.dex' -d /tmp/mopoke-dex
           strings /tmp/mopoke-dex/classes*.dex | grep -Fq 'Lcom/msa/freedoom/EntryActivity;'
-          echo "Launch contract verified: $APP_ID -> com.msa.freedoom.EntryActivity"
-          cp "$APK" Sam-and-the-Mopoke-IWAD-debug.apk
+          echo "Zombnomby launch contract verified: $APP_ID -> com.msa.freedoom.EntryActivity"
+          cp "$APK" Zombnomby-V37-debug.apk
 
       - name: Upload Sam and the Mopoke APK
         uses: actions/upload-artifact@v4
         with:
-          name: Sam-and-the-Mopoke-IWAD-APK
-          path: Sam-and-the-Mopoke-IWAD-debug.apk
+          name: Zombnomby-V37-APK
+          path: Zombnomby-V37-debug.apk
           if-no-files-found: error
           retention-days: 3
